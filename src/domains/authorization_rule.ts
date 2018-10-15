@@ -63,7 +63,7 @@ export class AuthorizationRuleUseCase extends BaseUseCase {
         });
     }
 
-    
+   
 }
 
 export default new AuthorizationRuleUseCase();

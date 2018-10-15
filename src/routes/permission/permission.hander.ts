@@ -321,6 +321,58 @@ export class PermissionHandler extends BaseHandler {
                 Utils.responseError(res, err);
             });
     }
+
+    public static selectModule(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        console.log(session);
+        let userId = session.userId;
+        console.log(userId);
+
+        return Promise.then(() => {
+
+            return AuthorizationRoleUseCase.findOne( q => {
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,userId);
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+        }).then((object) => {
+            if(object == null) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_REQUEST,
+                    MessageInfo.MI_USER_NOT_EXIST,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+
+            let role = AuthorizationRoleModel.fromDto(object)
+            return AuthorizationRoleUseCase.findByQuery( q => {
+                q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${AuthorizationRuleSetTableSchema.TABLE_NAME}.*`);
+                q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`);
+                q.innerJoin(`${AuthorizationRuleSetTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.MODULE_ID}`,`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`);
+                q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,role.roleId);
+                q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");
+                q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`,"asc");
+            })
+        }).then((object) => {
+     
+            if(object.models.length == 0 ) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_REQUEST,
+                    MessageInfo.MI_MODULE_NOT_FOUND,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+
+
+
+
+        })
+
+    }
+
 }
 
 export default PermissionHandler;

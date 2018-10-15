@@ -20,7 +20,7 @@ export class AuthorizationRoleModel extends BaseModel {
     public createdBy:number;
     public permissionType:number;
     public defaultRole:number;
-    
+    public level:number;
 
     /**
      *
@@ -36,6 +36,7 @@ export class AuthorizationRoleModel extends BaseModel {
             account.roleType = AuthorizationRoleModel.getString(req.body.roleType);
             account.createdBy = AuthorizationRoleModel.getNumber(req.body.createdBy);
             account.permissionType = AuthorizationRoleModel.getNumber(req.body.permissionType);
+            account.level = AuthorizationRoleModel.getNumber(req.body.level);
             return account;
         }
         return null;
@@ -61,6 +62,7 @@ export class AuthorizationRoleModel extends BaseModel {
                 let createdBy =  object.get(AuthorizationRoleTableSchema.FIELDS.CREATED_BY);
                 let permissionType =  object.get(AuthorizationRoleTableSchema.FIELDS.PERMISSION_TYPE);
                 let defaultRole =  object.get(AuthorizationRoleTableSchema.FIELDS.DEFAULT_ROLE);
+                let level =  object.get(AuthorizationRoleTableSchema.FIELDS.TREE_LEVEL);
                 let ret = new AuthorizationRoleModel();
                 ret.rid = rid != null && rid !== "" ? rid : undefined;
                 ret.roleId = roleId != null && roleId !== "" ? roleId : undefined;
@@ -73,7 +75,7 @@ export class AuthorizationRoleModel extends BaseModel {
                 ret.updatedDate = updatedDate != null ? updatedDate : undefined;
                 ret.permissionType = permissionType != null ? permissionType : undefined;
                 ret.defaultRole = defaultRole != null ? defaultRole : undefined;
-                
+                ret.level = level != null ? level : undefined;
         
                 //console.log("sdddd");
                 //console.log(filters);
@@ -113,7 +115,7 @@ export class AuthorizationRoleModel extends BaseModel {
         obj[AuthorizationRoleTableSchema.FIELDS.PARENT_ID] = this.parentId;
         obj[AuthorizationRoleTableSchema.FIELDS.CREATED_BY] = this.createdBy;
         obj[AuthorizationRoleTableSchema.FIELDS.PERMISSION_TYPE] = this.permissionType;
-
+        obj[AuthorizationRoleTableSchema.FIELDS.TREE_LEVEL] = this.level;
         return obj;
     }
 }

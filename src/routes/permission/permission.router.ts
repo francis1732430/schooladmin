@@ -16,4 +16,7 @@ router.route("/view/:rid")
 router.route("/master")
     .get(authentication, PermissionHandler.master);
 
+router.route("/selectModule")
+    .get(PermissionHandler.selectModule);    
+
 export default router;

@@ -1,6 +1,3 @@
-/**
- *    on 22/05/18.
- */
 import {AdminUserSessionDto} from "../data/models";
 import {AdminUserSessionTableSchema} from "../data/schemas";
 import {BearerObject, Logger} from "../libs";

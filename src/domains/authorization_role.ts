@@ -27,21 +27,6 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
      */
     public create(AuthorizationRole:AuthorizationRoleModel):Promise<any> {
         return Promise.then(() => {
-            /*return this.findOne(q => {
-                q.where(AuthorizationRoleTableSchema.FIELDS.ROLE_NAME, AuthorizationRole.roleName);
-            });
-        })
-            .then(objects => {
-                //noinspection TypeScriptUnresolvedVariable
-                if (objects != null) {
-                    let exception = new Exception(
-                        ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-                        MessageInfo.MI_OBJECT_ITEM_EXISTED,
-                        false,
-                        HttpStatus.BAD_REQUEST
-                    );
-                    return Promise.reject(exception);
-                }*/
                 return AuthorizationRoleDto.create(AuthorizationRoleDto, AuthorizationRole.toDto()).save();
             })
             .catch(err => {

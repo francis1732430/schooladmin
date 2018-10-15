@@ -32,7 +32,7 @@ export class RoleHandler extends BaseHandler {
     public static create(req:express.Request, res:express.Response):any {
         let session:BearerObject = req[Properties.SESSION];
         req.body.createdBy = session.userId;
-        req.body.roleType = 'G';
+        req.body.roleType = 'U';
         let authorizationRole = AuthorizationRoleModel.fromRequest(req);
         if (authorizationRole == null || authorizationRole.roleName == null) {
             return Utils.responseError(res, new Exception(
@@ -67,6 +67,26 @@ export class RoleHandler extends BaseHandler {
         let permission= JSON.parse(req.body.permission);
 
         return Promise.then(() => {
+            return AuthorizationRoleUseCase.findOne( q => {
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,authorizationRole.userId);
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+
+            })
+        }).then((object) => {
+
+           if(object == null) {
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_REQUEST,
+                MessageInfo.MI_PARENT_ROLE_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+           }
+        let parentRole=AuthorizationRoleModel.fromDto(object);
+        authorizationRole.level=parentRole.level+1;
+        return Promise.void;
+        }).then(() => {
             
             permission.forEach(Rule => {
                 checkmoduleId =  Rule.moduleId == null && Rule.moduleId == undefined ? count++ : count;
@@ -92,13 +112,13 @@ export class RoleHandler extends BaseHandler {
                 },[]);
             }
         }).then(object => {
-            if (object==null) {
+            if (object!=null) {
 
                 return AuthorizationRoleUseCase.create(authorizationRole);
             } else {
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.GENERIC,
-                    MessageInfo.MI_ROLE_NAME_EXIST,
+                    MessageInfo.MI_ROLE_NAME_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -468,7 +488,6 @@ console.log(object);
         .then((object) => {
             role = AuthorizationRoleModel.fromDto(object);
             return AuthorizationRoleUseCase.countByQuery(q => {
-                q.where(AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE, 'G');
                 q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
                 if(userId!='1') {
                     q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}' OR ${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} = '${role.parentId}')`);
@@ -503,7 +522,6 @@ console.log(object);
         .then((totalObject) => {
             total = totalObject;
             return AuthorizationRoleUseCase.findByQuery(q => {
-                q.where(AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE, 'G');
                 q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
                 if(userId!='1') {
                     q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}' OR ${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} = '${role.parentId}')`);
@@ -794,8 +812,197 @@ console.log(object);
             })
             .enclose();
     }
+    public static createMasterRole(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        req.body.createdBy = session.userId;
+        req.body.roleType = 'G';
+        let authorizationRole = AuthorizationRoleModel.fromRequest(req);
+        if (authorizationRole == null || authorizationRole.roleName == null) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_ROLE_NAME_NOT_EMPTY,
+                false, HttpStatus.BAD_REQUEST
+            ));
+        }
+
+        return Promise.then(() => {
+            return AuthorizationRoleUseCase.findOne( q => {
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,authorizationRole.userId);
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+
+            })
+        }).then((object) => {
+
+           if(object == null) {
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_REQUEST,
+                MessageInfo.MI_PARENT_ROLE_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+           }
+        let parentRole=AuthorizationRoleModel.fromDto(object);
+        authorizationRole.level=parentRole.level+1;
+            return AuthorizationRoleUseCase.findOne( q => {
+              q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,req.body.roleType);
+              q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,authorizationRole.roleName);
+            })
+        })
+        .then((object) => {
+           
+            if(object != null) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_REQUEST,
+                    MessageInfo.MI_ROLE_NAME_EXIST,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+            
+            return AuthorizationRoleUseCase.create(authorizationRole);
+        }).then((object) => {
+    
+            if(object == null){
+                if(object != null) {
+                    Utils.responseError(res, new Exception(
+                        ErrorCode.RESOURCE.INVALID_REQUEST,
+                        MessageInfo.MI_ROLE_CREATEION_FAILED,
+                        false,
+                        HttpStatus.BAD_REQUEST
+                    ));
+                    return Promise.break;
+                }
+            }
+                let data={};
+                data.message=MessageInfo.MI_ROLE_NAME_CREATED_SUCCESSFULLY
+                res.json(data);
+            
+
+        })
+    }
+
+    public static attachPolicy(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        req.body.createdBy = session.userId;
+        req.body.roleType = 'U';
+        let authorizationRole = AuthorizationRoleModel.fromRequest(req);
+        if (authorizationRole == null || authorizationRole.roleName == null) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_ROLE_NAME_NOT_EMPTY,
+                false, HttpStatus.BAD_REQUEST
+            ));
+        }
 
 
+        if (req.body.permission == null && req.body.permission == undefined){
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_PERMISSION_NAME_NOT_EMPTY,
+                false, HttpStatus.BAD_REQUEST
+            ));
+
+        }
+
+        let checkmoduleId: any;
+        let checkpermission: any;
+        let count = 0;
+        let roleId:number;
+        let permission= JSON.parse(req.body.permission);
+
+        return Promise.then(() => {
+            
+            permission.forEach(Rule => {
+                checkmoduleId =  Rule.moduleId == null && Rule.moduleId == undefined ? count++ : count;
+                checkpermission = Rule.isChecked == null && Rule.isChecked == undefined ? count++ : count;
+
+            });
+
+        }).then(obj => {
+
+            if (count > 0) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.GENERIC,
+                    MessageInfo.MI_PERMISSION_NAME_NOT_EMPTY,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            } 
+
+            return AuthorizationRoleUseCase.findOne( q => {
+              q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'G');
+              q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,authorizationRole.roleName);
+            })
+        
+        }).then((object) => {
+         
+            if(object == null) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.GENERIC,
+                    MessageInfo.MI_ROLE_NOT_EXIST,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+
+            return AuthorizationRoleUseCase.create(authorizationRole);
+
+        }).then(object => {
+            
+            if(object == null){
+                    Utils.responseError(res, new Exception(
+                        ErrorCode.RESOURCE.INVALID_REQUEST,
+                        MessageInfo.MI_ROLE_CREATEION_FAILED,
+                        false,
+                        HttpStatus.BAD_REQUEST
+                    ));
+                    return Promise.break;
+                }
+            if (object && object !== null && object.attributes !== null){
+                let rid = object.attributes.rid;
+                return AuthorizationRoleUseCase.findByQuery(q => {
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.RID}`,rid);
+                },[]);
+            }
+
+
+        }).then(object => {
+            if (object && object !== null && object.models.length>0) {  
+                let roleData = AuthorizationRoleModel.fromDto(object.models[0]);
+                roleId = roleData.roleId;
+                return AuthorizationRuleUseCase.savepermission(roleId,permission);
+              
+            }
+
+        }).then(object => {
+            console.log(object);
+            let data  = {};
+            data["message"] = MessageInfo.MI_ROLE_ADDED;
+            res.json(data);
+
+
+        }).catch(err => {
+            Utils.responseError(res, err);
+        });
+    }
+
+    public static masterRoles(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        let userId = session.userId;
+        return Promise.then(() => {            
+            return AuthorizationRoleUseCase.list(userId);   
+        })
+        .then(object => {
+            res.json(object);
+        })
+        .catch(err => {
+            Utils.responseError(res, err);
+        });
+    }
 }
 
 export default RoleHandler;

@@ -34,5 +34,10 @@ router.route("/")
 router.route("/exportSelected")
     .post(authentication, accessrole, RoleHandler.exportSelected);
 
+router.route("/createRole")
+      .post(RoleHandler.createMasterRole);
+
+ router.route("/masterRoles")
+       .get(RoleHandler.masterRoles)     
 
 export default router;
