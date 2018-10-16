@@ -2,11 +2,11 @@ import { MessageInfo } from './../../libs/constants';
 /**
  *    
  */
-import {AuthorizationRoleUseCase,AuthorizationRuleUseCase,AuthorizationRuleSetUseCase} from "../../domains"; 
+import {AuthorizationRoleUseCase,AuthorizationRuleUseCase,AuthorizationRuleSetUseCase,AdminUserUseCase} from "../../domains"; 
 import {AuthorizationRuleDto} from "../../data/models";
 import {ErrorCode, HttpStatus, MessageInfo, Properties,DATE_FORMAT} from "../../libs/constants";
 import {Utils} from "../../libs/utils";
-import {AuthorizationRoleTableSchema,AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema} from "../../data/schemas";
+import {AuthorizationRoleTableSchema,AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema, AdminUserTableSchema} from "../../data/schemas";
 import {Exception, AuthorizationRoleModel,AuthorizationRuleModel} from "../../models";
 import * as express from "express";
 import {Promise} from "thenfail";
@@ -33,6 +33,10 @@ export class RoleHandler extends BaseHandler {
         let session:BearerObject = req[Properties.SESSION];
         req.body.createdBy = session.userId;
         req.body.roleType = 'U';
+        let school=false;
+        let global=false;
+        let id=req.schoolId;
+        let currentUserRole=id != null ?global=true:school=true;
         let authorizationRole = AuthorizationRoleModel.fromRequest(req);
         if (authorizationRole == null || authorizationRole.roleName == null) {
             return Utils.responseError(res, new Exception(
@@ -67,25 +71,75 @@ export class RoleHandler extends BaseHandler {
         let permission= JSON.parse(req.body.permission);
 
         return Promise.then(() => {
-            return AuthorizationRoleUseCase.findOne( q => {
-                q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,authorizationRole.userId);
-                q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+        return AdminUserUseCase.findOne( q => {
+            q.whereIn(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,[authorizationRole.userId,req.body.userId]);
+            q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
+          })
+        }).then((objects) => {
+            if(objects.length > 0) {
+                let assignedUser;
+                let createdByUser;
+                let createdBySchoolId;
+                let assignedSchoolId;
+                let createdBy1;
+                let assignedBy1;
+                objects.filter((obj1) => {
+                    if(school){
+                        if(obj1.createdBy == req.body.createdBy){
+                            createdByUser=obj1;
+                            createdBySchoolId=obj1.schoolId;
+                        }else {
+                            assignedUser=obj1
+                            assignedSchoolId=obj1.schoolId;
+                        }
+                    } else {
+                        if(obj1.createdBy == req.body.createdBy){
+                            createdByUser=obj1;
+                            createdBy1=obj1.userId;
+                        }else {
+                            assignedUser=obj1
+                            assignedBy1=obj1.userId;
+                        }
+                    }
+                    
+                })
+                if(school && (createdBySchoolId != 18 || createdByUser.attributes.created_by != req.body.createdBy)){
+                    if(assignedSchoolId == null && assignedSchoolId != undefined){
+                            Utils.responseError(res, new Exception(
+                            ErrorCode.RESOURCE.INVALID_REQUEST,
+                            MessageInfo.MI_YOU_ARE_NOT_ALLOWED,
+                            false,
+                            HttpStatus.BAD_REQUEST
+                        ));
+                        return Promise.break;
+                    }
+               
+               }else  if(global && ( req.body.createdBy!= 1 || createdByUser.attributes.created_by != req.body.createdBy)){
+                  
+                if(assignedBy1 != null && assignedBy1 != undefined){
+                    Utils.responseError(res, new Exception(
+                        ErrorCode.RESOURCE.INVALID_REQUEST,
+                        MessageInfo.MI_YOU_ARE_NOT_ALLOWED,
+                        false,
+                        HttpStatus.BAD_REQUEST
+                    ));
+                    return Promise.break;
+                }
+              
+              }
+                
 
-            })
-        }).then((object) => {
+           } else {
+                   Utils.responseError(res, new Exception(
+                       ErrorCode.RESOURCE.INVALID_REQUEST,
+                       MessageInfo.MI_ROLEID_NOT_EMPTY,
+                       false,
+                       HttpStatus.BAD_REQUEST
+                   ));
+                   return Promise.break;
 
-           if(object == null) {
-            Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_REQUEST,
-                MessageInfo.MI_PARENT_ROLE_NOT_FOUND,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-            return Promise.break;
            }
-        let parentRole=AuthorizationRoleModel.fromDto(object);
-        authorizationRole.level=parentRole.level+1;
-        return Promise.void;
+            
         }).then(() => {
             
             permission.forEach(Rule => {
@@ -165,10 +219,14 @@ export class RoleHandler extends BaseHandler {
      */
     public static update(req:express.Request, res:express.Response):any {
         let session:BearerObject = req[Properties.SESSION];
-        req.body.createdBy = session.userId;
-        req.body.roleType = 'G';
+        let currentUserId = parseInt(session.userId);
+        req.body.roleType = 'U';
         let authorizationRole = AuthorizationRoleModel.fromRequest(req);
         let rid = req.params.rid;
+        let school=false;
+        let global=false;
+        let id=req.schoolId;
+        let currentUserRole=id != null ?global=true:school=true;
         if (authorizationRole == null || authorizationRole.roleName == null) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.GENERIC,
@@ -219,28 +277,81 @@ export class RoleHandler extends BaseHandler {
                     MessageInfo.MI_PERMISSION_NAME_NOT_EMPTY,
                     false, HttpStatus.BAD_REQUEST
                 ));
-            } else {
-                return AuthorizationRoleUseCase.findOne(q => {
-                    q.whereNot(`${AuthorizationRoleTableSchema.FIELDS.RID}`,rid);
-                    q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'G');
-                    q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,authorizationRole.roleName);
-                    q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
-                },[]);
+            } else { 
+                return AdminUserUseCase.findOne( q => {
+                    q.whereIn(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,[authorizationRole.userId,req.body.userId]);
+                    q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
+                  })
             }
         })
-        .then(object => {
-            if (object==null) {
-                return AuthorizationRoleUseCase.findById(rid);
-            } else {
-                Utils.responseError(res, new Exception(
-                    ErrorCode.RESOURCE.GENERIC,
-                    MessageInfo.MI_ROLE_NAME_EXIST,
-                    false,
-                    HttpStatus.BAD_REQUEST
-                ));
-                return Promise.break;
+        .then((objects) => {
+            if(objects.length > 0) {
+                let assignedUser;
+                let createdByUser;
+                let createdBySchoolId;
+                let assignedSchoolId;
+                let createdBy1;
+                let assignedBy1;
+                objects.filter((obj1) => {
+                    if(school){
+                        if(obj1.createdBy == req.body.createdBy){
+                            createdByUser=obj1;
+                            createdBySchoolId=obj1.schoolId;
+                        }else {
+                            assignedUser=obj1
+                            assignedSchoolId=obj1.schoolId;
+                        }
+                    } else {
+                        if(obj1.createdBy == req.body.createdBy){
+                            createdByUser=obj1;
+                            createdBy1=obj1.userId;
+                        }else {
+                            assignedUser=obj1
+                            assignedBy1=obj1.userId;
+                        }
+                    }
+                    
+                })
+                if(school && (createdBySchoolId != 18 || createdByUser.attributes.created_by != req.body.createdBy)){
+                    if(assignedSchoolId == null && assignedSchoolId != undefined){
+                            Utils.responseError(res, new Exception(
+                            ErrorCode.RESOURCE.INVALID_REQUEST,
+                            MessageInfo.MI_YOU_ARE_NOT_ALLOWED,
+                            false,
+                            HttpStatus.BAD_REQUEST
+                        ));
+                        return Promise.break;
+                    }
                
+               }else  if(global && ( req.body.createdBy!= 1 || createdByUser.attributes.created_by != req.body.createdBy)){
+                  
+                if(assignedBy1 != null && assignedBy1 != undefined){
+                    Utils.responseError(res, new Exception(
+                        ErrorCode.RESOURCE.INVALID_REQUEST,
+                        MessageInfo.MI_YOU_ARE_NOT_ALLOWED,
+                        false,
+                        HttpStatus.BAD_REQUEST
+                    ));
+                    return Promise.break;
+                }
+              
+              } 
+                  return AuthorizationRoleUseCase.findOne(q => {
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.RID}`,rid);
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+                },[]);
+
+            } else {
+                    Utils.responseError(res, new Exception(
+                        ErrorCode.RESOURCE.INVALID_REQUEST,
+                        MessageInfo.MI_ROLEID_NOT_EMPTY,
+                        false,
+                        HttpStatus.BAD_REQUEST
+                    ));
+                    return Promise.break;
+
             }
+
         })
         .then(object => {
             if (object == null) {
@@ -252,8 +363,28 @@ export class RoleHandler extends BaseHandler {
                 ));
                 return Promise.break;
             } else {
-                return AuthorizationRoleUseCase.updateById(rid,parseInt(req.body.createdBy),authorizationRole);
+            
+                return AuthorizationRoleUseCase.findOne(q => {
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'G');
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,authorizationRole.roleName);
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+                },[]);      
             }
+        }).then((object) => {
+            if (object!=null) {
+
+                return AuthorizationRoleUseCase.updateById(rid,authorizationRole);
+            } else {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.GENERIC,
+                    MessageInfo.MI_ROLE_NAME_NOT_FOUND,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+               
+            }
+
         }).then(object => {
 
             if (object && object !== null && object.attributes !== null){
@@ -1002,6 +1133,87 @@ console.log(object);
         .catch(err => {
             Utils.responseError(res, err);
         });
+    }
+
+    
+    public static updateMasterRole(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        let currentUserId = parseInt(session.userId);
+        let rid=req.body.rid;
+        let authorizationRole = AuthorizationRoleModel.fromRequest(req);
+        if (authorizationRole == null || authorizationRole.roleName == null) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_ROLE_NAME_NOT_EMPTY,
+                false, HttpStatus.BAD_REQUEST
+            ));
+        }
+
+        return Promise.then(() => {
+            return AuthorizationRoleUseCase.findOne( q => {
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.RID}`,authorizationRole.rid);
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+
+            })
+        }).then((object) => {
+
+           if(object == null) {
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_REQUEST,
+                MessageInfo.MI_ROLE_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+           }
+        let roleUser=AuthorizationRoleModel.fromDto(object);
+        if(currentUserId != 1 || currentUserId != roleUser.createdBy) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_REQUEST,
+                    MessageInfo.MI_YOU_ARE_NOT_ALLOWED,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+               
+        }
+            return AuthorizationRoleUseCase.findOne( q => {
+              q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'G');
+              q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,authorizationRole.roleName);
+            })
+        })
+        .then((object) => {
+           
+            if(object != null) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_REQUEST,
+                    MessageInfo.MI_ROLE_NAME_EXIST,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+            
+            return AuthorizationRoleUseCase.updateById(rid,authorizationRole);  
+        }).then((object) => {
+    
+            if(object == null){
+                if(object != null) {
+                    Utils.responseError(res, new Exception(
+                        ErrorCode.RESOURCE.INVALID_REQUEST,
+                        MessageInfo.MI_ROLE_CREATEION_FAILED,
+                        false,
+                        HttpStatus.BAD_REQUEST
+                    ));
+                    return Promise.break;
+                }
+            }
+                let data={};
+                data.message=MessageInfo.MI_ROLE_NAME_CREATED_SUCCESSFULLY
+                res.json(data);
+            
+
+        })
     }
 }
 

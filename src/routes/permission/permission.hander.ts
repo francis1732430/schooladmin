@@ -366,13 +366,31 @@ export class PermissionHandler extends BaseHandler {
                 return Promise.break;
             }
 
-
-
+            return Promise.each(object.models,(obj) => {
+                let idToNodeMap = {};
+                let ret = [];    
+                let root = [];  
+                let parentNode:any;  
+                let datum=AuthorizationRuleSetModel.fromDto(object);                                            
+                let tempModuleId = datum.moduleId;                         
+                let tempParentId = datum.parentId;                         
+                delete datum.moduleId;                         
+                delete datum.parentId;                                                  
+                datum["isChecked"] = false;                         
+                datum["subModules"] = [];                                                  
+                idToNodeMap[tempModuleId] = datum;                         
+                if (tempParentId === 0) {                             
+                root.push(datum);                         
+                } else {                             
+                parentNode = idToNodeMap[tempParentId];                             
+                console.log('mm',parentNode)                             
+                parentNode.subModules.push(datum);                         }                     
+                });
 
         })
 
     }
-
+    
 }
 
 export default PermissionHandler;

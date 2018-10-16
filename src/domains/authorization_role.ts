@@ -41,23 +41,18 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
      * @param {AuthorizationRoleModel} AuthorizationRole
      * @returns {Promise<any>}
      */
-    public updateById(id:string,userId:number, role:AuthorizationRoleModel):Promise<any> {
+    public updateById(id:string, role:AuthorizationRoleModel):Promise<any> {
         return Promise.then(() => {
             return this.findById(id);
         })
             .then(object => {
-                let userData = AuthorizationRoleModel.fromDto(object);
-                console.log(userData);
-                if(userData.createdBy == userId || userId==1 ) {
+                if(object != null && object != undefined) {
+                    let userData = AuthorizationRoleModel.fromDto(object);
+                    console.log(userData);
                     let data = role.toDto();
                     return object.save(data, {patch: true});
-                }
-                return Promise.reject(new Exception(
-                    ErrorCode.USER.NOT_ALLOWED_TO_UPDATE,
-                    MessageInfo.MI_NOT_ALLOWED_TO_UPDATE,
-                    false,
-                    HttpStatus.BAD_REQUEST
-                )); 
+                }  
+                  return Promise.void;
             })
             .catch(err => {
                 return Promise.reject(Utils.parseDtoError(err));
