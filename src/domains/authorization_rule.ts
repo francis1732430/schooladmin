@@ -22,7 +22,7 @@ export class AuthorizationRuleUseCase extends BaseUseCase {
      * @param {AuthorizationRuleModel} AuthorizationRole
      * @returns {Promise<any>}
      */
-    public savepermission(roleId:number,permission:any):Promise<any> {
+    public savepermission(roleId:number,permission:any,id?:any):Promise<any> {
         console.log(permission);
        let permissionVal:any;
         return Promise.each(permission, (perm: any) => {
@@ -36,27 +36,54 @@ export class AuthorizationRuleUseCase extends BaseUseCase {
             
             }).then((object) => {
                 console.log(object);                
-                if(object!=null) {                    
-                    let conditions = [];
-                    let updateData = [];
-                    let rule = AuthorizationRuleModel.fromDto(object);                     
-                    conditions[AuthorizationRuleTableSchema.FIELDS.RULE_ID] = rule.ruleId; 
-                    updateData[AuthorizationRuleTableSchema.FIELDS.PERMISSION] = permissionVal.isChecked?"allow":"deny";
-                    return this.updateByCondition(conditions, updateData)
-                        .catch(err => {
-                            return Promise.reject(Utils.parseDtoError(err));
-                        })
-                        .enclose();
-                }else {
-                    let data = [];                
-                    data[AuthorizationRuleTableSchema.FIELDS.ROLE_ID] = roleId;
-                    data[AuthorizationRuleTableSchema.FIELDS.MODULE_ID] = permissionVal.moduleId;
-                    data[AuthorizationRuleTableSchema.FIELDS.PERMISSION] = permissionVal.isChecked?"allow":"deny";
-                    data[AuthorizationRuleTableSchema.FIELDS.RULE_ID] = null;
-                    console.log(data);
-                    return AuthorizationRuleDto.create(AuthorizationRuleDto, data).save();
+                if(id != null && id != undefined) {
+                    if(object!=null) {                    
+                        let conditions = [];
+                        let updateData = [];
+                        let rule = AuthorizationRuleModel.fromDto(object);                     
+                        conditions[AuthorizationRuleTableSchema.FIELDS.RULE_ID] = rule.ruleId; 
+                        conditions[AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID]=id;
+                        updateData[AuthorizationRuleTableSchema.FIELDS.PERMISSION] = permissionVal.isChecked?"allow":"deny";
+                        return this.updateByCondition(conditions, updateData)
+                            .catch(err => {
+                                return Promise.reject(Utils.parseDtoError(err));
+                            })
+                            .enclose();
+                    }else {
+                        let data = [];                
+                        data[AuthorizationRuleTableSchema.FIELDS.ROLE_ID] = roleId;
+                        data[AuthorizationRuleTableSchema.FIELDS.MODULE_ID] = permissionVal.moduleId;
+                        data[AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID]=id;
+                        data[AuthorizationRuleTableSchema.FIELDS.PERMISSION] = permissionVal.isChecked?"allow":"deny";
+                        data[AuthorizationRuleTableSchema.FIELDS.RULE_ID] = null;
+                        console.log(data);
+                        return AuthorizationRuleDto.create(AuthorizationRuleDto, data).save();
+                    }
+                    
+                } else {
+                    if(object!=null) {                    
+                        let conditions = [];
+                        let updateData = [];
+                        let rule = AuthorizationRuleModel.fromDto(object);                     
+                        conditions[AuthorizationRuleTableSchema.FIELDS.RULE_ID] = rule.ruleId; 
+                        updateData[AuthorizationRuleTableSchema.FIELDS.PERMISSION] = permissionVal.isChecked?"allow":"deny";
+                        return this.updateByCondition(conditions, updateData)
+                            .catch(err => {
+                                return Promise.reject(Utils.parseDtoError(err));
+                            })
+                            .enclose();
+                    }else {
+                        let data = [];                
+                        data[AuthorizationRuleTableSchema.FIELDS.ROLE_ID] = roleId;
+                        data[AuthorizationRuleTableSchema.FIELDS.MODULE_ID] = permissionVal.moduleId;
+                        data[AuthorizationRuleTableSchema.FIELDS.PERMISSION] = permissionVal.isChecked?"allow":"deny";
+                        data[AuthorizationRuleTableSchema.FIELDS.RULE_ID] = null;
+                        console.log(data);
+                        return AuthorizationRuleDto.create(AuthorizationRuleDto, data).save();
+                    }
+                    
                 }
-                
+               
             }).catch(err => {
                 return Promise.reject(Utils.parseDtoError(err));
             });

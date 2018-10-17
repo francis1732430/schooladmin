@@ -216,7 +216,10 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
         }).enclose();
     }
 
-    public list(userId:string):Promise<any> {
+    public list(userId:string,id,tmpId):Promise<any> {
+        let school=false;
+        let global=false;
+        let currentUserRole=id != null ?global=true:school=true;
         return Promise.then(() => {
             return this.findOne(q => {
                 q.where(AuthorizationRoleTableSchema.FIELDS.USER_ID, userId);
@@ -225,11 +228,26 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
         .then((object) => {
             let role = AuthorizationRoleModel.fromDto(object);
             return this.findByQuery(q => {
+
+                if(global) {
+                    if(userId!='1') {
+                        q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+                    }
+                }
+
+                if(school) {
+
+                    if(userId != "18" && tmpId != "22") {
+                        q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+                        q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,id);
+                    }
+                } else {
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,id);
+                }
+
                 q.where(AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE, 'G');
                 q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
-                if(userId!='1') {
-                    q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}' OR ${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} = '${role.parentId}')`);
-                }
+               
             }, []);
         })
         .then(objects => {

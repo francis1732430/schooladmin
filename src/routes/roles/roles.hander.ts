@@ -1,4 +1,3 @@
-import { MessageInfo } from './../../libs/constants';
 /**
  *    
  */
@@ -86,17 +85,26 @@ export class RoleHandler extends BaseHandler {
                 objects.filter((obj1) => {
                     if(school){
                         if(obj1.createdBy == req.body.createdBy){
+                            authorizationRole.schoolId=id;
                             createdByUser=obj1;
                             createdBySchoolId=obj1.schoolId;
                         }else {
+                            authorizationRole.schoolId=id;
                             assignedUser=obj1
                             assignedSchoolId=obj1.schoolId;
                         }
                     } else {
                         if(obj1.createdBy == req.body.createdBy){
+                            if(id != null && id != undefined) {
+                                authorizationRole.schoolId=id;
+                            }
+                            
                             createdByUser=obj1;
                             createdBy1=obj1.userId;
                         }else {
+                            if(id != null && id != undefined) {
+                                authorizationRole.schoolId=id;
+                            }
                             assignedUser=obj1
                             assignedBy1=obj1.userId;
                         }
@@ -194,8 +202,8 @@ export class RoleHandler extends BaseHandler {
             if (object && object !== null && object.models.length>0) {  
                 let roleData = AuthorizationRoleModel.fromDto(object.models[0]);
                 roleId = roleData.roleId;
-                return AuthorizationRuleUseCase.savepermission(roleId,permission);
-              
+                    return AuthorizationRuleUseCase.savepermission(roleId,permission);
+                
             }
 
 
@@ -295,23 +303,31 @@ export class RoleHandler extends BaseHandler {
                 objects.filter((obj1) => {
                     if(school){
                         if(obj1.createdBy == req.body.createdBy){
+                            authorizationRole.schoolId=id;
                             createdByUser=obj1;
                             createdBySchoolId=obj1.schoolId;
                         }else {
+                            authorizationRole.schoolId=id;
                             assignedUser=obj1
                             assignedSchoolId=obj1.schoolId;
                         }
                     } else {
                         if(obj1.createdBy == req.body.createdBy){
+                            if(id != null && id != undefined) {
+                                authorizationRole.schoolId=id;
+                            }
+                            
                             createdByUser=obj1;
                             createdBy1=obj1.userId;
                         }else {
+                            if(id != null && id != undefined) {
+                                authorizationRole.schoolId=id;
+                            }
                             assignedUser=obj1
                             assignedBy1=obj1.userId;
                         }
-                    }
                     
-                })
+                }})
                 if(school && (createdBySchoolId != 18 || createdByUser.attributes.created_by != req.body.createdBy)){
                     if(assignedSchoolId == null && assignedSchoolId != undefined){
                             Utils.responseError(res, new Exception(
@@ -439,8 +455,16 @@ export class RoleHandler extends BaseHandler {
                 return Promise.break;
             } else {
                 role = AuthorizationRoleModel.fromDto(object);
+                let tmpId=role.tmpId;
                 return AuthorizationRuleUseCase.findByQuery(q => {
-                    q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
+
+                    if(tmpId != null && tmpId != undefined) {
+                        q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
+                        `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`
+                        );
+
+                    } else {
+                        q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
                         `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`,
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_NAME}`,
@@ -450,8 +474,8 @@ export class RoleHandler extends BaseHandler {
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`,
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.LEVEL}`
                         );
-                    q.innerJoin(AuthorizationRuleSetTableSchema.TABLE_NAME, `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.MODULE_ID}`);
-
+                    q.innerJoin(AuthorizationRuleSetTableSchema.TABLE_NAME, `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.MODULE_ID}`); 
+                    }
                     q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.roleId);
                     q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, 'asc');
                     //q.limit(13);    
@@ -597,6 +621,11 @@ console.log(object);
         let limit = parseInt(req.query.limit) || null;
         let sortKey;
         let sortValue;
+        let school=false;
+        let global=false;
+        let id=req.schoolId;
+        let tmpId=req.tmpId;
+        let currentUserRole=id != null ?global=true:school=true;
         let searchobj = [];
         let total = 0;
         for (let key in req.query) {
@@ -620,8 +649,20 @@ console.log(object);
             role = AuthorizationRoleModel.fromDto(object);
             return AuthorizationRoleUseCase.countByQuery(q => {
                 q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
-                if(userId!='1') {
-                    q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}' OR ${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} = '${role.parentId}')`);
+                if(global) {
+
+                    if(userId != "1") {
+                        q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+                    } 
+                } else if(school) {
+                    if(userId != "18" && tmpId != "22") {
+                        q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${id}`;
+                        q.whereRaw(condition);
+                    } else {
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${id}`;
+                        q.whereRaw(condition);
+                    }
                 }
                 let condition;
                 if (searchobj) {
@@ -654,8 +695,20 @@ console.log(object);
             total = totalObject;
             return AuthorizationRoleUseCase.findByQuery(q => {
                 q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
-                if(userId!='1') {
-                    q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}' OR ${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} = '${role.parentId}')`);
+                if(global) {
+
+                    if(userId != "1") {
+                        q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+                    } 
+                } else if(school) {
+                    if(userId != "18" && tmpId != "22") {
+                        q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${id}`;
+                        q.whereRaw(condition);
+                    } else {
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${id}`;
+                        q.whereRaw(condition);
+                    }
                 }
 
                 let condition;
@@ -947,6 +1000,14 @@ console.log(object);
         let session:BearerObject = req[Properties.SESSION];
         req.body.createdBy = session.userId;
         req.body.roleType = 'G';
+        let school=false;
+        let global=false;
+        let id=req.schoolId;
+        let tmpId=req.tmpId;
+        let currentUserRole=id != null ?global=true:school=true;
+        if(school) {
+            req.body.schoolId=id;
+        }
         let authorizationRole = AuthorizationRoleModel.fromRequest(req);
         if (authorizationRole == null || authorizationRole.roleName == null) {
             return Utils.responseError(res, new Exception(
@@ -1124,8 +1185,10 @@ console.log(object);
     public static masterRoles(req:express.Request, res:express.Response):any {
         let session:BearerObject = req[Properties.SESSION];
         let userId = session.userId;
+        let id=req.schoolId;
+        let tmpId=req.tmpId;
         return Promise.then(() => {            
-            return AuthorizationRoleUseCase.list(userId);   
+            return AuthorizationRoleUseCase.list(userId,id,tmpId);   
         })
         .then(object => {
             res.json(object);
