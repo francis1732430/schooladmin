@@ -44,12 +44,9 @@ export class AuthHandler extends BaseHandler {
     }
 
     public static login(req:Request, res:Response):any {
-        let email = req.body.email || "";
+        let emailOrPhone = req.body.email || "";
         let password = req.body.password || "";
-        let deviceId = req.body.deviceId || "";
-        let deviceToken = req.body.deviceToken || "";
-        let platform = req.body.platform || "";
-        if (!Utils.requiredCheck(email)) {
+        if (!Utils.requiredCheck(emailOrPhone)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_EMAIL,
                 MessageInfo.MI_INVALID_EMAIL,
@@ -57,52 +54,33 @@ export class AuthHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        if (!Utils.validateEmail(email)) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_EMAIL,
-                MessageInfo.MI_INVALID_EMAIL,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-        }
-        if (!Utils.requiredCheck(platform)) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_PLATFORM,
-                MessageInfo.MI_INVALID_PLATFORM,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-        }
-        if (!Utils.requiredCheck(deviceId) && platform!=1) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_DEVICEID,
-                MessageInfo.INVALID_DEVICEID,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-        }
-        if (!Utils.requiredCheck(deviceToken) && platform!=1) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_DEVICETOKEN,
-                MessageInfo.INVALID_DEVICETOKEN,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-        }
+        
+        let cond=Utils.validateNumber(emailOrPhone);
 
+        if (!cond && !Utils.validateEmail(emailOrPhone)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_EMAIL,
+                MessageInfo.MI_INVALID_EMAIL,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
         let userId;
         let userInfo;
         let userName;
         let userRole;
         let firstname;
         let lastname;
+        let email;
+        let phoneNumber;
         return Promise.then(() => {
             console.log("userInfo");
            return AdminUserUseCase.findByQuery(q => {
                 q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,
                 `${AuthorizationRoleTableSchema.TABLE_NAME}.*`
                 );
-                q.where(AdminUserTableSchema.FIELDS.EMAIL, email);
+                let condition=`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.EMAIL}=${emailOrPhone} or ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.PHONE_NUMBER1} =${emailOrPhone}`;
+                q.where(condition)
                 q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`, 0);
                 q.innerJoin(AuthorizationRoleTableSchema.TABLE_NAME, `${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);
                 q.limit(1);
@@ -121,6 +99,7 @@ export class AuthHandler extends BaseHandler {
                             //noinspection TypeScriptUnresolvedVariable
                             userId = object.models[0].get(AdminUserTableSchema.FIELDS.USER_ID);
                             email = object.models[0].get(AdminUserTableSchema.FIELDS.EMAIL);
+                            phoneNumber = object.models[0].get(AdminUserTableSchema.FIELDS.PHONE_NUMBER1);
                             firstname = object.models[0].get(AdminUserTableSchema.FIELDS.FIRSTNAME);
                             lastname = object.models[0].get(AdminUserTableSchema.FIELDS.LASTNAME);
                             let hash = object.models[0].get(AdminUserTableSchema.FIELDS.PASSWORD);
@@ -169,9 +148,6 @@ export class AuthHandler extends BaseHandler {
                 //console.log("Saving session");
                 return AdminUserSessionUseCase.findByQuery(q => {
                     q.where(AdminUserSessionTableSchema.FIELDS.USER_ID, userId);
-                    q.where(AdminUserSessionTableSchema.FIELDS.DEVICE_ID, deviceId);
-                    q.where(AdminUserSessionTableSchema.FIELDS.DEVICE_TOKEN, deviceToken);
-                    q.where(AdminUserSessionTableSchema.FIELDS.PLATFORM, '1');
                     q.limit(1);
                 }, []);
             })

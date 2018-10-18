@@ -415,7 +415,8 @@ export const MessageInfo = {
     MI_ROLE_NAME_NOT_FOUND:"Role name not found.",
     MI_ROLE_NOT_FOUND:"Role id not found",
     MI_YOU_ARE_NOT_ALLOWED:"You are not allowed edit role",
-    MI_YOU_ARE_NOT_ALLOWED_CREATE_ROLE:"You are not allowed create role"
+    MI_YOU_ARE_NOT_ALLOWED_CREATE_ROLE:"You are not allowed create role",
+    MI_SCHOOL_ID_NOT_FOUND:"School id not found"
 };
 
 export const DefaultVal = {

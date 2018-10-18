@@ -14,6 +14,8 @@ router.route("/list")
 router.route("/")
     .get(authentication,accessrole, RoleHandler.list)
 
+router.route("/")
+    .get(authentication,accessrole, RoleHandler.schoolList)
 router.route("/:rid")
     .put(authentication,accessrole, RoleHandler.update)
     .delete(authentication,accessrole, RoleHandler.destroy)
@@ -37,7 +39,10 @@ router.route("/exportSelected")
 router.route("/createRole")
       .post(RoleHandler.createMasterRole);
 
- router.route("/masterRoles")
-       .get(RoleHandler.masterRoles)     
+router.route("/masterRoles")
+       .get(RoleHandler.masterRoles);
+       
+router.route("/schoolRole")
+     .post(RoleHandler.schoolCreate);            
 
 export default router;

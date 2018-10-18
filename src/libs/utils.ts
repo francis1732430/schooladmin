@@ -312,6 +312,20 @@ export class Utils {
         } 
         return yyyy+'-'+mm+'-'+dd;
     }
+
+
+    public static validateNumber(val:any) {
+
+        if(val != null && val != undefined && val !="") {
+         if(val.length == 10) {
+             
+            return true;
+            }
+            return false;
+        } 
+ 
+        return false;
+    }
 }
 
     

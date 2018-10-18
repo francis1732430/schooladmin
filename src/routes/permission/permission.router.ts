@@ -19,4 +19,6 @@ router.route("/master")
 router.route("/selectModule")
     .get(PermissionHandler.selectModule);    
 
+router.route("/selectSchool")
+    .get(PermissionHandler.selectSchool);
 export default router;

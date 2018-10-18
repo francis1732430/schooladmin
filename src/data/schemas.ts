@@ -105,6 +105,8 @@ export const AuthorizationRuleTableSchema = {
         ROLE_ID: "role_id",
         MODULE_ID: "module_id",
         PERMISSION: "permission",
+        SCHOOL_ID:"school_id",
+        USER_ID:"user_id",
         CREATED_DATE: "created_date",
         UPDATED_DATE: "updated_date",
     },

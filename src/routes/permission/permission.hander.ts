@@ -365,11 +365,12 @@ export class PermissionHandler extends BaseHandler {
                         q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,role.roleId);   
                         q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");
                         q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`,"asc");       
-                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.SCHOOL_ID} = null`;
-                        q.whereRaw(condition);
+                        let conditions=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} NOT NULL`;
+                        q.whereRaw(conditions);
                     } else {
-                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.SCHOOL_ID} = null`;
-                        q.whereRaw(condition);
+                        q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`);
+                        let conditions=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} NOT NULL`;
+                        q.whereRaw(conditions);
                         q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`,"asc"); 
                     }
                     
@@ -442,6 +443,101 @@ export class PermissionHandler extends BaseHandler {
               ret.push(adminPermissions,schoolPermissions,schoolAdminPermissions);
               res.json(ret);
                 })
+
+        })
+
+    }
+
+
+    public static selectSchool(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        console.log(session);
+        let userId = parseInt(session.userId);
+        console.log(userId);
+        let school=false;
+        let global=false;
+        let id=req.schoolId;
+        let tmpId=req.tmpId;
+        let currentUserRole=id != null ?global=true:school=true;
+        let schoolPermissions=[];
+        return Promise.then(() => {
+
+            return AuthorizationRoleUseCase.findOne( q => {
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,userId);
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+        }).then((object) => {
+            if(object == null) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_REQUEST,
+                    MessageInfo.MI_USER_NOT_EXIST,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+
+
+            let role = AuthorizationRoleModel.fromDto(object)
+            return AuthorizationRoleUseCase.findByQuery( q => {
+                q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${AuthorizationRuleSetTableSchema.TABLE_NAME}.*`);
+    //            q.where(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.IS_DELETED}`,0);   
+                if(userId != 1) {
+                        q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`);
+                        let conditions=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} NOT NULL`;
+                        q.whereRaw(conditions);
+                        q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,role.roleId);   
+                        q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");
+                        q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`,"asc");             
+                    } else {
+                        q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`);
+                        let conditions=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} NOT NULL`;
+                        q.whereRaw(conditions);
+                        q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`,"asc"); 
+                    }  
+                  
+
+            })
+        }).then((object) => {
+     
+            if(object.models.length == 0 ) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_REQUEST,
+                    MessageInfo.MI_MODULE_NOT_FOUND,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+            let root = []; 
+            return Promise.each(object.models,(obj) => {
+              
+                return Promise.then(() => {
+
+
+                    let idToNodeMap = {};    
+                    let parentNode:any;  
+                    let datum=AuthorizationRuleSetModel.fromDto(object);                                            
+                    let tempModuleId = datum.moduleId;                         
+                    let tempParentId = datum.parentId;                         
+                    delete datum.moduleId;                         
+                    delete datum.parentId;                                                  
+                    datum["isChecked"] = false;                         
+                    datum["subModules"] = [];                                                  
+                    idToNodeMap[tempModuleId] = datum;                         
+                    if (tempParentId === 0) {                             
+                    root.push(datum);                         
+                    } else {                             
+                    parentNode = idToNodeMap[tempParentId];                             
+                    console.log('mm',parentNode)                             
+                    parentNode.subModules.push(datum);
+                    return 0; 
+                    }
+                })
+            }).then(() => {
+              res.json(root);
+               
+            })
 
         })
 

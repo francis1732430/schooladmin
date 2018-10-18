@@ -75,7 +75,7 @@ export class RoleHandler extends BaseHandler {
             q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
           })
         }).then((objects) => {
-            if(objects.length > 0) {
+            if(objects != null && objects != undefined) {
                 let assignedUser;
                 let createdByUser;
                 let createdBySchoolId;
@@ -84,7 +84,7 @@ export class RoleHandler extends BaseHandler {
                 let assignedBy1;
                 objects.filter((obj1) => {
                     if(school){
-                        if(obj1.createdBy == req.body.createdBy){
+                        if(obj1.attributes.createdBy == req.body.createdBy){
                             authorizationRole.schoolId=id;
                             createdByUser=obj1;
                             createdBySchoolId=obj1.schoolId;
@@ -94,17 +94,10 @@ export class RoleHandler extends BaseHandler {
                             assignedSchoolId=obj1.schoolId;
                         }
                     } else {
-                        if(obj1.createdBy == req.body.createdBy){
-                            if(id != null && id != undefined) {
-                                authorizationRole.schoolId=id;
-                            }
-                            
+                        if(obj1.createdBy == req.body.createdBy){       
                             createdByUser=obj1;
                             createdBy1=obj1.userId;
                         }else {
-                            if(id != null && id != undefined) {
-                                authorizationRole.schoolId=id;
-                            }
                             assignedUser=obj1
                             assignedBy1=obj1.userId;
                         }
@@ -293,7 +286,7 @@ export class RoleHandler extends BaseHandler {
             }
         })
         .then((objects) => {
-            if(objects.length > 0) {
+            if(objects != null && objects != undefined) {
                 let assignedUser;
                 let createdByUser;
                 let createdBySchoolId;
@@ -302,29 +295,22 @@ export class RoleHandler extends BaseHandler {
                 let assignedBy1;
                 objects.filter((obj1) => {
                     if(school){
-                        if(obj1.createdBy == req.body.createdBy){
+                        if(obj1.attributes.createdBy == req.body.createdBy){
                             authorizationRole.schoolId=id;
                             createdByUser=obj1;
-                            createdBySchoolId=obj1.schoolId;
+                            createdBySchoolId=obj1.attributes.schoolId;
                         }else {
                             authorizationRole.schoolId=id;
                             assignedUser=obj1
-                            assignedSchoolId=obj1.schoolId;
+                            assignedSchoolId=obj1.attributes.schoolId;
                         }
                     } else {
-                        if(obj1.createdBy == req.body.createdBy){
-                            if(id != null && id != undefined) {
-                                authorizationRole.schoolId=id;
-                            }
-                            
+                        if(obj1.attributes.createdBy == req.body.createdBy){
                             createdByUser=obj1;
-                            createdBy1=obj1.userId;
+                            createdBy1=obj1.attributes.userId;
                         }else {
-                            if(id != null && id != undefined) {
-                                authorizationRole.schoolId=id;
-                            }
                             assignedUser=obj1
-                            assignedBy1=obj1.userId;
+                            assignedBy1=obj1.attributes.userId;
                         }
                     
                 }})
@@ -457,15 +443,9 @@ export class RoleHandler extends BaseHandler {
                 role = AuthorizationRoleModel.fromDto(object);
                 let tmpId=role.tmpId;
                 return AuthorizationRuleUseCase.findByQuery(q => {
-
-                    if(tmpId != null && tmpId != undefined) {
-                        q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
-                        `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`
-                        );
-
-                    } else {
                         q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
                         `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
+                        `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`,       
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`,
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_NAME}`,
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ACTION}`,
@@ -475,7 +455,6 @@ export class RoleHandler extends BaseHandler {
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.LEVEL}`
                         );
                     q.innerJoin(AuthorizationRuleSetTableSchema.TABLE_NAME, `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.MODULE_ID}`); 
-                    }
                     q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.roleId);
                     q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, 'asc');
                     //q.limit(13);    
@@ -487,7 +466,7 @@ export class RoleHandler extends BaseHandler {
             let ret = [];
             role.permission = {};
             if (object != null && object.models != null) {
-console.log(object);
+                console.log(object);
                 ret = AuthorizationRuleSetUseCase.permissionFormat(object);
                 role.permission = ret;
             }
@@ -652,8 +631,17 @@ console.log(object);
                 if(global) {
 
                     if(userId != "1") {
+                        //q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                        //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}  NULL`;
+                        q.where(condition);
                         q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
-                    } 
+                    } else {
+                        //q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                        //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}  NULL`;
+                        q.where(condition);
+                    }
                 } else if(school) {
                     if(userId != "18" && tmpId != "22") {
                         q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
@@ -698,8 +686,17 @@ console.log(object);
                 if(global) {
 
                     if(userId != "1") {
+                        //q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                        //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}  NULL`;
+                        q.where(condition);
                         q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
-                    } 
+                    } else {
+                        //q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                        //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}  NULL`;
+                        q.where(condition);
+                    }
                 } else if(school) {
                     if(userId != "18" && tmpId != "22") {
                         q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
@@ -1278,6 +1275,292 @@ console.log(object);
 
         })
     }
+
+    public static schoolCreate(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        req.body.createdBy = session.userId;
+        let school=false;
+        let global=false;
+        let id=req.schoolId;
+        let tmpId=req.tmpId;
+        let currentUserRole=id != null ?global=true:school=true;
+        let permission=req.body.permission;
+        let checkschoolId;
+        let checkpermission;
+        let count=0;
+        let schoolId=req.body.schoolId;
+        let roleId=req.body.roleId;
+        let authorizationRole = AuthorizationRoleModel.fromRequest(req);
+            
+        if (authorizationRole == null || authorizationRole.roleName == null) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_ROLE_NAME_NOT_EMPTY,
+                false, HttpStatus.BAD_REQUEST
+            ));
+        }
+        
+            
+              if (schoolId == null || schoolId != undefined) {
+                return Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.GENERIC,
+                    MessageInfo.MI_SCHOOL_ID_NOT_FOUND,
+                    false, HttpStatus.BAD_REQUEST
+                ));
+                }
+                if (roleId == null || roleId != undefined) {
+                    return Utils.responseError(res, new Exception(
+                        ErrorCode.RESOURCE.GENERIC,
+                        MessageInfo.MI_ROLE_NOT_EXIST,
+                        false, HttpStatus.BAD_REQUEST
+                    ));
+                    }
+            permission.forEach(Rule => {
+                checkschoolId =  Rule.schoolId == null && Rule.schoolId == undefined ? count++ : count;
+                checkpermission = Rule.isChecked == null && Rule.isChecked == undefined ? count++ : count;
+
+            });
+
+        return Promise.then(() => {
+            return AuthorizationRoleUseCase.findOne( q => {
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,authorizationRole.userId);
+                q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+
+            })
+        }).then((object) => {
+
+           if(object == null) {
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_REQUEST,
+                MessageInfo.MI_PARENT_ROLE_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+           }
+        if(count > 0) {
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_PERMISSION_NAME_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+        }
+
+        return Promise.void;
+        }).then(() => {
+          return AuthorizationRoleUseCase.create(authorizationRole);
+
+        }).then((object) => {
+            if (object && object !== null && object.attributes !== null){
+                let rid = object.attributes.rid;
+                return AuthorizationRoleUseCase.findByQuery(q => {
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.RID}`,rid);
+                },[]);
+            }
+        })
+        .then((object) => {
+            if (object && object !== null && object.models.length>0) {  
+                let roleData = AuthorizationRoleModel.fromDto(object.models[0]);
+                roleId = roleData.roleId;
+                return AuthorizationRuleUseCase.saveSchoolPermission(roleId,schoolId,permission); 
+                
+            }
+                      
+
+        }).then((object) => {
+    
+            if(object == null){
+                if(object != null) {
+                    Utils.responseError(res, new Exception(
+                        ErrorCode.RESOURCE.INVALID_REQUEST,
+                        MessageInfo.MI_ROLE_CREATEION_FAILED,
+                        false,
+                        HttpStatus.BAD_REQUEST
+                    ));
+                    return Promise.break;
+                }
+            }
+                let data={};
+                data.message=MessageInfo.MI_ROLE_NAME_CREATED_SUCCESSFULLY
+                res.json(data);
+            
+
+        })
+    }
+
+    public static schoolList(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        let userId = session.userId;
+        let role:any;
+        let offset = parseInt(req.query.offset) || null;
+        let limit = parseInt(req.query.limit) || null;
+        let sortKey;
+        let sortValue;
+        let school=false;
+        let global=false;
+        let id=req.schoolId;
+        let tmpId=req.tmpId;
+        let currentUserRole=id != null ?global=true:school=true;
+        let searchobj = [];
+        let total = 0;
+        for (let key in req.query) {
+            console.log(req.query[key]);
+            if(key=='sortKey'){
+                sortKey = req.query[key];
+            }
+            else if(key=='sortValue'){
+                sortValue = req.query[key];
+            } else if(req.query[key]!='' && key!='limit' && key!='offset' && key!='sortKey' && key!='sortValue'){
+                searchobj[key] = req.query[key];
+            }
+        }
+        console.log(searchobj);
+        return Promise.then(() => {
+            return AuthorizationRoleUseCase.findOne(q => {
+                q.where(AuthorizationRoleTableSchema.FIELDS.USER_ID, userId);
+            }, []);
+        })
+        .then((object) => {
+            role = AuthorizationRoleModel.fromDto(object);
+            return AuthorizationRoleUseCase.countByQuery(q => {
+                q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
+                q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}*`,`${AuthorizationRuleTableSchema.TABLE_NAME}.*`);
+               if(userId != "1") {
+                 q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,userId);
+                 q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                 q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
+                 let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} NOT NULL`;
+                 q.where(condition);
+               } else {
+                q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
+                let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} NOT NULL`;
+                q.where(condition);
+               }
+                let condition;
+                if (searchobj) {
+                    for (let key in searchobj) { 
+                        if(searchobj[key]!=null && searchobj[key]!=''){
+                            console.log(searchobj[key]);
+                            let searchval = searchobj[key];
+                            let ColumnKey = Utils.changeSearchKey(key);
+
+                            if(key === "roleId"){
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "roleName"){
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "updatedDate") {
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "createdDate") {
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            }
+                        }
+                    }
+                } 
+                
+            });
+        })
+        .then((totalObject) => {
+            total = totalObject;
+            return AuthorizationRoleUseCase.findByQuery(q => {
+                q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
+                if(global) {
+
+                    if(userId != "1") {
+                        q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+                    } 
+                } else if(school) {
+                    if(userId != "18" && tmpId != "22") {
+                        q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${id}`;
+                        q.whereRaw(condition);
+                    } else {
+                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${id}`;
+                        q.whereRaw(condition);
+                    }
+                }
+
+                let condition;
+                if (searchobj) {
+                    for (let key in searchobj) { 
+                        if(searchobj[key]!=null && searchobj[key]!=''){
+                            console.log(searchobj[key]);
+                            let searchval = searchobj[key];
+                            let ColumnKey = Utils.changeSearchKey(key);
+                            if(key === "roleId"){
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "roleName"){
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "updatedDate") {
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "createdDate") {
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            }
+                        }
+                    }
+                } 
+
+                if (offset != null) {
+                    q.offset(offset);
+                }
+                if (limit != null) {
+                    q.limit(limit);
+                }
+                if (sortKey != null && sortValue != '') {
+                    if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
+                        let ColumnSortKey = Utils.changeSearchKey(sortKey);
+                        if (sortKey === "roleId") {
+                            q.orderBy(ColumnSortKey, sortValue);
+                        } else if (sortKey === "roleName") {
+                            q.orderBy(ColumnSortKey, sortValue);
+                        } else if (sortKey === "updatedDate") {
+                            q.orderBy(ColumnSortKey, sortValue);
+                        } else if (sortKey === "createdDate") {
+                            q.orderBy(ColumnSortKey, sortValue);
+                        }
+                    }
+                }
+            });
+        })
+        .then(objects => {
+            if (objects != null && objects.models != null && objects.models.length != null) {
+                let ret = [];
+                objects.models.forEach(object => {
+                    ret.push(AuthorizationRoleModel.fromDto(object));
+                });
+                res.header(Properties.HEADER_TOTAL, total.toString(10));
+
+                if (offset != null) {
+                    res.header(Properties.HEADER_OFFSET, offset.toString(10));
+                }
+                if (limit != null) {
+                    res.header(Properties.HEADER_LIMIT, limit.toString(10));
+                }
+    
+                res.json(ret);
+                
+            }
+            let exception;
+            exception = new Exception(ErrorCode.ROLE.NO_ROLE_FOUND, MessageInfo.MI_NO_ROLE_FOUND, false);
+            exception.httpStatus = HttpStatus.BAD_REQUEST;
+            return exception;
+        })
+        .catch(err => {
+            Utils.responseError(res, err);
+        })
+        .enclose();
+    }
+
 }
 
 export default RoleHandler;
