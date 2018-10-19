@@ -17,6 +17,10 @@ export interface BearerObject {
     token?:string;
     otp?:string;
     otpVerify?:number;
+    school?:boolean;
+    schoolId?:number;
+    global?:boolean;
+    tmp?:boolean
 }
 
 export class JsonWebToken {

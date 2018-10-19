@@ -51,7 +51,7 @@ export function authentication(req: express.Request, res: express.Response, next
     } else {
         try {
             console.log("======================gfhgfh================================"); 
-            Jwt.verify(token, req.header(Properties.HEADER_DEVICE_ID));
+            Jwt.verify(token,"client");
             let jwtObject = Jwt.decode(token);
             let current = Date.now();
             if (current < jwtObject.exp) {

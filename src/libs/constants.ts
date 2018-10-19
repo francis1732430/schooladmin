@@ -18,6 +18,8 @@ export const Properties = {
     FORM_VIDEO_PRICE: "price",
     FORM_VIDEO_CATEGORY: "category",
     FORM_VIDEO_THUMBNAIL: "thumbnail",
+    SCHOOL_ID:"schoolid",
+    CHECK_USER:"checkuser",
     CATEGORIES: ['Freshman', 'Sophomore', 'Senior', 'Junior'],
     STATUS: {
         APPROVAL: {

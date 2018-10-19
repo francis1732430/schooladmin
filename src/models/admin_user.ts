@@ -34,6 +34,7 @@ export class AdminUserModel extends BaseModel {
     public businessLegalName:string;
     public approvalRole:string;
     public approvalStatusKey:string;
+    public schoolId:number;
 
     public static fromRequest(req:Request):AdminUserModel {
         if (req != null && req.body) {
@@ -53,6 +54,7 @@ export class AdminUserModel extends BaseModel {
             user.roleId = AdminUserModel.getNumber(req.body.roleId);
             user.password = Utils.hashPassword(AdminUserModel.getString(req.body.password));
             user.status = AdminUserModel.getNumber(req.body.status);
+            user.schoolId = AdminUserModel.getNumber(req.body.schoolId);
             return user;
         }
         return null;
@@ -85,6 +87,7 @@ export class AdminUserModel extends BaseModel {
                 let approvalRole = object.get(AdminUserTableSchema.FIELDS.APPROVAL_ROLE);
                 let businessLegalName = object.get(StoreBusinessInfoTableSchema.FIELDS.BUSINESS_LEGAL_NAME);
                 let status = object.get(AdminUserTableSchema.FIELDS.IS_ACTIVE);
+                let schoolId = object.get(AdminUserTableSchema.FIELDS.SCHOOL_ID);
                 let approvalStatusKey = object.get('approvalStatusKey')
                 let createdByName = object.get('createdByFname')+" "+object.get('createdByLname');
 
@@ -114,6 +117,7 @@ export class AdminUserModel extends BaseModel {
                 ret.status = status != null && status !== "" ? status : "";
                 ret.createdByName = createdByName != null && createdByName !== "" ? createdByName : "";
                 ret.roleIsDeleted = roleIsDeleted != null && roleIsDeleted !== "" ? roleIsDeleted : "";
+                ret.schoolId = schoolId != null && schoolId !== "" ? schoolId : "";
                 ret.approvalStatusKey = approvalStatusKey;
                
                 if (object.relations != null) {
@@ -157,7 +161,8 @@ export class AdminUserModel extends BaseModel {
         obj[AdminUserTableSchema.FIELDS.EXTENSION_NUMBER] = this.extensionNumber;
         obj[AdminUserTableSchema.FIELDS.TELEPHONE] = this.telephone;
         obj[AdminUserTableSchema.FIELDS.DESIGNATION] = this.designation;
-        obj[AdminUserTableSchema.FIELDS.MERCHANT_REPRESENTATIVE_NAME] = this.merchantRepresentativeName;
+        obj[AdminUserTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
+        //obj[AdminUserTableSchema.FIELDS.MERCHANT_REPRESENTATIVE_NAME] = this.merchantRepresentativeName;
         return obj;
     }
 }

@@ -560,6 +560,44 @@ export class AdminUserUseCase extends BaseUseCase {
             return Promise.reject(Utils.parseDtoError(err));
         }).enclose();
     }
+    public checkUser(userid:any,schoolId?:any):Promise<any> {
+        return Promise.then(() => {
+     
+            return this.findOne(q => {
+            q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,userid);
+            q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
+            
+            })
+
+        }).then((object) => {
+
+            if(object == null && object == undefined) {
+                return null;
+            }
+            let obj:any={};
+            let adminuser=AdminUserModel.fromDto(object);
+            let schoolid=adminuser.schoolId;
+
+            if(schoolid) {
+            obj.school=true
+            } else {
+             obj.global=true;
+             if(schoolId) {
+                 obj.tmp=true;
+                 obj.schoolId=schoolId;
+             }
+            }
+
+            return obj;
+
+        })
+            .catch(err => {
+                return Promise.reject(Utils.parseDtoError(err));
+            })
+            .enclose();
+    }
+
+
 }
 
 export default new AdminUserUseCase();

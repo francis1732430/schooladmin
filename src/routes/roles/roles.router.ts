@@ -14,7 +14,7 @@ router.route("/list")
 router.route("/")
     .get(authentication,accessrole, RoleHandler.list)
 
-router.route("/")
+router.route("/schoolList")
     .get(authentication,accessrole, RoleHandler.schoolList)
 router.route("/:rid")
     .put(authentication,accessrole, RoleHandler.update)

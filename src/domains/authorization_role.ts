@@ -104,7 +104,7 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
             .enclose();
     }
 
-    public verifyRole(userId:string, action:string):Promise<any> {
+    public verifyRole(userId:string, action:string, checkuser?:any):Promise<any> {
         if (userId == null) {
             return Promise.reject(new Error(MessageInfo.MI_INVALID_PARAMETER));
         }
@@ -136,10 +136,22 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                                     `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ROUTES}`,
                                     `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`
                                     );
-                                q.innerJoin(AuthorizationRuleSetTableSchema.TABLE_NAME, `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.MODULE_ID}`);
-                                q.where(AuthorizationRuleTableSchema.FIELDS.PERMISSION, 'allow');
-                                q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.parentId);
-                                q.where(AuthorizationRuleSetTableSchema.FIELDS.ACTION, action);
+
+                                    if(checkuser.tmp != null && checkuser.tmp != undefined && checkuser.tmp == true) {
+                                        q.where(AuthorizationRuleTableSchema.FIELDS.PERMISSION, 'allow');
+                                        q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.roleId);
+                                        q.where(AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID, checkuser.schoolId);                         
+                                        
+                                    } else {
+                                        q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
+                                    `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
+                                    `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`,
+                                    );
+                                        q.innerJoin(AuthorizationRuleSetTableSchema.TABLE_NAME, `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.MODULE_ID}`);
+                                        q.where(AuthorizationRuleTableSchema.FIELDS.PERMISSION, 'allow');
+                                        q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.roleId);
+                                        q.where(AuthorizationRuleSetTableSchema.FIELDS.ACTION, action);
+                                    }
                                 //q.limit(1);    
                             }, []);
                         }
@@ -216,10 +228,7 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
         }).enclose();
     }
 
-    public list(userId:string,id,tmpId):Promise<any> {
-        let school=false;
-        let global=false;
-        let currentUserRole=id != null ?global=true:school=true;
+    public list(userId:string,checkuser:any):Promise<any> {
         return Promise.then(() => {
             return this.findOne(q => {
                 q.where(AuthorizationRoleTableSchema.FIELDS.USER_ID, userId);
@@ -229,20 +238,22 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
             let role = AuthorizationRoleModel.fromDto(object);
             return this.findByQuery(q => {
 
-                if(global) {
-                    if(userId!='1') {
+                if(checkuser.global != undefined && checkuser.global != null && checkuser.global == true) {
+                    
+                if(checkuser.tmp != undefined && checkuser.tmp != null && checkuser.tmp == true) {
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,checkuser.schoolId);
+                }else if(userId!='1') {
                         q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
                     }
                 }
 
-                if(school) {
-
-                    if(userId != "18" && tmpId != "22") {
+                if(checkuser.school != undefined && checkuser.school != null && checkuser.school == true) {
+                   if(userId != "18") {
                         q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
-                        q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,id);
+                        q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,checkuser.schoolId);
                     }
                 } else {
-                    q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,id);
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,checkuser.schoolId);
                 }
 
                 q.where(AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE, 'G');

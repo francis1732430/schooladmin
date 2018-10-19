@@ -40,7 +40,8 @@ export const AdminUserTableSchema = {
         INTERFACE_LOCALE: "interface_locale",
         FALIURES_NUM: "failures_num",
         FIRST_FALIURE: "first_failure",
-        LOCK_EXPIRES: "lock_expires"
+        LOCK_EXPIRES: "lock_expires",
+        SCHOOL_ID:"school_id"
     },
 };
 

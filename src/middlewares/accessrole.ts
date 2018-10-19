@@ -32,12 +32,13 @@ export function accessrole(req: express.Request, res: express.Response, next: ex
         next(exception);
     } else {
         let session:BearerObject = req[Properties.SESSION];
+        let checkuser:BearerObject = req[Properties.CHECK_USER];
         console.log(session);
         let userId = session.userId;
         try {
             if (userId!=null) {    
                         
-                AuthorizationRoleUseCase.verifyRole(userId, action)
+                AuthorizationRoleUseCase.verifyRole(userId, action,checkuser)
                         .then(object => {
                             if (object != null) {
                                 next(object);

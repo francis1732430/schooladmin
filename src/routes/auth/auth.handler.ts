@@ -160,12 +160,7 @@ export class AuthHandler extends BaseHandler {
                     let adminUserSession = new AdminUserSessionModel();
                     adminUserSession.userId = userId;
                     adminUserSession.status = 1;
-                    adminUserSession.deviceId = '1';
-                    adminUserSession.ip = '127.0.0.1';
-                    adminUserSession.sessionId = Jwt.encode(adminUserSession, req.header(Properties.HEADER_DEVICE_ID));
-                    adminUserSession.platform = platform;
-                    adminUserSession.deviceId = deviceId;
-                    adminUserSession.deviceToken = deviceToken;
+                    adminUserSession.sessionId = Jwt.encode(adminUserSession, "client");
                     //console.log(adminUserSession);
                     return AdminUserSessionUseCase.create(adminUserSession);
 
