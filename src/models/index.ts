@@ -9,4 +9,7 @@ export {DirectoryCountryModel} from "./directory_country";
 export {ServerEndpointModel} from "./server_endpoint";
 export {DirectoryStateModel} from "./directory_state";
 export {DirectoryCityModel} from "./directory_city";
+export {DirectoryDistrictModel} from "./directory_district";
+export {DirectoryTalukModel} from "./directory_taluk";
+export {SchoolModel} from "./school_details";
 

@@ -13,6 +13,9 @@ import {
     ServerEndpointTableSchema,
     DirectoryStateTableSchema,
     DirectoryCityTableSchema,
+    DirectoryDistrictTableSchema,
+    DirectoryTalukTableSchema,
+    SchoolTableSchema
 } from "./schemas";
 import * as Bookshelf from "bookshelf";
 import * as UUID from "node-uuid";
@@ -132,3 +135,19 @@ export class ServerEndpointDto extends BaseDto {
     }
 }
 
+export class DirectoryDistrictDto extends BaseDto {
+    get tableName():string {
+        return DirectoryDistrictTableSchema.TABLE_NAME;
+    }
+}
+
+export class DirectoryTalukDto extends BaseDto {
+    get tableName():string {
+        return DirectoryTalukTableSchema.TABLE_NAME;
+    }
+}
+export class SchoolDto extends BaseDto {
+    get tableName():string {
+        return SchoolTableSchema.TABLE_NAME;
+    }
+}

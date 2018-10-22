@@ -9,3 +9,6 @@ export {default as DirectoryCountryUseCase} from "./directory_country";
 export {default as ServerEndpointUseCase} from "./server_endpoint";
 export {default as DirectoryStateUseCase} from "./directory_state";
 export {default as DirectoryCityUseCase} from "./directory_city";
+export {default as DirectoryDistrictUseCase} from "./directory_district";
+export {default as DirectoryTalukUseCase} from "./directory_taluk";
+export {default as SchoolUseCase} from "./school_details";

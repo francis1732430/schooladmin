@@ -102,6 +102,7 @@ export class UserHandler extends BaseHandler {
         });
     }
 
+    
     public static list(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
         let offset = parseInt(req.query.offset) || null;

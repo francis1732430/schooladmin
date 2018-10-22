@@ -306,6 +306,25 @@ export class Mailer {
         }
 
     }
+
+    public sendApproval(toEmail,schoolName,districtName) {
+        let message = {
+            body: {
+                name: name,
+                intro: "School approvals.",
+                action: {
+                    instructions: "Please check this approval request."+schoolName+"and"+districtName,
+                    button: {
+                        color: "blue",
+                        text: schoolName,
+                    },
+                },
+                outro: "Need help, or have questions? Just reply to this email, we\"d love to help.",
+            },
+        };
+
+        return this.send(toEmail, "Message from iyngaran", message);
+    }
 }
 
 export default new Mailer(conf.mailer);

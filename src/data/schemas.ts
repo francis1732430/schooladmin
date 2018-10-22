@@ -88,6 +88,7 @@ export const AuthorizationRoleTableSchema = {
         SCHOOL_ID:"school_id",
         SCHOOL_TMP_ID:"school_tmp_id",
         CREATED_BY: "created_by",
+        DISTRICT_ID: "district_id",
         IS_DELETED: "is_deleted",
         CREATED_DATE: "created_date",
         UPDATED_DATE: "updated_date",
@@ -221,3 +222,56 @@ export const ServerEndpointTableSchema = {
     },
 };
 
+export const DirectoryDistrictTableSchema = {
+    TABLE_NAME: "district_entity",
+    FIELDS: {
+        RID:"rid",
+        DISTRICT_ID:"district_id",
+        DISTRICT_NAME: "district_name",
+        STATE_NAME: "state_name",
+        IS_ACTIVE: "status",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted"
+    },
+};
+export const DirectoryTalukTableSchema = {
+    TABLE_NAME: "taluk_entity",
+    FIELDS: {
+        RID:"rid",
+        CITY_ID:"city_id",
+        CITY_NAME: "city_name",
+        DISTRICT_ID:"district_id",
+        IS_ACTIVE: "status",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted"
+    },
+};
+
+export const SchoolTableSchema = {
+    TABLE_NAME: "school_entity",
+    FIELDS: {
+        RID:"rid",
+        SCHOOL_ID:"school_id",
+        SCHOOL_NAME: "school_name",
+        DISTRICT_ID:"district_id",
+        CITY_ID:"city_id",
+        STARTED_DATE:"started_date",
+        REPRESENTATIVE_NAME:"representative_name",
+        PRNICIPLE_NAME:"principle_name",
+        REPRESENTATIVE_PHONE_NUMBER:"representative_number",
+        SCHOOL_PHONE_NUMBER:"school_number",
+        IMAGE_URL:"image_url",
+        SCHOOL_EMAIL:"email",
+        REPRESENTATIVE_EMAIL:"representative_email",
+        POSTAL_CODE:"postal_code",
+        ADDRESS:"address",
+        APPROVAL_STATUS:"approval_status",
+        IS_ACTIVE: "status",
+        CREATED_BY: "created_by",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted"
+    },
+};

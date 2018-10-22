@@ -3,7 +3,7 @@
  */
 import {Logger} from "../libs";
 import {ErrorCode, HttpStatus} from "../libs/constants";
-import {Exception} from "../models/v2";
+import {Exception} from "../models";
 import Types from "./types";
 import * as bcrypt from "bcrypt";
 import {Response} from "express";
