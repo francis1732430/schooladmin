@@ -80,13 +80,40 @@ export class SchoolUseCase extends BaseUseCase {
               })
           }).then(() => {
               return null;
-          })
+          }).catch(err => {
+            return Promise.reject(Utils.parseDtoError(err));
+        }).enclose();
 
 
         })
     }
+    public createTmpAdmin(object):Promise<any> {
 
+        let email=object.get("representative_email");
+        let schoolId=object.get("school_id");
+        let tmpPassword:any;
+        let genHash:any;
+        let obj:any={};
+        return Promise.then(() => {
+            tmpPassword=Utils.randomPassword(8);
+            genHash=Utils.hashPassword(tmpPassword);
+            let schoolData=SchoolModel.fromDto(object);
+           obj.firstname=schoolData.representativeName;
+           obj.lastname=schoolData.schoolName;
+           obj.email=schoolData.representativeEmail;
+           obj.status="1";
+           obj.roleId="18";
+           obj.createdby="1";
+           obj.tmpPassword=genHash;
+           return Mailer.sendNewPassword(schoolData.representativeEmail,schoolData.representativeName,tmpPassword);
+          // return AdminUserUseCase.create(obj);
+        
+    }).then((object) => {
+        return AdminUserUseCase.create(obj);
+    }).catch(err => {
+        return Promise.reject(Utils.parseDtoError(err));
+    }).enclose();
 
 }
-
+}
 export default new SchoolUseCase();

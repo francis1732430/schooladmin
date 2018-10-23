@@ -434,6 +434,8 @@ export const MessageInfo = {
     MI_CITY_ID_NOT_FOUND:"City not found.",
     MI_SCHOOL_CREATION_FAILED:"School creation failed.",
     MI_YOU_ARE_NOT_ALLOWED_EDIT_SCHOOL:"You are not allowed edit School.",
+    MI_SCHOOL_IS_ALREADY_APPROVED:"School is already approved.",
+    MI_USER_PASSWORD_NOT_EMPTY:"User password not empty.",
 };
 
 export const DefaultVal = {

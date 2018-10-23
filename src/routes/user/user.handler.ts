@@ -36,6 +36,15 @@ export class UserHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
+        
+        if (!Utils.requiredCheck(user.password)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_EMAIL,
+                MessageInfo.MI_USER_PASSWORD_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
         if (!Utils.validateEmail(user.email)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_EMAIL,
@@ -44,8 +53,8 @@ export class UserHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        let generatedPassword = Utils.randomPassword(8);
-        user.password =  Utils.hashPassword(generatedPassword);
+        //let generatedPassword = Utils.randomPassword(8);
+        user.password =  Utils.hashPassword(user.password);
         if (!Utils.requiredCheck(user.firstname)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.USER.FIRSTNAME_EMPTY,
@@ -92,7 +101,7 @@ export class UserHandler extends BaseHandler {
             return AdminUserUseCase.create(user);
         })
         .then(object => {
-            Mailer.newUser(user.firstname,user.email, generatedPassword);
+            //Mailer.newUser(user.firstname,user.email, generatedPassword);
             let data  ={};
             data["message"] = MessageInfo.MI_USER_ADDED;
             res.json(data);

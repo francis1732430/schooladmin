@@ -792,19 +792,30 @@ public static createRequest(req: express.Request, res: express.Response): any {
         })
     }).then((object) => {
         if(object != null) {
-            if(createdBy == 1){
-                let adminUser = {};
-                adminUser[SchoolTableSchema.FIELDS.APPROVAL_STATUS] = 1;
-                return object.save(adminUser, {patch: true});
-                }else {
-                    Utils.responseError(res, new Exception(
-                        ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                        MessageInfo.MI_YOU_ARE_NOT_ALLOWED_EDIT_SCHOOL,
-                        false,
-                        HttpStatus.BAD_REQUEST
-                    ));
-                    return Promise.break;
-                    }
+       if(object.attributes.approvalStatus !=1 && object.attributes.approvalStatus != 2){
+        if(createdBy == 1){
+            let adminUser = {};
+            adminUser[SchoolTableSchema.FIELDS.APPROVAL_STATUS] = 1;
+            return object.save(adminUser, {patch: true});
+            }else {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
+                    MessageInfo.MI_YOU_ARE_NOT_ALLOWED_EDIT_SCHOOL,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+                }
+       }else {
+        Utils.responseError(res, new Exception(
+            ErrorCode.RESOURCE.NOT_FOUND,
+            MessageInfo.MI_SCHOOL_IS_ALREADY_APPROVED,
+            false,
+            HttpStatus.BAD_REQUEST
+        ));
+        return Promise.break;
+       }     
+        } else {
             Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.NOT_FOUND,
                 MessageInfo.MI_SCHOOL_ID_NOT_FOUND,
@@ -814,9 +825,13 @@ public static createRequest(req: express.Request, res: express.Response): any {
             return Promise.break;
         }
     })
-    .then(() => {
-        res.status(HttpStatus.NO_CONTENT);
-        res.json({});
+    .then((object) => {
+     let schoolData=SchoolModel.fromDto(object);
+      return SchoolUseCase.createTmpAdmin(object); 
+    }).then(() => {
+        let data:any={};
+          data.message="School is approved and mail is send to school representative";
+        res.json(data);
     })
     .catch(err => {
         Utils.responseError(res, err);

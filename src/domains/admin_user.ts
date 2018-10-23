@@ -93,10 +93,11 @@ export class AdminUserUseCase extends BaseUseCase {
                 console.log(userData);
                 let authRole = new AuthorizationRoleModel();
                 authRole.userId = userData.userId;
-                authRole.roleType = 'U';
+                //authRole.roleType = 'U';
                 authRole.createdBy = user.createdBy;
                 authRole.parentId = user.roleId;
                 authRole.roleName = roleInfo["roleName"];
+                authRole.schoolId=roleInfo.schoolId;
                 AuthorizationRoleDto.create(AuthorizationRoleDto, authRole.toDto()).save();
                 return  authRole.toDto();
             }
@@ -147,7 +148,7 @@ export class AdminUserUseCase extends BaseUseCase {
                 let userData = AdminUserModel.fromDto(adminuser);
                 console.log(userData);
                 console.log(user);
-                if(userData.createdBy == user.createdBy || user.createdBy==1) {
+                if(userData.createdBy == user.createdBy || user.createdBy==1 || user.userId == userData.userId) {
                     let data = user.toDto();
                     return adminuser.save(data, {patch: true});
                 }

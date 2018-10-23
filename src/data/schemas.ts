@@ -87,6 +87,7 @@ export const AuthorizationRoleTableSchema = {
         DEFAULT_ROLE:"default_role",
         SCHOOL_ID:"school_id",
         SCHOOL_TMP_ID:"school_tmp_id",
+        TMP_PASSWORD:"tmp_password",
         CREATED_BY: "created_by",
         DISTRICT_ID: "district_id",
         IS_DELETED: "is_deleted",
