@@ -19,8 +19,6 @@ router.route("/resetPassword/:rpToken")
 router.route("/forgotPassword/:rpToken")
     .get(AuthHandler.forgetPasswordToken);
 
-
-
 router.route("/sendOtp")
     .post(AuthHandler.sendOtp);
 
@@ -32,6 +30,5 @@ router.route("/verifyOtp/:rpToken")
 
 router.route("/resetPasswordWithOtp/:rpToken")
     .post(AuthHandler.resetPasswordWithOtp);
-
 
 export default router;

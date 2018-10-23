@@ -9,7 +9,7 @@ import {  Mailer } from "../../libs";
 import { Exception, AdminUserModel,AuthorizationRoleModel} from "../../models";
 import * as express from "express";
 import { Promise } from "thenfail";
-import { AdminUserTableSchema,AuthorizationRoleTableSchema,AuthorizationRuleTableSchema} from "../../data/schemas";
+import { AdminUserTableSchema,AuthorizationRoleTableSchema,AuthorizationRuleTableSchema, SchoolTableSchema} from "../../data/schemas";
 import { BaseHandler } from "../base.handler";
 import { BearerObject } from "../../libs/jwt";
 import * as formidable from "formidable";
@@ -114,6 +114,7 @@ export class UserHandler extends BaseHandler {
     
     public static list(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
+        let checkuser:BearerObject = req[Properties.CHECK_USER];
         let offset = parseInt(req.query.offset) || null;
         let limit = parseInt(req.query.limit) || null;
         let sortKey;
@@ -137,15 +138,33 @@ export class UserHandler extends BaseHandler {
         return Promise.then(() => {
             console.log(AdminUserTableSchema.FIELDS);
             return AdminUserUseCase.countByQuery(q => {
+            
                 q.leftJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} AS ar`, `ar.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);
                 q.leftJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} AS arg`, `arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`, `ar.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`);
                 q.innerJoin(`${AdminUserTableSchema.TABLE_NAME} AS user`, `user.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY}`);
+                q.leftJoin(`${SchoolTableSchema.TABLE_NAME}`,  `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`);
                 let condition;
-                if(session.userId=='1') {
-                    condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0`;
-                } else {
-                    condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0`;
+           
+                if(checkuser.global == true){
+                    if(checkuser.tmp == true){
+                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
+                    }
+                    else if(session.userId=='1') {
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
+
+                    } else {
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
+                    }
+                } else if(checkuser.school == true) {
+                    if(session.userId=='1') {
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
+                    } else {
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
+                    }
+                }else {
+                    condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=0`;
                 }
+                
                 q.whereRaw(condition);               
 
                 if (searchobj) {
@@ -165,6 +184,9 @@ export class UserHandler extends BaseHandler {
                                 q.andWhereRaw(condition);
                             } else if(key == 'lastname'){
                                 condition = `(${AdminUserTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key == 'schoolName'){
+                                condition = `(${SchoolTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key == 'email') {
                                 condition = `(${AdminUserTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
@@ -191,17 +213,33 @@ export class UserHandler extends BaseHandler {
                         `ar.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,
                         `arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,
                         `user.${AdminUserTableSchema.FIELDS.FIRSTNAME} AS createdByFname`,
-                        `user.${AdminUserTableSchema.FIELDS.LASTNAME}  AS createdByLname`
-                         );
+                        `user.${AdminUserTableSchema.FIELDS.LASTNAME}  AS createdByLname`,
+                         `${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`);
                     q.leftJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} AS ar`, `ar.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);
                     q.leftJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} AS arg`, `arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`, `ar.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`);
                     q.innerJoin(`${AdminUserTableSchema.TABLE_NAME} AS user`, `user.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY}`);
+                    q.leftJoin(`${SchoolTableSchema.TABLE_NAME}`,  `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`);
                     let condition;
-                    if(session.userId=='1') {
-                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0`;
-                    } else {
-                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0`;
+                    if(checkuser.global == true){
+                        if(checkuser.tmp == true){
+                                condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
+                        }
+                        else if(session.userId=='1') {
+                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
+    
+                        } else {
+                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
+                        }
+                    } else if(checkuser.school == true) {
+                        if(session.userId=='1') {
+                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
+                        } else {
+                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
+                        }
+                    }else {
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=0`;
                     }
+                    
                     q.whereRaw(condition);               
     
                     if (searchobj) {
@@ -224,6 +262,9 @@ export class UserHandler extends BaseHandler {
                                     q.andWhereRaw(condition);
                                 } else if(key == 'email') {
                                     condition = `(${AdminUserTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                    q.andWhereRaw(condition);
+                                } else if(key == 'schoolName'){
+                                    condition = `(${SchoolTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
                                 } else if(key == 'isActive') {
                                     condition = `(${AdminUserTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
@@ -260,6 +301,8 @@ export class UserHandler extends BaseHandler {
                             } else if (sortKey == 'lastname') {
                                 q.orderBy(ColumnSortKey, sortValue);
                             } else if (sortKey == 'email') {
+                                q.orderBy(ColumnSortKey, sortValue);
+                            } else if (sortKey == 'schoolName') {
                                 q.orderBy(ColumnSortKey, sortValue);
                             } else if (sortKey == 'createdDate') {
                                 q.orderBy(ColumnSortKey, sortValue);
@@ -327,7 +370,7 @@ export class UserHandler extends BaseHandler {
                 `ar.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,
                 `arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,
                 `user.${AdminUserTableSchema.FIELDS.FIRSTNAME} AS createdByFname`,
-                `user.${AdminUserTableSchema.FIELDS.LASTNAME}  AS createdByLname`
+                `user.${AdminUserTableSchema.FIELDS.LASTNAME}  AS createdByLname`,
                  );
                 q.leftJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} AS ar`, `ar.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);
                 q.leftJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} AS arg`, `arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`, `ar.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`);
@@ -417,9 +460,11 @@ export class UserHandler extends BaseHandler {
                     `${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,
                     `${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,
                     `user.${AdminUserTableSchema.FIELDS.FIRSTNAME} AS createdByFname`,
-                    `user.${AdminUserTableSchema.FIELDS.LASTNAME}  AS createdByLname`);
+                    `user.${AdminUserTableSchema.FIELDS.LASTNAME}  AS createdByLname`,
+                    `${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`);
                 q.innerJoin(AuthorizationRoleTableSchema.TABLE_NAME, `${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);
                 q.leftJoin(`${AdminUserTableSchema.TABLE_NAME} AS user`, `user.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY}`);
+                q.leftJoin(`${SchoolTableSchema.TABLE_NAME}`,  `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`);
                 let condition 
                 if(session.userId=='1') {
                     condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.RID}="${rid}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0`;
@@ -443,6 +488,7 @@ export class UserHandler extends BaseHandler {
             } else {
                 let adminUseData = AdminUserModel.fromDto(adminuser.models[0], ["password","createdBy"])
                // adminUseData["roleName"] = roles[adminUseData["roleId"]]; 
+               adminUseData["schoolName"]=object.get("school_name");
                 res.json(adminUseData);
             }
         })

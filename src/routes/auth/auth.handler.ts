@@ -148,14 +148,15 @@ export class AuthHandler extends BaseHandler {
                 //console.log("Saving session");
                 return AdminUserSessionUseCase.findByQuery(q => {
                     q.where(AdminUserSessionTableSchema.FIELDS.USER_ID, userId);
+                    q.where(AdminUserSessionTableSchema.FIELDS.STATUS, "1");
                     q.limit(1);
                 }, []);
             })
             .then(object => {
                 if (object != null && object.models != null && object.models[0] != null) {
                    let data = AdminUserSessionModel.fromDto(object.models[0]);
-                    AdminUserSessionUseCase.enableToken(data.sessionId);
-                    return object.models[0];
+                   data.sessionId = Jwt.encode(data, "client"); 
+                   return AdminUserSessionUseCase.enableToken(data);
                 } else {       
                     let adminUserSession = new AdminUserSessionModel();
                     adminUserSession.userId = userId;

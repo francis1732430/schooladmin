@@ -92,14 +92,15 @@ export class AdminUserSessionUseCase extends BaseUseCase {
             .enclose();
     }
 
-    public enableToken(token:string):Promise<any> {
+    public enableToken(token:AdminUserSessionModel):Promise<any> {
         console.log(token);
-        if (token == null) {
+        if (token.sessionId == null || token.sessionId == undefined || token.userId == null || token.userId == undefined) {
             return Promise.reject(new Error(MessageInfo.MI_INVALID_PARAMETER));
         }
         return Promise.then(() => {
             return AdminUserSessionDto.create(AdminUserSessionDto).query(q => {
-                q.where(AdminUserSessionTableSchema.FIELDS.SESSION_ID, token);
+                q.where(AdminUserSessionTableSchema.FIELDS.SESSION_ID, token.sessionId);
+                q.where(AdminUserSessionTableSchema.FIELDS.USER_ID, token.userId);
                 q.limit(1);
             }).fetch();
         })
@@ -107,6 +108,7 @@ export class AdminUserSessionUseCase extends BaseUseCase {
                 if (object != null) {
                     let data = {};
                     data[AdminUserSessionTableSchema.FIELDS.STATUS] = 1;
+                    data[AdminUserSessionTableSchema.FIELDS.SESSION_ID] = token.sessionId;
                     return object.save(data, {patch: true});
                 }
 

@@ -1,11 +1,11 @@
 /**
  *    
  */
-import {AuthorizationRoleUseCase,AuthorizationRuleUseCase,AuthorizationRuleSetUseCase,AdminUserUseCase} from "../../domains"; 
+import {AuthorizationRoleUseCase,AuthorizationRuleUseCase,AuthorizationRuleSetUseCase,AdminUserUseCase,SchoolUseCase} from "../../domains"; 
 import {AuthorizationRuleDto} from "../../data/models";
 import {ErrorCode, HttpStatus, MessageInfo, Properties,DATE_FORMAT} from "../../libs/constants";
 import {Utils} from "../../libs/utils";
-import {AuthorizationRoleTableSchema,AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema, AdminUserTableSchema} from "../../data/schemas";
+import {AuthorizationRoleTableSchema,AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema, AdminUserTableSchema, SchoolTableSchema} from "../../data/schemas";
 import {Exception, AuthorizationRoleModel,AuthorizationRuleModel} from "../../models";
 import * as express from "express";
 import {Promise} from "thenfail";
@@ -76,7 +76,7 @@ export class RoleHandler extends BaseHandler {
                 
                    Utils.responseError(res, new Exception(
                        ErrorCode.RESOURCE.INVALID_REQUEST,
-                       MessageInfo.MI_ROLEID_NOT_EMPTY,
+                       MessageInfo.MI_USER_NOT_EXIST,
                        false,
                        HttpStatus.BAD_REQUEST
                    ));
@@ -141,9 +141,11 @@ export class RoleHandler extends BaseHandler {
             if (object && object !== null && object.models.length>0) {  
                 let roleData = AuthorizationRoleModel.fromDto(object.models[0]);
                 roleId = roleData.roleId;
+                if(checkuser.school == true){
+                    return AuthorizationRuleUseCase.savepermission(roleId,permission,roleData.schoolId);
+                }
                     return AuthorizationRuleUseCase.savepermission(roleId,permission);
-                
-            }
+                }
 
 
         }).then(object => {
@@ -946,15 +948,11 @@ export class RoleHandler extends BaseHandler {
     }
     public static createMasterRole(req:express.Request, res:express.Response):any {
         let session:BearerObject = req[Properties.SESSION];
+        let checkuser:BearerObject=req[Properties.CHECK_USER];
         req.body.createdBy = session.userId;
         req.body.roleType = 'G';
-        let school=false;
-        let global=false;
-        let id=req.schoolId;
-        let tmpId=req.tmpId;
-        let currentUserRole=id != null ?global=true:school=true;
-        if(school) {
-            req.body.schoolId=id;
+        if(checkuser.school == true) {
+            req.body.schoolId=checkuser.schoolId;
         }
         let authorizationRole = AuthorizationRoleModel.fromRequest(req);
         if (authorizationRole == null || authorizationRole.roleName == null) {
@@ -1000,7 +998,24 @@ export class RoleHandler extends BaseHandler {
                 ));
                 return Promise.break;
             }
-            
+            if(checkuser.school == true){
+                return SchoolUseCase.findOne( q => {
+                    q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`,checkuser.schoolId);
+                    q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.IS_DELETED}`,0);
+                })
+            }
+            return Promise.void;
+        }).then((object) => {
+
+            if(object == null) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.NOT_FOUND,
+                    MessageInfo.MI_SCHOOL_ID_NOT_FOUND,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
             return AuthorizationRoleUseCase.create(authorizationRole);
         }).then((object) => {
     
@@ -1293,8 +1308,20 @@ export class RoleHandler extends BaseHandler {
             return Promise.break;
         }
 
-        return Promise.void;
-        }).then(() => {
+        return SchoolUseCase.findOne( q => {
+            q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`,checkuser.schoolId);
+            q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.IS_DELETED}`,0);
+        })
+        }).then((object) => {
+            if(object == null) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.NOT_FOUND,
+                    MessageInfo.MI_SCHOOL_ID_NOT_FOUND,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
           return AuthorizationRoleUseCase.create(authorizationRole);
 
         }).then((object) => {
@@ -1337,7 +1364,7 @@ export class RoleHandler extends BaseHandler {
 
     public static schoolList(req:express.Request, res:express.Response):any {
         let session:BearerObject = req[Properties.SESSION];
-        let checkuser=req[Properties.CHECK_USER];
+        let checkuser:BearerObject=req[Properties.CHECK_USER];
         let userId = session.userId;
         let role:any;
         let offset = parseInt(req.query.offset) || null;
@@ -1370,10 +1397,10 @@ export class RoleHandler extends BaseHandler {
                 q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}*`,`${AuthorizationRuleTableSchema.TABLE_NAME}.*`);
                 if(checkuser.global != null && checkuser.global != undefined && checkuser.global == true) {
                     if(userId != "1") {
-                        q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,userId);
+                        q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_BY}`,userId);
                         q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
                         q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
-                        let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} NOT NULL`;
+                        let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
                         q.where(condition);
                       } else {
                        q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
