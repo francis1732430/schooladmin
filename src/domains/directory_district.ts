@@ -13,7 +13,16 @@ export class DirectoryDistrictUseCase extends BaseUseCase {
         super();
         this.mysqlModel = DirectoryDistrictDto;
     }
-
+    public create(district:DirectoryDistrictModel):Promise<any> {
+        console.log("rr",district);
+        return Promise.then(() => {
+                return DirectoryDistrictDto.create(DirectoryDistrictDto, district.toDto()).save();
+            })
+            .catch(err => {
+                return Promise.reject(Utils.parseDtoError(err));
+            })
+            .enclose();
+    }
     
 }
 

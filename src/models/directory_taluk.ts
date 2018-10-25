@@ -21,6 +21,15 @@ export class DirectoryTalukModel extends BaseModel {
         }
         return null;
     }
+    public static objRequest(req:any):DirectoryTalukModel {
+        console.log(req);
+            let city = new DirectoryTalukModel();
+            city.cityId = DirectoryTalukModel.getString(req.cityId);
+            city.cityName = DirectoryTalukModel.getString(req.cityName);
+            city.districtId = DirectoryTalukModel.getString(req.districtId);
+            city.isActive = DirectoryTalukModel.getNumber(req.isActive);
+            return city;
+    }
 
     public static fromDto(object:any, filters?:string[]):DirectoryTalukModel {
         if (object != null) {

@@ -22,12 +22,13 @@ export class SchoolModel extends BaseModel {
     public image:string;
     public createdDate:string;
     public updatedDate:string;
+    public createdBy:number;
 
     public static fromRequest(req:Request):SchoolModel {
         if (req != null && req.body) {
             let school = new SchoolModel();
             school.schoolId = SchoolModel.getString(req.body.schoolId);
-            school.schoolName = SchoolModel.getString(req.body.districtName);
+            school.schoolName = SchoolModel.getString(req.body.schoolName);
             school.districtId = SchoolModel.getString(req.body.districtId);
             school.cityId = SchoolModel.getString(req.body.cityId);
             school.startedDate = SchoolModel.getString(req.body.startedDate);
@@ -42,6 +43,7 @@ export class SchoolModel extends BaseModel {
             school.image = SchoolModel.getString(req.body.image);
             school.address = SchoolModel.getString(req.body.address);
             school.isActive = SchoolModel.getNumber(req.body.isActive);
+            school.createdBy = SchoolModel.getNumber(req.body.createdBy);
             return school;
         }
         return null;
@@ -67,6 +69,7 @@ export class SchoolModel extends BaseModel {
             let isActive = object.get(SchoolTableSchema.FIELDS.IS_ACTIVE);
             let createdDate = object.get(SchoolTableSchema.FIELDS.CREATED_DATE);
             let updatedDate = object.get(SchoolTableSchema.FIELDS.UPDATED_DATE);
+            let createdBy = object.get(SchoolTableSchema.FIELDS.CREATED_BY);
             let ret = new SchoolModel();
             ret.schoolId = schoolId != null && schoolId !== "" ? schoolId : undefined;
             ret.schoolName = schoolName != null && schoolName !== "" ? schoolName : undefined;
@@ -84,6 +87,7 @@ export class SchoolModel extends BaseModel {
             ret.image = image != null && image !== "" ? image : undefined;
             ret.address = address != null && address !== "" ? address : undefined;
             ret.isActive = isActive != null && isActive !== "" ? isActive : undefined;
+            ret.createdBy = createdBy != null && createdBy !== "" ? createdBy : undefined;
             ret.createdDate = createdDate != null && createdDate !== "" ? createdDate : undefined;
             ret.updatedDate = updatedDate != null && updatedDate !== "" ? updatedDate : undefined;
             //noinspection TypeScriptUnresolvedVariable
@@ -119,6 +123,7 @@ export class SchoolModel extends BaseModel {
         obj[SchoolTableSchema.FIELDS.ADDRESS] = this.address;
         obj[SchoolTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
         obj[SchoolTableSchema.FIELDS.IMAGE_URL] = this.image;
+        obj[SchoolTableSchema.FIELDS.CREATED_BY] = this.createdBy;
         return obj;
     }
 }

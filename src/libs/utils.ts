@@ -103,17 +103,17 @@ export class Utils {
         return true;
     }
 
-    public static compareHash(password:string, hash:string):boolean {
+    public static compareHash(password:any, hash:any):boolean {
         if (password == null || hash == null) {
             return false;
         }
-
         return bcrypt.compareSync(password, hash);
     }
 
     public static hashPassword(password:string):string {
         if (password != null) {
-            return bcrypt.hashSync(password, 10);
+            let hash=bcrypt.hashSync(password, 8);
+            return hash;
         }
         return "";
     }
@@ -317,8 +317,7 @@ export class Utils {
     public static validateNumber(val:any) {
 
         if(val != null && val != undefined && val !="") {
-         if(val.length == 10) {
-             
+            if(val.length == 10) {
             return true;
             }
             return false;

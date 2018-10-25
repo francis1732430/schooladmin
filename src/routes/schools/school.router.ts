@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.route("/")
     .get(authentication,accessrole, SchoolHandler.list)
-    .post(authentication,accessrole, SchoolHandler.create);
+    .post(SchoolHandler.create);
 
 router.route("/view/:rid")
     .get(authentication,accessrole,SchoolHandler.view)

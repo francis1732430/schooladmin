@@ -20,8 +20,8 @@ export class SchoolHandler extends BaseHandler {
     }
 
     public static create(req: express.Request, res: express.Response): any {
-        let session: BearerObject = req[Properties.SESSION];
-        req.body.createdBy = session.userId;
+        //let session: BearerObject = req[Properties.SESSION];
+        req.body.createdBy = "18";
         let school = SchoolModel.fromRequest(req);
         let status = req.body.status;
         let districtName;
@@ -34,14 +34,14 @@ export class SchoolHandler extends BaseHandler {
             ));
         }
         
-        if (!Utils.requiredCheck(school.schoolName)) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_EMAIL,
-                MessageInfo.MI_SCHOOL_NAME_IS_REQUIRED,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-        }
+        // if (!Utils.requiredCheck(school.schoolName)) {
+        //     return Utils.responseError(res, new Exception(
+        //         ErrorCode.RESOURCE.INVALID_EMAIL,
+        //         MessageInfo.MI_SCHOOL_NAME_IS_REQUIRED,
+        //         false,
+        //         HttpStatus.BAD_REQUEST
+        //     ));
+        // }
         
         if (!Utils.requiredCheck(school.districtId)) {
             return Utils.responseError(res, new Exception(
@@ -113,14 +113,14 @@ export class SchoolHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        if (!Utils.requiredCheck(school.address)) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_EMAIL,
-                MessageInfo.MI_ADDRESS_IS_REQUIRED,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-        }
+        // if (!Utils.requiredCheck(school.address)) {
+        //     return Utils.responseError(res, new Exception(
+        //         ErrorCode.RESOURCE.INVALID_EMAIL,
+        //         MessageInfo.MI_ADDRESS_IS_REQUIRED,
+        //         false,
+        //         HttpStatus.BAD_REQUEST
+        //     ));
+        // }
         if (!Utils.validateEmail(school.schoolEmail)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_EMAIL,
@@ -145,7 +145,7 @@ export class SchoolHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        if (Utils.validateNumber(school.representativePhoneNumber)) {
+        if (!Utils.validateNumber(school.representativePhoneNumber)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_EMAIL,
                 MessageInfo.MI_INVALID_PHONE_NUMBER,
@@ -155,8 +155,37 @@ export class SchoolHandler extends BaseHandler {
         }
         return Promise.then(() => {
 
+            return SchoolUseCase.findOne( q => {
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_EMAIL}`,school.schoolEmail);
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+        }).then((object) => {
+                if(object != null) {
+                    Utils.responseError(res, new Exception(
+                       ErrorCode.RESOURCE.NOT_FOUND,
+                       MessageInfo.MI_EMAIL_ALREADY_USE,
+                       false,
+                       HttpStatus.BAD_REQUEST
+                   ));
+                   return Promise.break;
+               }
+            return SchoolUseCase.findOne( q => {
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.REPRESENTATIVE_EMAIL}`,school.representativeEmail);
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+        }).then((object) => {
+
+            if(object != null) {
+                    Utils.responseError(res, new Exception(
+                       ErrorCode.RESOURCE.NOT_FOUND,
+                       MessageInfo.MI_EMAIL_ALREADY_USE,
+                       false,
+                       HttpStatus.BAD_REQUEST
+                   ));
+                   return Promise.break;
+               }    
             return DirectoryDistrictUseCase.findOne( q => {
-                q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`);
+                q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,school.districtId);
                 q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -172,7 +201,8 @@ export class SchoolHandler extends BaseHandler {
             }
             districtName=object.get('ditrict_name');
             return DirectoryTalukUseCase.findOne( q => {
-                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`);
+                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`,school.cityId);
+                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`,school.districtId);
                 q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -188,31 +218,31 @@ export class SchoolHandler extends BaseHandler {
            }
            school.approvalStatus=0;
            return SchoolUseCase.create(school);
-        }).then((object) => {
-                if(object == null) {
-                    Utils.responseError(res, new Exception(
-                       ErrorCode.RESOURCE.NOT_FOUND,
-                       MessageInfo.MI_SCHOOL_CREATION_FAILED,
-                       false,
-                       HttpStatus.BAD_REQUEST
-                   ));
-                   return Promise.break;
-               }    
-            return AuthorizationRoleUseCase.findByQuery(q => {
-                q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.EMAIL}`)
-                q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,"7");
-                q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,school.districtId);
-                q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`)
-            })
-        }).then((objects) => {
-            let emails=[];
-            objects.models.forEach((obj) => {
-                let userData=AdminUserModel.fromDto(obj);
-                 emails.push(userData.email);
-            })
+         }).then((object) => {
+        //         if(object == null) {
+        //             Utils.responseError(res, new Exception(
+        //                ErrorCode.RESOURCE.NOT_FOUND,
+        //                MessageInfo.MI_SCHOOL_CREATION_FAILED,
+        //                false,
+        //                HttpStatus.BAD_REQUEST
+        //            ));
+        //            return Promise.break;
+        //        }    
+        //     return AuthorizationRoleUseCase.findByQuery(q => {
+        //         q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.EMAIL}`)
+        //         q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,"32");
+        //         q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,school.districtId);
+        //         q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`)
+        //     })
+        // }).then((objects) => {
+        //     let emails=[];
+        //     objects.models.forEach((obj) => {
+        //         let userData=AdminUserModel.fromDto(obj);
+        //          emails.push(userData.email);
+        //     })
 
-            return SchoolUseCase.sendMail(emails,school.schoolName,districtName);
-        }).then(() => {
+        //     return SchoolUseCase.sendMail(emails,school.schoolName,districtName);
+        // }).then(() => {
             let schoolData={};
             schoolData["message"] = "School created successfully";
             res.json(schoolData);
@@ -357,6 +387,38 @@ export class SchoolHandler extends BaseHandler {
        
        
         return Promise.then(() => {
+
+            return SchoolUseCase.findOne( q => {
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_EMAIL}`,school.schoolEmail);
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.RID}`,rid);
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+        }).then((object) => {
+                if(object != null) {
+                    Utils.responseError(res, new Exception(
+                       ErrorCode.RESOURCE.NOT_FOUND,
+                       MessageInfo.MI_EMAIL_ALREADY_USE,
+                       false,
+                       HttpStatus.BAD_REQUEST
+                   ));
+                   return Promise.break;
+               }
+            return SchoolUseCase.findOne( q => {
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.REPRESENTATIVE_EMAIL}`,school.representativeEmail);
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.RID}`,rid);
+                q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+        }).then((object) => {
+
+            if(object != null) {
+                    Utils.responseError(res, new Exception(
+                       ErrorCode.RESOURCE.NOT_FOUND,
+                       MessageInfo.MI_EMAIL_ALREADY_USE,
+                       false,
+                       HttpStatus.BAD_REQUEST
+                   ));
+                   return Promise.break;
+               }    
             return SchoolUseCase.findById(rid);
         })
             .then(object => {

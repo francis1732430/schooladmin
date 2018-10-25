@@ -20,7 +20,15 @@ export class DirectoryDistrictModel extends BaseModel {
         }
         return null;
     }
-
+    public static objRequest(req:any):DirectoryDistrictModel {
+            let district = new DirectoryDistrictModel();
+            district.districtId = DirectoryDistrictModel.getString(req.districtId);
+            district.districtName = DirectoryDistrictModel.getString(req.districtName);
+            district.isActive = DirectoryDistrictModel.getNumber(req.isActive);
+            return district;
+        
+        return null;
+    }
     public static fromDto(object:any, filters?:string[]):DirectoryDistrictModel {
         if (object != null) {
             let districtId = object.get(DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID);

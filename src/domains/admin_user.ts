@@ -21,26 +21,26 @@ export class AdminUserUseCase extends BaseUseCase {
     public create(user:AdminUserModel):Promise<any> {
         let roleInfo:any;
         return Promise.then(() => {
-            return this.findByQuery(q => {
-                q.where(AdminUserTableSchema.FIELDS.USER_ID, user.createdBy);
-                q.limit(1);
-            }, []);
+            // return this.findByQuery(q => {
+            //     q.where(AdminUserTableSchema.FIELDS.USER_ID, user.createdBy);
+            //     q.limit(1);
+            // }, []);
         })
         .then(object => {
-            if (object != null && object.models != null && object.models[0] != null) {
+            // if (object != null && object.models != null && object.models[0] != null) {
                 return this.findByQuery(q => {
                     q.where(AdminUserTableSchema.FIELDS.EMAIL, user.email);
                     q.where(AdminUserTableSchema.FIELDS.IS_DELETED, 0);
                     q.limit(1);
                 }, []);
-            }
+            // }
 
-            return Promise.reject(new Exception(
-                ErrorCode.RESOURCE.USER_NOT_FOUND,
-                MessageInfo.MI_USER_NOT_EXIST,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
+            // return Promise.reject(new Exception(
+            //     ErrorCode.RESOURCE.USER_NOT_FOUND,
+            //     MessageInfo.MI_USER_NOT_EXIST,
+            //     false,
+            //     HttpStatus.BAD_REQUEST
+            // ));
         })
         .then(object => {
             if (object != null && object.models.length == 0) {
@@ -87,17 +87,18 @@ export class AdminUserUseCase extends BaseUseCase {
             ));
         })
         .then(object => {
-           
             if (object != null && object.models != null && object.models[0] != null) {
                 let userData = AdminUserModel.fromDto(object.models[0]);
                 console.log(userData);
                 let authRole = new AuthorizationRoleModel();
+                authRole.level=roleInfo["level"]+1;
                 authRole.userId = userData.userId;
-                //authRole.roleType = 'U';
+                authRole.roleType = 'U';
                 authRole.createdBy = user.createdBy;
                 authRole.parentId = user.roleId;
                 authRole.roleName = roleInfo["roleName"];
                 authRole.schoolId=roleInfo.schoolId;
+                console.log("nnnnn",authRole);
                 AuthorizationRoleDto.create(AuthorizationRoleDto, authRole.toDto()).save();
                 return  authRole.toDto();
             }
@@ -588,7 +589,7 @@ export class AdminUserUseCase extends BaseUseCase {
                  obj.schoolId=schoolId;
              }
             }
-
+            console.log("nnnnnnnn",obj);
             return obj;
 
         })

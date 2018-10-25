@@ -54,9 +54,16 @@ export class AuthHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        
+        if (!Utils.requiredCheck(password)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_EMAIL,
+                MessageInfo.MI_NEW_PASSWORD_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
         let cond=Utils.validateNumber(emailOrPhone);
-
+        console.log("hhhhhhhhhhh",emailOrPhone);
         if (!cond && !Utils.validateEmail(emailOrPhone)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_EMAIL,
@@ -79,8 +86,8 @@ export class AuthHandler extends BaseHandler {
                 q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,
                 `${AuthorizationRoleTableSchema.TABLE_NAME}.*`
                 );
-                let condition=`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.EMAIL}=${emailOrPhone} or ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.PHONE_NUMBER1} =${emailOrPhone}`;
-                q.where(condition)
+                 let condition=`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.EMAIL} = "${emailOrPhone}"  or  ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.PHONE_NUMBER1} = "${emailOrPhone}"`;
+                 q.whereRaw(condition)
                 q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`, 0);
                 q.innerJoin(AuthorizationRoleTableSchema.TABLE_NAME, `${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);
                 q.limit(1);
@@ -93,10 +100,11 @@ export class AuthHandler extends BaseHandler {
                 //noinspection TypeScriptUnresolvedVariable
                 if (object != null && object.models != null && object.models[0] != null && object.models[0].relations != null) {
                     userInfo = AdminUserModel.fromDto(object.models[0]);
-                    console.log(userInfo);
+                    console.log("rrrrrrrrrr",object.models[0]);
                     if(object.models[0].get(AdminUserTableSchema.FIELDS.IS_ACTIVE)==1) {
                         if(object.models[0].get(AuthorizationRoleTableSchema.FIELDS.IS_DELETED)==0) {
                             //noinspection TypeScriptUnresolvedVariable
+                            console.log("rrrrrrrr");
                             userId = object.models[0].get(AdminUserTableSchema.FIELDS.USER_ID);
                             email = object.models[0].get(AdminUserTableSchema.FIELDS.EMAIL);
                             phoneNumber = object.models[0].get(AdminUserTableSchema.FIELDS.PHONE_NUMBER1);
@@ -155,13 +163,15 @@ export class AuthHandler extends BaseHandler {
             .then(object => {
                 if (object != null && object.models != null && object.models[0] != null) {
                    let data = AdminUserSessionModel.fromDto(object.models[0]);
-                   data.sessionId = Jwt.encode(data, "client"); 
+                   console.log("data",data);
+                   data.deviceToken = Jwt.encode(data, "client"); 
                    return AdminUserSessionUseCase.enableToken(data);
                 } else {       
                     let adminUserSession = new AdminUserSessionModel();
                     adminUserSession.userId = userId;
                     adminUserSession.status = 1;
-                    adminUserSession.sessionId = Jwt.encode(adminUserSession, "client");
+                    console.log("ttttttt",adminUserSession);
+                    adminUserSession.deviceToken = Jwt.encode(adminUserSession, "client");
                     //console.log(adminUserSession);
                     return AdminUserSessionUseCase.create(adminUserSession);
 

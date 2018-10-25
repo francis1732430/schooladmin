@@ -41,23 +41,23 @@ export class AdminUserSessionModel extends BaseModel {
                 let updatedDate = object.get(AdminUserSessionTableSchema.FIELDS.UPDATED_DATE);
                 let userId = object.get(AdminUserSessionTableSchema.FIELDS.USER_ID);
                 let sessionId = object.get(AdminUserSessionTableSchema.FIELDS.SESSION_ID);
-                let deviceId = object.get(AdminUserSessionTableSchema.FIELDS.DEVICE_ID);
+               // let deviceId = object.get(AdminUserSessionTableSchema.FIELDS.DEVICE_ID);
                 let deviceToken = object.get(AdminUserSessionTableSchema.FIELDS.DEVICE_TOKEN);
-                let platform = object.get(AdminUserSessionTableSchema.FIELDS.PLATFORM);
+                //let platform = object.get(AdminUserSessionTableSchema.FIELDS.PLATFORM);
                 let status = object.get(AdminUserSessionTableSchema.FIELDS.STATUS);
-                status = parseInt(status, 10);
-                let ip = object.get(AdminUserSessionTableSchema.FIELDS.IP);
+                //status = parseInt(status, 10);
+               // let ip = object.get(AdminUserSessionTableSchema.FIELDS.IP);
 
                 let ret = new AdminUserSessionModel();
                 //ret.id = id;
-                //ret.createdDate = createdDate != null ? createdDate : undefined;
-                //ret.updatedDate = updatedDate != null ? updatedDate : undefined;
-                //ret.userId = userId != null && userId !== "" ? userId : undefined;
+                ret.createdDate = createdDate != null ? createdDate : undefined;
+                ret.updatedDate = updatedDate != null ? updatedDate : undefined;
+                ret.userId = userId != null && userId !== "" ? userId : undefined;
                 ret.sessionId = sessionId != null && sessionId !== "" ? sessionId : undefined;
-                //ret.deviceId = deviceId != null && deviceId !== "" ? deviceId : undefined;
+                ret.deviceToken = deviceToken != null && deviceToken !== "" ? deviceToken : undefined;
                // ret.ip = isNaN(ip) ? undefined : ip;
-                //ret.status = isNaN(status) ? undefined : status;
-                //ret.message = 'Your Password has been updated successfully';
+                ret.status = isNaN(status) ? undefined : status;
+                ret.message = 'Your Password has been updated successfully';
                 if (filters != null) {
                     filters.forEach(filter => {
                         ret[filter] = undefined;
@@ -76,10 +76,10 @@ export class AdminUserSessionModel extends BaseModel {
         }
         obj[AdminUserSessionTableSchema.FIELDS.USER_ID] = this.userId;
         obj[AdminUserSessionTableSchema.FIELDS.SESSION_ID] = this.sessionId;
-        obj[AdminUserSessionTableSchema.FIELDS.DEVICE_ID] = this.deviceId;
-        obj[AdminUserSessionTableSchema.FIELDS.DEVICE_TOKEN] = this.deviceToken;
-        obj[AdminUserSessionTableSchema.FIELDS.PLATFORM] = this.platform;
-        obj[AdminUserSessionTableSchema.FIELDS.IP] = this.ip;
+       // obj[AdminUserSessionTableSchema.FIELDS.DEVICE_ID] = this.deviceId;
+       obj[AdminUserSessionTableSchema.FIELDS.DEVICE_TOKEN] = this.deviceToken;
+        //obj[AdminUserSessionTableSchema.FIELDS.PLATFORM] = this.platform;
+        //obj[AdminUserSessionTableSchema.FIELDS.IP] = this.ip;
         obj[AdminUserSessionTableSchema.FIELDS.STATUS] = this.status;
         return obj;
     }

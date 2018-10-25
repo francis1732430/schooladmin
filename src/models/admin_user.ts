@@ -71,24 +71,24 @@ export class AdminUserModel extends BaseModel {
                 let firstname = object.get(AdminUserTableSchema.FIELDS.FIRSTNAME);
                 let lastname = object.get(AdminUserTableSchema.FIELDS.LASTNAME);
                 let phoneNumber1 = object.get(AdminUserTableSchema.FIELDS.PHONE_NUMBER1);
-                let phoneNumber2 = object.get(AdminUserTableSchema.FIELDS.PHONE_NUMBER2);
+                //let phoneNumber2 = object.get(AdminUserTableSchema.FIELDS.PHONE_NUMBER2);
                 let createdBy = object.get(AdminUserTableSchema.FIELDS.CREATED_BY);
                 let roleId = object.get(AuthorizationRoleTableSchema.FIELDS.PARENT_ID);
                 let roleName = object.get(AuthorizationRoleTableSchema.FIELDS.ROLE_NAME);
-                let roleIsDeleted = object.get(AuthorizationRoleTableSchema.FIELDS.IS_DELETED);
-                let companyNumber = object.get(StoreBusinessInfoTableSchema.FIELDS.COMPANY_NUMBER);
-                let storeName = object.get(StoreBusinessInfoTableSchema.FIELDS.STORE_NAME);
+                //let roleIsDeleted = object.get(AuthorizationRoleTableSchema.FIELDS.IS_DELETED);
+                //let companyNumber = object.get(StoreBusinessInfoTableSchema.FIELDS.COMPANY_NUMBER);
+                //let storeName = object.get(StoreBusinessInfoTableSchema.FIELDS.STORE_NAME);
                 let password = object.get(AdminUserTableSchema.FIELDS.PASSWORD);
-                let extensionNumber = object.get(AdminUserTableSchema.FIELDS.EXTENSION_NUMBER);
-                let telephone = object.get(AdminUserTableSchema.FIELDS.TELEPHONE);
+                //let extensionNumber = object.get(AdminUserTableSchema.FIELDS.EXTENSION_NUMBER);
+                //let telephone = object.get(AdminUserTableSchema.FIELDS.TELEPHONE);
                 let designation = object.get(AdminUserTableSchema.FIELDS.DESIGNATION);
-                let merchantRepresentativeName = object.get(AdminUserTableSchema.FIELDS.MERCHANT_REPRESENTATIVE_NAME);
+                //let merchantRepresentativeName = object.get(AdminUserTableSchema.FIELDS.MERCHANT_REPRESENTATIVE_NAME);
                 let approvalStatus = object.get(AdminUserTableSchema.FIELDS.APPROVAL_STATUS);
-                let approvalRole = object.get(AdminUserTableSchema.FIELDS.APPROVAL_ROLE);
-                let businessLegalName = object.get(StoreBusinessInfoTableSchema.FIELDS.BUSINESS_LEGAL_NAME);
+                //let approvalRole = object.get(AdminUserTableSchema.FIELDS.APPROVAL_ROLE);
+                //let businessLegalName = object.get(StoreBusinessInfoTableSchema.FIELDS.BUSINESS_LEGAL_NAME);
                 let status = object.get(AdminUserTableSchema.FIELDS.IS_ACTIVE);
                 let schoolId = object.get(AdminUserTableSchema.FIELDS.SCHOOL_ID);
-                let approvalStatusKey = object.get('approvalStatusKey')
+                //let approvalStatusKey = object.get('approvalStatusKey')
                 let createdByName = object.get('createdByFname')+" "+object.get('createdByLname');
 
                 let ret = new AdminUserModel();
@@ -99,26 +99,26 @@ export class AdminUserModel extends BaseModel {
                 ret.lastname = lastname != null && lastname !== "" ? lastname : "";
                 ret.userId = userId != null && userId !== "" ? userId : "";
                 ret.phoneNumber1 = phoneNumber1 != null && phoneNumber1 !== "" ? phoneNumber1 : "";
-                ret.phoneNumber2 = phoneNumber2 != null && phoneNumber2 !== "" ? phoneNumber2 : "";
+                //ret.phoneNumber2 = phoneNumber2 != null && phoneNumber2 !== "" ? phoneNumber2 : "";
                 ret.rid = rid != null && rid !== "" ? rid : "";
                 ret.createdBy = createdBy != null && createdBy !== "" ? createdBy : "";
                 ret.roleId = roleId != null && roleId !== "" ? roleId : "";
                 ret.roleName = roleName != null && roleName !== "" ? roleName : "";
                 ret.password = password != null && password !== "" ? password : "";
-                ret.extensionNumber = extensionNumber != null && extensionNumber !== "" ? extensionNumber : "";
-                ret.telephone= telephone != null && telephone !== "" ? telephone : "";
-                ret.designation = designation != null && designation !== "" ? designation : "";
-                ret.merchantRepresentativeName = merchantRepresentativeName != null && merchantRepresentativeName !== "" ? merchantRepresentativeName : "";
-                ret.storeName = storeName != null && storeName !== "" ? storeName : "";
-                ret.companyNumber = companyNumber != null && companyNumber !== "" ? companyNumber : "";
+                //ret.extensionNumber = extensionNumber != null && extensionNumber !== "" ? extensionNumber : "";
+                //ret.telephone= telephone != null && telephone !== "" ? telephone : "";
+                //ret.designation = designation != null && designation !== "" ? designation : "";
+                //ret.merchantRepresentativeName = merchantRepresentativeName != null && merchantRepresentativeName !== "" ? merchantRepresentativeName : "";
+                //ret.storeName = storeName != null && storeName !== "" ? storeName : "";
+                //ret.companyNumber = companyNumber != null && companyNumber !== "" ? companyNumber : "";
                 ret.approvalStatus = approvalStatus != null && approvalStatus !== "" ? approvalStatus : "";
-                ret.approvalRole = approvalRole != null && approvalRole !== "" ? approvalRole : "";
-                ret.businessLegalName = businessLegalName != null && businessLegalName !== "" ? businessLegalName : "";
+                //ret.approvalRole = approvalRole != null && approvalRole !== "" ? approvalRole : "";
+                //ret.businessLegalName = businessLegalName != null && businessLegalName !== "" ? businessLegalName : "";
                 ret.status = status != null && status !== "" ? status : "";
                 ret.createdByName = createdByName != null && createdByName !== "" ? createdByName : "";
-                ret.roleIsDeleted = roleIsDeleted != null && roleIsDeleted !== "" ? roleIsDeleted : "";
+                //ret.roleIsDeleted = roleIsDeleted != null && roleIsDeleted !== "" ? roleIsDeleted : "";
                 ret.schoolId = schoolId != null && schoolId !== "" ? schoolId : "";
-                ret.approvalStatusKey = approvalStatusKey;
+                //ret.approvalStatusKey = approvalStatusKey;
                
                 if (object.relations != null) {
                     if (object.relations.role != null) { 
@@ -151,16 +151,17 @@ export class AdminUserModel extends BaseModel {
         if(this.createdBy)
             obj[AdminUserTableSchema.FIELDS.CREATED_BY] = this.createdBy;
         obj[AdminUserTableSchema.FIELDS.PHONE_NUMBER1] = this.phoneNumber1;
-        obj[AdminUserTableSchema.FIELDS.PHONE_NUMBER2] = this.phoneNumber2;
+        //obj[AdminUserTableSchema.FIELDS.PHONE_NUMBER2] = this.phoneNumber2;
         if(this.password)
             obj[AdminUserTableSchema.FIELDS.PASSWORD] = this.password;
 
-        obj[AdminUserTableSchema.FIELDS.APPROVAL_STATUS] = this.approvalStatus;
+        //obj[AdminUserTableSchema.FIELDS.APPROVAL_STATUS] = this.approvalStatus;
         obj[AdminUserTableSchema.FIELDS.IS_ACTIVE] = this.status;
         obj[AdminUserTableSchema.FIELDS.IS_DELETED] = this.isDeleted;
-        obj[AdminUserTableSchema.FIELDS.EXTENSION_NUMBER] = this.extensionNumber;
-        obj[AdminUserTableSchema.FIELDS.TELEPHONE] = this.telephone;
-        obj[AdminUserTableSchema.FIELDS.DESIGNATION] = this.designation;
+        //obj[AdminUserTableSchema.FIELDS.EXTENSION_NUMBER] = this.extensionNumber;
+        //obj[AdminUserTableSchema.FIELDS.TELEPHONE] = this.telephone;
+        //obj[AdminUserTableSchema.FIELDS.DESIGNATION] = this.designation;
+        if(this.schoolId)
         obj[AdminUserTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
         //obj[AdminUserTableSchema.FIELDS.MERCHANT_REPRESENTATIVE_NAME] = this.merchantRepresentativeName;
         return obj;

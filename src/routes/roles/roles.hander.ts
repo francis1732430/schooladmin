@@ -948,9 +948,12 @@ export class RoleHandler extends BaseHandler {
     }
     public static createMasterRole(req:express.Request, res:express.Response):any {
         let session:BearerObject = req[Properties.SESSION];
-        let checkuser:BearerObject=req[Properties.CHECK_USER];
-        req.body.createdBy = session.userId;
+        //let checkuser:BearerObject=req[Properties.CHECK_USER];
+       // req.body.createdBy = session.userId;
+       let checkuser={};
+       checkuser.global=true;
         req.body.roleType = 'G';
+        req.body.parentId = '0';
         if(checkuser.school == true) {
             req.body.schoolId=checkuser.schoolId;
         }
@@ -964,24 +967,24 @@ export class RoleHandler extends BaseHandler {
         }
 
         return Promise.then(() => {
-            return AuthorizationRoleUseCase.findOne( q => {
-                q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,authorizationRole.userId);
-                q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+            // return AuthorizationRoleUseCase.findOne( q => {
+            //     q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,authorizationRole.userId);
+            //     q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
 
-            })
+            // })
         }).then((object) => {
 
-           if(object == null) {
-            Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_REQUEST,
-                MessageInfo.MI_PARENT_ROLE_NOT_FOUND,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-            return Promise.break;
-           }
+        //    if(object == null) {
+        //     Utils.responseError(res, new Exception(
+        //         ErrorCode.RESOURCE.INVALID_REQUEST,
+        //         MessageInfo.MI_PARENT_ROLE_NOT_FOUND,
+        //         false,
+        //         HttpStatus.BAD_REQUEST
+        //     ));
+        //     return Promise.break;
+        //    }
         let parentRole=AuthorizationRoleModel.fromDto(object);
-        authorizationRole.level=parentRole.level+1;
+       // authorizationRole.level=parentRole.level+1;
             return AuthorizationRoleUseCase.findOne( q => {
               q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,req.body.roleType);
               q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,authorizationRole.roleName);
@@ -1006,7 +1009,7 @@ export class RoleHandler extends BaseHandler {
             }
             return Promise.void;
         }).then((object) => {
-
+            if(checkuser.school == true){
             if(object == null) {
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.NOT_FOUND,
@@ -1016,6 +1019,7 @@ export class RoleHandler extends BaseHandler {
                 ));
                 return Promise.break;
             }
+        }
             return AuthorizationRoleUseCase.create(authorizationRole);
         }).then((object) => {
     

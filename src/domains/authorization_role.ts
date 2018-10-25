@@ -129,15 +129,12 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                         if (objects != null && objects.models != null && objects.models.length != null && objects.models.length === 1) {
                             let role = AuthorizationRoleModel.fromDto(objects.models[0])
                             return AuthorizationRuleUseCase.findByQuery(q => {
-                                q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
-                                    `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
-                                    `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_NAME}`,
-                                    `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ACTION}`,
-                                    `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ROUTES}`,
-                                    `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`
-                                    );
-
-                                    if(checkuser.tmp != null && checkuser.tmp != undefined && checkuser.tmp == true) {
+                                console.log("checkuser.tmp",checkuser.tmp);    
+                                if(checkuser && checkuser.tmp != null && checkuser.tmp != undefined && checkuser.tmp == true) {
+                                        q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
+                                        `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
+                                        `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`,
+                                        );
                                         q.where(AuthorizationRuleTableSchema.FIELDS.PERMISSION, 'allow');
                                         q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.roleId);
                                         q.where(AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID, checkuser.schoolId);                         
@@ -145,7 +142,10 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                                     } else {
                                         q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
                                     `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
-                                    `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`,
+                                    `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_NAME}`,
+                                    `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ACTION}`,
+                                    `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ROUTES}`,
+                                    `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`
                                     );
                                         q.innerJoin(AuthorizationRuleSetTableSchema.TABLE_NAME, `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.MODULE_ID}`);
                                         q.where(AuthorizationRuleTableSchema.FIELDS.PERMISSION, 'allow');
@@ -161,6 +161,7 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                         return exception;
                     })
                     .then(object => {
+                        console.log("vvvvvvvvvvvvvvv",object);
                         if (object != null && object.models != null && object.model.length != null && object.models.length === 1) {
                             return Promise.void;
                         } else {

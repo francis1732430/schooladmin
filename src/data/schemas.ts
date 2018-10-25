@@ -20,7 +20,7 @@ export const AdminUserTableSchema = {
         USERNAME: "username",
         PASSWORD: "password",
         CREATED_BY: "created_by",
-        PHONE_NUMBER1: "phone_number1",
+        PHONE_NUMBER1: "mobile_number",
         PHONE_NUMBER2: "phone_number2",
         EXTENSION_NUMBER: "extension_number",
         TELEPHONE: "telephone",
@@ -55,7 +55,7 @@ export const AdminUserSessionTableSchema = {
         ID: "id",
         SESSION_ID: "session_id",
         USER_ID: "user_id",
-        STATUS: "status",
+        STATUS: "login_status",
         CREATED_DATE: "created_date",
         UPDATED_DATE: "updated_date",
         IP: "ip",
@@ -75,7 +75,7 @@ export const AuthorizationRoleTableSchema = {
         RID:"rid",
         ROLE_ID: "role_id",
         PARENT_ID: "parent_id",
-        TREE_LEVEL: "tree_level",
+        TREE_LEVEL: "level",
         SORT_ORDER: "sort_order",
         ROLE_TYPE: "role_type",
         USER_ID: "user_id",
@@ -224,7 +224,7 @@ export const ServerEndpointTableSchema = {
 };
 
 export const DirectoryDistrictTableSchema = {
-    TABLE_NAME: "district_entity",
+    TABLE_NAME: "directory_district",
     FIELDS: {
         RID:"rid",
         DISTRICT_ID:"district_id",
@@ -237,7 +237,7 @@ export const DirectoryDistrictTableSchema = {
     },
 };
 export const DirectoryTalukTableSchema = {
-    TABLE_NAME: "taluk_entity",
+    TABLE_NAME: "directory_city",
     FIELDS: {
         RID:"rid",
         CITY_ID:"city_id",
@@ -264,7 +264,7 @@ export const SchoolTableSchema = {
         REPRESENTATIVE_PHONE_NUMBER:"representative_number",
         SCHOOL_PHONE_NUMBER:"school_number",
         IMAGE_URL:"image_url",
-        SCHOOL_EMAIL:"email",
+        SCHOOL_EMAIL:"school_email",
         REPRESENTATIVE_EMAIL:"representative_email",
         POSTAL_CODE:"postal_code",
         ADDRESS:"address",

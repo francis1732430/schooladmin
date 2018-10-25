@@ -107,6 +107,7 @@ export class Mailer {
             try {
                 this.transport.sendMail(message, (error, response: any) => {
                     if (error) {
+                        console.log("errrrrrror",error);
                         return reject(error);
                     }
 

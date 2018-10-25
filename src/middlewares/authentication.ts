@@ -12,7 +12,7 @@ const bodyKey = "access_token";
 const headerKey = "Bearer";
 const sessionKey = "session";
 const tokenKey = "token";
-
+const schoolId = "schoolId";
 export function authentication(req: express.Request, res: express.Response, next: express.NextFunction) {
     let token: string;
     let error: boolean;
@@ -53,6 +53,7 @@ export function authentication(req: express.Request, res: express.Response, next
             console.log("======================gfhgfh================================"); 
             Jwt.verify(token,"client");
             let jwtObject = Jwt.decode(token);
+            console.log("tnnnnn",jwtObject);
             let current = Date.now();
             if (current < jwtObject.exp) {
                 console.log("======================================================"); 
@@ -65,6 +66,9 @@ export function authentication(req: express.Request, res: express.Response, next
                         } else {
                             jwtObject[tokenKey] = token;
                             req[sessionKey] = jwtObject;
+                            if(req.header("schoolId")){
+                                req[schoolId] = req.header("schoolId");
+                            }
                             next();
                         }
                     });

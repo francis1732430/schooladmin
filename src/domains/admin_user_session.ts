@@ -94,7 +94,7 @@ export class AdminUserSessionUseCase extends BaseUseCase {
 
     public enableToken(token:AdminUserSessionModel):Promise<any> {
         console.log(token);
-        if (token.sessionId == null || token.sessionId == undefined || token.userId == null || token.userId == undefined) {
+        if (token.deviceToken == null || token.deviceToken == undefined || token.userId == null || token.userId == undefined) {
             return Promise.reject(new Error(MessageInfo.MI_INVALID_PARAMETER));
         }
         return Promise.then(() => {
@@ -108,7 +108,7 @@ export class AdminUserSessionUseCase extends BaseUseCase {
                 if (object != null) {
                     let data = {};
                     data[AdminUserSessionTableSchema.FIELDS.STATUS] = 1;
-                    data[AdminUserSessionTableSchema.FIELDS.SESSION_ID] = token.sessionId;
+                    data[AdminUserSessionTableSchema.FIELDS.DEVICE_TOKEN] = token.deviceToken;
                     return object.save(data, {patch: true});
                 }
 
@@ -129,7 +129,7 @@ export class AdminUserSessionUseCase extends BaseUseCase {
         }
         return Promise.then(() => {
             return AdminUserSessionDto.create(AdminUserSessionDto).query(q => {
-                q.where(AdminUserSessionTableSchema.FIELDS.SESSION_ID, val);
+                q.where(AdminUserSessionTableSchema.FIELDS.DEVICE_TOKEN, val);
                 q.andWhere(AdminUserSessionTableSchema.FIELDS.USER_ID, token.userId);
                 q.andWhere(AdminUserSessionTableSchema.FIELDS.STATUS, 1);
                 q.limit(1);
