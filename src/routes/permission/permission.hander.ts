@@ -164,13 +164,13 @@ export class PermissionHandler extends BaseHandler {
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_NAME}`,
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ACTION}`,
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ROUTES}`,
-                        `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ICON}`,
+                        //`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.ICON}`,
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`,
                         `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.LEVEL}`
                         );
                     q.innerJoin(AuthorizationRuleSetTableSchema.TABLE_NAME, `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.MODULE_ID}`);
                     q.where(AuthorizationRuleTableSchema.FIELDS.PERMISSION, 'allow');
-                    q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.parentId);
+                    q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, userId);
                     q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, 'asc');
                     //q.limit(13);    
                 }, []);
@@ -239,7 +239,7 @@ export class PermissionHandler extends BaseHandler {
                     });
                    console.log(retNew)
 
-                    res.json(retNew);
+                    res.json(ret);
                 } else {
                     Utils.responseError(res, new Exception(
                         ErrorCode.RESOURCE.INVALID_REQUEST,

@@ -115,5 +115,33 @@ export class SchoolUseCase extends BaseUseCase {
     }).enclose();
 
 }
+
+public checkSchool(permissions:any[]):Promise<any> {
+
+    let count=1;
+    return Promise.then(() => {
+
+        return Promise.each(permissions,(schools) => {
+
+            return Promise.then(() => {
+                return this.findOne( q => {
+                    q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`,schools.schoolId);
+                    q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.IS_DELETED}`,0);
+                })
+            }).then((object) => {
+                if(object == null || count == 2){
+                  count=2;
+                }else {
+                    count=1;
+                }
+            })
+        }).then(() => {
+            return count;
+        })
+    })
+
+
+
+}
 }
 export default new SchoolUseCase();

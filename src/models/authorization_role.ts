@@ -38,6 +38,7 @@ export class AuthorizationRoleModel extends BaseModel {
             account.roleType = AuthorizationRoleModel.getString(req.body.roleType);
             account.createdBy = AuthorizationRoleModel.getNumber(req.body.createdBy);
             account.parentId = AuthorizationRoleModel.getNumber(req.body.parentId);
+            account.schoolId = AuthorizationRoleModel.getNumber(req.body.schoolId);
             //account.permissionType = AuthorizationRoleModel.getNumber(req.body.permissionType);
             account.level = AuthorizationRoleModel.getNumber(req.body.level);
             return account;
@@ -63,6 +64,7 @@ export class AuthorizationRoleModel extends BaseModel {
                 let roleType = object.get(AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE);
                 let parentId =  object.get(AuthorizationRoleTableSchema.FIELDS.PARENT_ID);
                 let createdBy =  object.get(AuthorizationRoleTableSchema.FIELDS.CREATED_BY);
+                let schoolId =  object.get(AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID);
                 //let permissionType =  object.get(AuthorizationRoleTableSchema.FIELDS.PERMISSION_TYPE);
                 let defaultRole =  object.get(AuthorizationRoleTableSchema.FIELDS.DEFAULT_ROLE);
                 let level =  object.get(AuthorizationRoleTableSchema.FIELDS.TREE_LEVEL);
@@ -77,6 +79,7 @@ export class AuthorizationRoleModel extends BaseModel {
                 ret.createdBy = createdBy != null && createdBy !== "" ? createdBy : undefined;
                 ret.createdDate = createdDate != null ? createdDate : undefined;
                 ret.updatedDate = updatedDate != null ? updatedDate : undefined;
+                ret.schoolId = schoolId != null ? schoolId : undefined;
                 //ret.permissionType = permissionType != null ? permissionType : undefined;
                 ret.defaultRole = defaultRole != null ? defaultRole : undefined;
                 ret.level = level != null ? level : undefined;
@@ -121,6 +124,10 @@ export class AuthorizationRoleModel extends BaseModel {
         //obj[AuthorizationRoleTableSchema.FIELDS.PERMISSION_TYPE] = this.permissionType;
         obj[AuthorizationRoleTableSchema.FIELDS.TREE_LEVEL] = this.level;
         obj[AuthorizationRoleTableSchema.FIELDS.SCHOOL_TMP_ID] = this.tmpId;
+        if(this.schoolId)
+         {
+            obj[AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
+         }
         return obj;
     }
 }

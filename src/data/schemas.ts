@@ -110,6 +110,8 @@ export const AuthorizationRuleTableSchema = {
         PERMISSION: "permission",
         SCHOOL_ID:"school_id",
         USER_ID:"user_id",
+        CREATED_BY:"created_by",
+        IS_DELETED: "is_deleted",
         CREATED_DATE: "created_date",
         UPDATED_DATE: "updated_date",
     },

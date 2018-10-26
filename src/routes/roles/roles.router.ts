@@ -3,6 +3,7 @@
  */
 import {authentication} from "../../middlewares/authentication";
 import {accessrole} from "../../middlewares/accessrole";
+import {checkUser} from "../../middlewares/checkuser";
 import {RoleHandler} from "./roles.hander";
 import * as express from "express";
 const router = express.Router();
@@ -12,10 +13,10 @@ router.route("/list")
 
 
 router.route("/")
-    .get(authentication,accessrole, RoleHandler.list)
+    .get(authentication,accessrole,checkUser, RoleHandler.list)
 
 router.route("/schoolList")
-    .get(authentication,accessrole, RoleHandler.schoolList)
+    .get(authentication,checkUser,accessrole, RoleHandler.schoolList)
 router.route("/:rid")
     .put(authentication,accessrole, RoleHandler.update)
     .delete(authentication,accessrole, RoleHandler.destroy)
@@ -37,12 +38,12 @@ router.route("/exportSelected")
     .post(authentication, accessrole, RoleHandler.exportSelected);
 
 router.route("/createRole")
-      .post(RoleHandler.createMasterRole);
+      .post(authentication, accessrole,checkUser,RoleHandler.createMasterRole);
 
 router.route("/masterRoles")
-       .get(RoleHandler.masterRoles);
+       .get(authentication, accessrole,checkUser,RoleHandler.masterRoles);
        
 router.route("/schoolRole")
-     .post(RoleHandler.schoolCreate);            
+     .post(authentication, accessrole,checkUser,RoleHandler.schoolCreate);            
 
 export default router;

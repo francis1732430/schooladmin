@@ -55,7 +55,7 @@ export class Mailer {
         this.generator = new Mailgen({
             theme: "default",
             product: {
-                name: "Aladdin Street",
+                name: "Iyngaran",
                 link: " ",
                 logo: " "
 
@@ -180,7 +180,7 @@ export class Mailer {
             },
         };
 
-        return this.send(toEmail, "Reset Password for Aladdin Street", message);
+        return this.send(toEmail, "Reset Password for Iyngaran", message);
     }
 
     public sendPin(toEmail, name, pin) {
@@ -199,7 +199,8 @@ export class Mailer {
             },
         };
 
-        return this.send(toEmail, "Reset Password for Aladdin Street", message);
+
+        return this.send(toEmail, "Reset password for iyngaran", message);
     }
 
     public sendStoreApproval(toEmail, name) {
@@ -211,7 +212,7 @@ export class Mailer {
             },
         };
 
-        return this.send(toEmail, "Message from Aladdin Street", message);
+        return this.send(toEmail, "Message from iyngaran", message);
     }
 
     public sendPaymentSuccessEmail(toEmail, plan_name, plan_duration, paid_from, subscription_date, name, paid_amt, transaction_no, billing_address) {
@@ -247,7 +248,7 @@ export class Mailer {
         let subdate = day+"-"+month+"-"+new Date(subscription_date).getFullYear();
         let message = {
             body: {
-                name: 'Aladdin Street Admin',
+                name: 'Iyngaran Admin',
                 intro: "<strong>You Have New (Plus) Subscription.</strong><br>Please retain for your records.<br><br><strong>Customer Details</strong><br><strong>Name: </strong>"+
                 name+"<br><strong>Email Address: </strong>"+customer_email+"<br><br>"+
                 "<strong>Transaction details</strong><br>Transaction for the value of: USD "+paid_amt+"<br><strong>Transaction number: </strong>"+transaction_no+"<br><br><strong>Plan Details: </strong>"+plan_name+" (Billed "+plan_duration+")<br><br><strong>Billing Information: </strong><br>"+billing_address+
@@ -265,6 +266,7 @@ export class Mailer {
                 intro: "<Strong>Name:</Strong> " + name + "<br/><Strong>Email:</Strong> " + email + "<br/><Strong>Phone:</Strong>  " + phone + "<br/><Strong>Company Name:</Strong> " + companyName + "<br/><Strong>Subject:</Strong> " + subject + "<br/> <Strong>Message:</Strong> " + message,
             },
         };
+
 
         return this.send(toEmail, "Message from Aladdin Street", message);
     }
@@ -285,6 +287,7 @@ export class Mailer {
                 outro: "Need help, or have questions? Just reply to this email, we\"d love to help.",
             },
         };
+
 
         return this.send(toEmail, "Message from Aladdin Street", message);
     }

@@ -12,7 +12,6 @@ export function checkUser(req: express.Request, res: express.Response, next: exp
         console.log(session);
         let userId = session.userId;
         let school:BearerObject=req[Properties.SCHOOL_ID];
-        console.log("tyyyyyy",school);
         if(userId != null) {
  
             AdminUserUseCase.checkUser(userId,school).then((obj) => {

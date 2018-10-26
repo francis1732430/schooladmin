@@ -128,8 +128,7 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                         //noinspection TypeScriptUnresolvedVariable
                         if (objects != null && objects.models != null && objects.models.length != null && objects.models.length === 1) {
                             let role = AuthorizationRoleModel.fromDto(objects.models[0])
-                            return AuthorizationRuleUseCase.findByQuery(q => {
-                                console.log("checkuser.tmp",checkuser.tmp);    
+                            return AuthorizationRuleUseCase.findByQuery(q => {   
                                 if(checkuser && checkuser.tmp != null && checkuser.tmp != undefined && checkuser.tmp == true) {
                                         q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
                                         `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
@@ -239,23 +238,24 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
             let role = AuthorizationRoleModel.fromDto(object);
             return this.findByQuery(q => {
 
-                if(checkuser.global != undefined && checkuser.global != null && checkuser.global == true) {
+                if(checkuser.global && checkuser.global == true) {
                     
-                if(checkuser.tmp != undefined && checkuser.tmp != null && checkuser.tmp == true) {
+                if(checkuser.tmp && checkuser.tmp == true) {
                     q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,checkuser.schoolId);
                 }else if(userId!='1') {
                         q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
                     }
                 }
 
-                if(checkuser.school != undefined && checkuser.school != null && checkuser.school == true) {
+                if(checkuser.school && checkuser.school == true) {
                    if(userId != "18") {
                         q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
                         q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,checkuser.schoolId);
                     }
-                } else {
+                 else {
                     q.where(`${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`,checkuser.schoolId);
                 }
+            }
 
                 q.where(AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE, 'G');
                 q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);

@@ -89,13 +89,14 @@ export class AuthorizationRuleUseCase extends BaseUseCase {
             });
         });
     }
-    public saveSchoolPermission(roleId:number,schoolId:number,permission):Promise<any> {
+    public saveSchoolPermission(roleId:number,permission,userId:any):Promise<any> {
         console.log(permission);
        let permissionVal:any;
         return Promise.each(permission, (perm: any) => {
             console.log(perm);
             return Promise.then(() => {
                 permissionVal = perm;
+                console.log("vvvvvvvvvvvvv",permissionVal.isChecked,permissionVal.isChecked == 'true'?"allow":"deny")
                 return this.findOne(q => {
                     q.where(AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID, perm.schoolId);                 
                     q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, roleId);  
@@ -108,7 +109,7 @@ export class AuthorizationRuleUseCase extends BaseUseCase {
                         let updateData = [];
                         let rule = AuthorizationRuleModel.fromDto(object);                     
                         conditions[AuthorizationRuleTableSchema.FIELDS.RULE_ID] = rule.ruleId; 
-                        conditions[AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID]=schoolId;
+                        conditions[AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID]=permissionVal.schoolId;
                         updateData[AuthorizationRuleTableSchema.FIELDS.PERMISSION] = permissionVal.isChecked?"allow":"deny";
                         return this.updateByCondition(conditions, updateData)
                             .catch(err => {
@@ -118,9 +119,10 @@ export class AuthorizationRuleUseCase extends BaseUseCase {
                     }else {
                         let data = [];                
                         data[AuthorizationRuleTableSchema.FIELDS.ROLE_ID] = roleId;
-                        data[AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID]=schoolId;
+                        data[AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID]=permissionVal.schoolId;
                         data[AuthorizationRuleTableSchema.FIELDS.PERMISSION] = permissionVal.isChecked?"allow":"deny";
                         data[AuthorizationRuleTableSchema.FIELDS.RULE_ID] = null;
+                        data[AuthorizationRoleTableSchema.FIELDS.CREATED_BY]=userId;
                         console.log(data);
                         return AuthorizationRuleDto.create(AuthorizationRuleDto, data).save();
                     }

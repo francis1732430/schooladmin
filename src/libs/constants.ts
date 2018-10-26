@@ -436,6 +436,8 @@ export const MessageInfo = {
     MI_YOU_ARE_NOT_ALLOWED_EDIT_SCHOOL:"You are not allowed edit School.",
     MI_SCHOOL_IS_ALREADY_APPROVED:"School is already approved.",
     MI_USER_PASSWORD_NOT_EMPTY:"User password not empty.",
+    MI_PERMISSION_DENIED:"Permission denied.",
+    MI_ROLE_ALREADY_ASSIGNED:"Role already assigned.",
 };
 
 export const DefaultVal = {
