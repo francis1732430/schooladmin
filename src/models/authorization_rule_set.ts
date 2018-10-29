@@ -9,7 +9,7 @@ export class AuthorizationRuleSetModel extends BaseModel {
     public moduleNames:String;
     public parentId:Number;
     public action:String;
-
+    public level:number;
 
     public static fromDto(object: any, filters?: string[]): AuthorizationRuleSetModel {
         if (object != null) {
@@ -18,7 +18,7 @@ export class AuthorizationRuleSetModel extends BaseModel {
                 let parentId = object.get(AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID);
                 let action = object.get(AuthorizationRuleSetTableSchema.FIELDS.ACTION);
                 let rid = object.get(AuthorizationRuleSetTableSchema.FIELDS.RID);
-
+                let level = object.get(AuthorizationRuleSetTableSchema.FIELDS.LEVEL);
                 let ret = new AuthorizationRuleSetModel();
 
                 ret.rid = rid != null && rid !== "" ? rid : undefined;
@@ -30,6 +30,7 @@ export class AuthorizationRuleSetModel extends BaseModel {
                 ret.parentId = parentId != null && parentId !== "" ? parentId : undefined;
 
                 ret.action = action != null && action !== "" ? action : undefined;
+                ret.level = level != null && level !== "" ? level : undefined;
                 //ret.permission = permission != null && permission !== "" ? permission : undefined;
 
                 if (filters != null) {

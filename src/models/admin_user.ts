@@ -52,6 +52,7 @@ export class AdminUserModel extends BaseModel {
             user.designation = AdminUserModel.getString(req.body.designation);
             user.merchantRepresentativeName = AdminUserModel.getString(req.body.merchantRepresentativeName);
             user.roleId = AdminUserModel.getNumber(req.body.roleId);
+            user.roleName = AdminUserModel.getString(req.body.roleName);
             user.password = Utils.hashPassword(AdminUserModel.getString(req.body.password));
             user.status = AdminUserModel.getNumber(req.body.status);
             user.schoolId = AdminUserModel.getNumber(req.body.schoolId);

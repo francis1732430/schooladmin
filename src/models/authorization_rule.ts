@@ -1,7 +1,7 @@
 /**
  *      on 7/23/16.
  */
-import {AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema} from "../data/schemas";
+import {AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema,AuthorizationRoleTableSchema} from "../data/schemas";
 import BaseModel from "./base";
 import * as express from "express";
 import {Utils} from "../libs/utils";
@@ -59,7 +59,7 @@ export class AuthorizationRuleModel extends BaseModel {
                 let moduleId = object.get(AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID);
                 let moduleName = object.get(AuthorizationRuleSetTableSchema.FIELDS.MODULE_NAME);
                 let action = object.get(AuthorizationRuleSetTableSchema.FIELDS.ACTION);
-                let icon = object.get(AuthorizationRuleSetTableSchema.FIELDS.ICON);
+                //let roleName = object.get(AuthorizationRoleTableSchema.FIELDS.ROLE_NAME);
                 let routes = object.get(AuthorizationRuleSetTableSchema.FIELDS.ROUTES);
                 let level =  object.get(AuthorizationRuleSetTableSchema.FIELDS.LEVEL);
                 let parentId = object.get(AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID);
@@ -71,7 +71,7 @@ export class AuthorizationRuleModel extends BaseModel {
                 ret.moduleName = moduleName != null && moduleName !== "" ? moduleName : undefined;
                 ret.action = action != null && action !== "" ? action : undefined;
                 ret.routes = routes != null && routes !== "" ? routes : undefined;
-                ret.icon = icon != null && icon !== "" ? icon : undefined;
+               // ret.icon = icon != null && icon !== "" ? icon : undefined;
                 ret.level = level != null && level !== "" ? level : undefined;
                 ret.parentId = parentId != null && parentId !== "" ? parentId : undefined;
                 ret.permission = permission != null && permission !== "" ? permission : undefined;

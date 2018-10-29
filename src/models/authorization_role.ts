@@ -23,6 +23,7 @@ export class AuthorizationRoleModel extends BaseModel {
     public level:number;
     public schoolId:number;
     public tmpId:number;
+    public assignedDistrict:number;
 
     /**
      *
@@ -41,6 +42,7 @@ export class AuthorizationRoleModel extends BaseModel {
             account.schoolId = AuthorizationRoleModel.getNumber(req.body.schoolId);
             //account.permissionType = AuthorizationRoleModel.getNumber(req.body.permissionType);
             account.level = AuthorizationRoleModel.getNumber(req.body.level);
+            account.assignedDistrict = AuthorizationRoleModel.getNumber(req.body.assignedDistrict);
             return account;
         }
         return null;
@@ -69,6 +71,7 @@ export class AuthorizationRoleModel extends BaseModel {
                 let defaultRole =  object.get(AuthorizationRoleTableSchema.FIELDS.DEFAULT_ROLE);
                 let level =  object.get(AuthorizationRoleTableSchema.FIELDS.TREE_LEVEL);
                 let tmpId =  object.get(AuthorizationRoleTableSchema.FIELDS.SCHOOL_TMP_ID);
+                let assignedDistrict =  object.get(AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID);
                 let ret = new AuthorizationRoleModel();
                 ret.rid = rid != null && rid !== "" ? rid : undefined;
                 ret.roleId = roleId != null && roleId !== "" ? roleId : undefined;
@@ -84,6 +87,7 @@ export class AuthorizationRoleModel extends BaseModel {
                 ret.defaultRole = defaultRole != null ? defaultRole : undefined;
                 ret.level = level != null ? level : undefined;
                 ret.tmpId = tmpId != null ? tmpId : undefined;
+                ret.assignedDistrict = assignedDistrict != null ? assignedDistrict : undefined;
                 //console.log("sdddd");
                 //console.log(filters);
                 if (filters != null) {
@@ -127,6 +131,10 @@ export class AuthorizationRoleModel extends BaseModel {
         if(this.schoolId)
          {
             obj[AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
+         }
+         if(this.assignedDistrict)
+         {
+            obj[AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID] = this.assignedDistrict;
          }
         return obj;
     }

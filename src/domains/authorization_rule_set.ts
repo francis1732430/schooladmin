@@ -67,6 +67,23 @@ export class AuthorizationRuleSetUseCase extends BaseUseCase {
         });
         return ret;
     }
+
+    public global_permission_format(AuthorizationRule:any) {
+    
+        console.log(AuthorizationRule.models);
+         let ret=[];
+         let object={};
+        AuthorizationRule.models.forEach((obj) => {
+         object["ruleId"]=obj.get("rule_id");
+         object["permission"]=obj.get("permission");
+         object["schoolName"]=obj.get("school_name");
+         object["districtName"]=obj.get("district_name");
+         object["cityName"]=obj.get("city_name");
+         object["asigneeName"]=obj.get("asigneeName");
+         ret.push(object);
+        })
+        return ret;
+    }
 }
 
 export default new AuthorizationRuleSetUseCase();

@@ -5,7 +5,7 @@ import {AuthorizationRoleUseCase,AuthorizationRuleUseCase,AuthorizationRuleSetUs
 import {AuthorizationRuleDto} from "../../data/models";
 import {ErrorCode, HttpStatus, MessageInfo, Properties,DATE_FORMAT} from "../../libs/constants";
 import {Utils} from "../../libs/utils";
-import {AuthorizationRoleTableSchema,AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema, AdminUserTableSchema, SchoolTableSchema} from "../../data/schemas";
+import {AuthorizationRoleTableSchema,AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema, AdminUserTableSchema, SchoolTableSchema, DirectoryDistrictTableSchema, DirectoryTalukTableSchema} from "../../data/schemas";
 import {Exception, AuthorizationRoleModel,AuthorizationRuleModel} from "../../models";
 import * as express from "express";
 import {Promise} from "thenfail";
@@ -17,7 +17,7 @@ let fs = require('fs');
 import {Uploader} from "../../libs";
 import { checkUser } from "../../middlewares/checkuser";
 var dateFormat = require('dateformat');
-
+let knex=require("knex");
 export class RoleHandler extends BaseHandler {
     constructor() {
         super();
@@ -35,7 +35,7 @@ export class RoleHandler extends BaseHandler {
         req.body.createdBy = session.userId;
         req.body.roleType = 'U';
         let authorizationRole = AuthorizationRoleModel.fromRequest(req);
-        if (authorizationRole == null || authorizationRole.parentId == null) {
+        if (authorizationRole == null || authorizationRole.roleName == null) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.GENERIC,
                 MessageInfo.MI_ROLE_NAME_NOT_EMPTY,
@@ -106,36 +106,55 @@ export class RoleHandler extends BaseHandler {
                     HttpStatus.BAD_REQUEST
                 ));
                 return Promise.break;
-            } else {
-                return AuthorizationRoleUseCase.findOne(q => {
-                    q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'G');
-                    q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,authorizationRole.parentId);
-                    q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
-                },[]);
             }
+        return AuthorizationRoleUseCase.findOne(q => {
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,authorizationRole.userId);
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,authorizationRole.roleName);
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+        })
         }).then((object) => {
-            if (object!=null) {
-                //authorizationRole.parentId=object.get("role_id");
-                authorizationRole.roleName=object.get("role_name");
-           return AuthorizationRoleUseCase.findOne(q => {
-            q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'U');
-            q.where(`${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,authorizationRole.parentId);
-            q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,authorizationRole.userId);
-            q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
-        },[]);
-            } else {
-                Utils.responseError(res, new Exception(
-                    ErrorCode.RESOURCE.GENERIC,
-                    MessageInfo.MI_ROLE_NAME_NOT_FOUND,
-                    false,
-                    HttpStatus.BAD_REQUEST
-                ));
-                return Promise.break;
+
+            
+         //else {
+        //         return AuthorizationRoleUseCase.findOne(q => {
+        //             q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'G');
+        //             q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,authorizationRole.parentId);
+        //             q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+        //         },[]);
+        //     }
+        // }).then((object) => {
+        //     if (object!=null) {
+        //         //authorizationRole.parentId=object.get("role_id");
+        //         authorizationRole.roleName=object.get("role_name");
+        //    return AuthorizationRoleUseCase.findOne(q => {
+        //     q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'U');
+        //     q.where(`${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,authorizationRole.parentId);
+        //     q.where(`${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,authorizationRole.userId);
+        //     q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+        // },[]);
+        //     } else {
+        //         Utils.responseError(res, new Exception(
+        //             ErrorCode.RESOURCE.GENERIC,
+        //             MessageInfo.MI_ROLE_NAME_NOT_FOUND,
+        //             false,
+        //             HttpStatus.BAD_REQUEST
+        //         ));
+        //         return Promise.break;
                
-            }
-        }).then((object) => {
+        //     }
+        // }).then((object) => {
           
-            if(object != null){
+        //     if(object != null){
+        //         Utils.responseError(res, new Exception(
+        //             ErrorCode.RESOURCE.GENERIC,
+        //             MessageInfo.MI_ROLE_ALREADY_ASSIGNED,
+        //             false,
+        //             HttpStatus.BAD_REQUEST
+        //         ));
+        //         return Promise.break;
+        //     }
+
+        if(object != null){
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.GENERIC,
                     MessageInfo.MI_ROLE_ALREADY_ASSIGNED,
@@ -143,7 +162,7 @@ export class RoleHandler extends BaseHandler {
                     HttpStatus.BAD_REQUEST
                 ));
                 return Promise.break;
-            }
+        }
             return AuthorizationRoleUseCase.create(authorizationRole);
         }).then(object => {
 
@@ -161,13 +180,19 @@ export class RoleHandler extends BaseHandler {
                 if(checkuser.school == true){
                     return AuthorizationRuleUseCase.savepermission(roleId,permission,roleData.schoolId);
                 }
-                    return AuthorizationRuleUseCase.savepermission(roleId,permission);
-                }
-
+                   
+            }
 
         }).then(object => {
             console.log(object);
             let data  = {};
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_ROLE_ALREADY_ASSIGNED,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
             data["message"] = MessageInfo.MI_ROLE_ADDED;
             res.json(data);
 
@@ -247,15 +272,21 @@ export class RoleHandler extends BaseHandler {
                 ));
                 return Promise.break;
             } else {
-                let role_Id=object.get("role_id");   
+                //let role_Id=object.get("role_id");   
+                // return AuthorizationRoleUseCase.findOne(q => {
+                //     q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'G');
+                //     q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,authorizationRole.parentId);
+                //     q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+                // },[]);
+           
                 return AuthorizationRoleUseCase.findOne(q => {
-                    q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'G');
-                    q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,authorizationRole.parentId);
+                    q.whereNot(`${AuthorizationRoleTableSchema.FIELDS.RID}`,rid);
+                    q.where(`${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,authorizationRole.roleName);
                     q.where(`${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
-                },[]);      
+                },[]);
             }
         }).then((object) => {
-            if (object!=null) {
+            if (object == null) {
                 return AuthorizationRoleUseCase.updateById(rid,authorizationRole);
             } else {
                 Utils.responseError(res, new Exception(
@@ -303,8 +334,10 @@ export class RoleHandler extends BaseHandler {
      * @param res
      * @returns {any}
      */
+
     public static view(req:express.Request, res:express.Response):any {
         let session:BearerObject = req[Properties.SESSION];
+        let checkuser:BearerObject = req[Properties.CHECK_USER];
         let rid = req.params.rid;
         let role :any;
 
@@ -324,6 +357,27 @@ export class RoleHandler extends BaseHandler {
                 role = AuthorizationRoleModel.fromDto(object);
                 let tmpId=role.tmpId;
                 return AuthorizationRuleUseCase.findByQuery(q => {
+                    if(checkuser.global && checkuser.global == true){
+
+                        q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
+                        `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
+                        `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`,
+                        `${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`,
+                        `${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME}`,
+                        `${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`,     
+                        );
+                        q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as asigneeName`));
+                        q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                        q.innerJoin(`${SchoolTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`);
+                        q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`);
+                        q.innerJoin(`${DirectoryTalukTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.CITY_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`);
+                        q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`);
+                        q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");
+                        q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`, role.roleId);
+                       // q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);      
+                        let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
+                        q.whereRaw(condition);
+                    }   else {
                         q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
                         `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
                         `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`,       
@@ -338,7 +392,8 @@ export class RoleHandler extends BaseHandler {
                     q.innerJoin(AuthorizationRuleSetTableSchema.TABLE_NAME, `${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`, `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.MODULE_ID}`); 
                     q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.roleId);
                     q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.LEVEL}`, 'asc');
-                    //q.limit(13);    
+                    //q.limit(13); 
+                    }   
                 }, []);
             }
         })
@@ -347,9 +402,13 @@ export class RoleHandler extends BaseHandler {
             let ret = [];
             role.permission = {};
             if (object != null && object.models != null) {
-                console.log(object);
-                ret = AuthorizationRuleSetUseCase.permissionFormat(object);
-                role.permission = ret;
+    if(checkuser.global && checkuser.global == true){
+        ret = AuthorizationRuleSetUseCase.global_permission_format(object);
+        role.permission = ret;
+    } else {
+        ret = AuthorizationRuleSetUseCase.permissionFormat(object);
+        role.permission = ret;
+    }
             }
             res.json(role);
             
@@ -477,7 +536,6 @@ export class RoleHandler extends BaseHandler {
         let session:BearerObject = req[Properties.SESSION];
         let checkuser:BearerObject = req[Properties.CHECK_USER];
         let userId = session.userId;
-        userId="109";
         let role:any;
         let offset = parseInt(req.query.offset) || null;
         let limit = parseInt(req.query.limit) || null;
@@ -508,23 +566,13 @@ export class RoleHandler extends BaseHandler {
                 q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
                 if(checkuser && checkuser.global == true) {
                   if(checkuser && checkuser.tmp == true){
-                    q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+  //                  q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
                     let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
                     q.whereRaw(condition);
-                    }
-                    else if(userId != "1") {
-                        //q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
-                        //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
-                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}  IS NULL`;
-                        q.whereRaw(condition);
-                        q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
                     } else {
-                        //q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
-                        //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
-                        let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
-                        q.whereRaw(condition);
+                        q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`, 0);
                     }
-                } else if(checkuser && checkuser.school == true) {
+                } else  {
                     if(userId != "18") {
                         q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
                         let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
@@ -567,23 +615,13 @@ export class RoleHandler extends BaseHandler {
                 q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
                 if(checkuser && checkuser.global == true) {
                     if(checkuser && checkuser.tmp == true){
-                      q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
+    //                  q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
                       let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
                       q.whereRaw(condition);
-                      }
-                      else if(userId != "1") {
-                          //q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
-                          //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
-                          let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}  IS NULL`;
-                          q.whereRaw(condition);
-                          q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
-                      } else {
-                          //q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
-                          //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
-                          let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
-                          q.whereRaw(condition);
-                      }
-                  } else if(checkuser && checkuser.school == true) {
+                      }else {
+                        q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}`, 0);
+                    }
+                  } else  {
                       if(userId != "18") {
                           q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
                           let condition=`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
@@ -1165,6 +1203,7 @@ export class RoleHandler extends BaseHandler {
         let permission=req.body.permission;
         let checkschoolId;
         let checkpermission;
+        let parentId;
         let count=0;
         let roleId=req.body.roleId;
         //let schoolId=req.body.schoolId;
@@ -1175,7 +1214,122 @@ export class RoleHandler extends BaseHandler {
 
             });
 
-        return Promise.then(() => {     
+        return Promise.then(() => {
+             return AuthorizationRoleUseCase.findOne( q => {
+                q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,session.userId);
+                q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+        }).then((object) => {
+          parentId=object.get("parent_id");     
+        if(count > 0) {
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_PERMISSION_NAME_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+        }
+        return SchoolUseCase.checkSchool(permission);
+        }).then((object) => {
+            if(object == 2) {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.GENERIC,
+                    MessageInfo.MI_SCHOOL_ID_NOT_FOUND,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+            if(checkuser && checkuser.global == true){
+                if(session.userId == "1" || parentId == "32" || parentId == "221"){
+                    return AuthorizationRuleUseCase.saveSchoolPermission(roleId,permission,session.userId);
+                }
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.GENERIC,
+                    MessageInfo.MI_PERMISSION_DENIED,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }else {
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.GENERIC,
+                    MessageInfo.MI_PERMISSION_DENIED,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+             
+                      
+
+        }).then((object) => {
+    
+            if(object == null){
+                
+                    Utils.responseError(res, new Exception(
+                        ErrorCode.RESOURCE.INVALID_REQUEST,
+                        MessageInfo.MI_ROLE_CREATEION_FAILED,
+                        false,
+                        HttpStatus.BAD_REQUEST
+                    ));
+                    return Promise.break;
+                
+            }
+                let data={};
+                data.message=MessageInfo.MI_ROLE_NAME_CREATED_SUCCESSFULLY
+                res.json(data);
+            
+
+        })
+    }
+
+    public static schoolUpdate(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        let checkuser:BearerObject = req[Properties.CHECK_USER];
+        req.body.createdBy = session.userId;
+        let permission=req.body.permission;
+        let checkschoolId;
+        let checkpermission;
+        let count=0;
+        let rid=req.params.rid;
+        //let schoolId=req.body.schoolId;
+        let authorizationRole = AuthorizationRoleModel.fromRequest(req);
+        if(authorizationRole == null || authorizationRole.roleName == null){
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_PERMISSION_NAME_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+        }
+       
+            permission.forEach(Rule => {
+                checkschoolId =  Rule.schoolId == null && Rule.schoolId == undefined ? count++ : count;
+                checkpermission = Rule.isChecked == null && Rule.isChecked == undefined ? count++ : count;
+
+            });
+
+        return Promise.then(() => {
+
+            return AuthorizationRoleUseCase.findOne( q => {
+                q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+                q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.RID}`,rid);
+            })
+        }).then((object) => {
+            
+            if(object == null){
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.GENERIC,
+                    MessageInfo.MI_ROLE_NOT_EXIST,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
+            
         if(count > 0) {
             Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.GENERIC,
@@ -1243,7 +1397,7 @@ export class RoleHandler extends BaseHandler {
     public static schoolList(req:express.Request, res:express.Response):any {
         let session:BearerObject = req[Properties.SESSION];
         let checkuser:BearerObject=req[Properties.CHECK_USER];
-        let userId = session.userId;
+        let userId = "32";
         let role:any;
         let offset = parseInt(req.query.offset) || null;
         let limit = parseInt(req.query.limit) || null;
@@ -1271,25 +1425,30 @@ export class RoleHandler extends BaseHandler {
         .then((object) => {
             role = AuthorizationRoleModel.fromDto(object);
             return AuthorizationRoleUseCase.countByQuery(q => {
-                q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.IS_DELETED}`, 0);
-                q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${AuthorizationRuleTableSchema.TABLE_NAME}.*`);
-                //q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
-                if(checkuser && checkuser.global == true) {
-                    if(userId != "1") {
+                q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.IS_DELETED}`, 0); 
+                     if(userId != "1") {
                         q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`,userId);
                         q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                        q.innerJoin(`${SchoolTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`);
+                        q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`);
+                        q.innerJoin(`${DirectoryTalukTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.CITY_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`);
+                        q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`);
                         q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
                         let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
                         q.whereRaw(condition);
                       } else {
                        q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                       q.innerJoin(`${SchoolTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`);
+                       q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`);
+                       q.innerJoin(`${DirectoryTalukTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.CITY_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`);
+                       q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`);
                        //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
                        let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
                        q.whereRaw(condition);
+                       //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`,userId);
+                      // q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
                       }
-                }else {
-                    q.andWhere(AuthorizationRuleTableSchema.FIELDS.IS_DELETED, 2);
-                }
+                
                
                 let condition;
                 if (searchobj) {
@@ -1302,8 +1461,24 @@ export class RoleHandler extends BaseHandler {
                             if(key === "roleId"){
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else if(key === "ruleId"){
+                                condition = `(${AuthorizationRuleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            }else if(key=='createdByName'){
+                                condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                q.andWhereRaw(condition);
                             } else if(key === "roleName"){
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "districtName"){
+                                condition = `(${DirectoryDistrictTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            }
+                            else if(key === "cityName"){
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "schoolName"){
+                                condition = `(${SchoolTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key === "updatedDate") {
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
@@ -1322,24 +1497,31 @@ export class RoleHandler extends BaseHandler {
             total = totalObject;
             return AuthorizationRoleUseCase.findByQuery(q => {
                 q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.IS_DELETED}`, 0);
-                q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${AuthorizationRuleTableSchema.TABLE_NAME}.*`);
-                q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
-                if(checkuser.global != null && checkuser.global == true) {
-                    if(userId != "1") {
-                        q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`,userId);
-                        q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
-                        q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
-                        let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
-                        q.whereRaw(condition);
-                      } else {
-                       q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
-                       //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
-                       let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
-                       q.whereRaw(condition);
-                      }
-                }else {
-                    q.andWhere(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 2);
-                }
+                q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${AuthorizationRuleTableSchema.TABLE_NAME}.*`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}`);
+                //q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
+                q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as createdByName`))
+                if(userId != "1") {
+                    q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`,userId);
+                    q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                    q.innerJoin(`${SchoolTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`);
+                    q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`);
+                    q.innerJoin(`${DirectoryTalukTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.CITY_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`);
+                    q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`);
+                    q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
+                    let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
+                    q.whereRaw(condition);
+                  } else {
+                   q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                   q.innerJoin(`${SchoolTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`);
+                   q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`);
+                   q.innerJoin(`${DirectoryTalukTableSchema.TABLE_NAME}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.CITY_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`);
+                   q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`);
+                 //  q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,"allow");      
+                   let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
+                   q.whereRaw(condition);
+                   //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`,userId);
+                    q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
+                  }
 
                 let condition;
                 if (searchobj) {
@@ -1351,8 +1533,24 @@ export class RoleHandler extends BaseHandler {
                             if(key === "roleId"){
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else if(key === "ruleId"){
+                                condition = `(${AuthorizationRuleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            }else if(key=='createdByName'){
+                                condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                q.andWhereRaw(condition);
                             } else if(key === "roleName"){
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "districtName"){
+                                condition = `(${DirectoryDistrictTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            }
+                            else if(key === "cityName"){
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key === "schoolName"){
+                                condition = `(${SchoolTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key === "updatedDate") {
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
@@ -1375,13 +1573,24 @@ export class RoleHandler extends BaseHandler {
                     if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
                         let ColumnSortKey = Utils.changeSearchKey(sortKey);
                         if (sortKey === "roleId") {
-                            q.orderBy(ColumnSortKey, sortValue);
+                            q.orderBy(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`, sortValue);
+                        } if (sortKey === "ruleId") {
+                            q.orderBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`, sortValue);
                         } else if (sortKey === "roleName") {
-                            q.orderBy(ColumnSortKey, sortValue);
-                        } else if (sortKey === "updatedDate") {
-                            q.orderBy(ColumnSortKey, sortValue);
+                            q.orderBy(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`, sortValue);
+                        }else if (sortKey === "districtName") {
+                            q.orderBy(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`, sortValue);
+                        } else if (sortKey === "cityName") {
+                            q.orderBy(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME}`, sortValue);
+                        }else if (sortKey === "schoolName") {
+                            q.orderBy(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`, sortValue);
+                        } else if (sortKey == 'createdByName') {
+                            q.orderBy(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}`, sortValue);
+                            q.orderBy(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}`, sortValue);
+                        }else if (sortKey === "updatedDate") {
+                            q.orderBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.UPDATED_DATE}`, sortValue);
                         } else if (sortKey === "createdDate") {
-                            q.orderBy(ColumnSortKey, sortValue);
+                            q.orderBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_DATE}`, sortValue);
                         }
                     }
                 }
@@ -1391,7 +1600,13 @@ export class RoleHandler extends BaseHandler {
             if (objects != null && objects.models != null && objects.models.length != null) {
                 let ret = [];
                 objects.models.forEach(object => {
-                    ret.push(AuthorizationRoleModel.fromDto(object));
+                    let rules=AuthorizationRoleModel.fromDto(object);
+                    rules["ruleId"]=object.get("rule_id");
+                    rules["createdbyname"]=object.get("createdByName");
+                    rules["districtName"]=object.get("district_name");
+                    rules["schoolName"]=object.get("school_name");
+                    rules["cityName"]=object.get("city_name");
+                    ret.push(rules);
                 });
                 res.header(Properties.HEADER_TOTAL, total.toString(10));
 

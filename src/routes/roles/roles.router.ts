@@ -13,7 +13,7 @@ router.route("/list")
 
 
 router.route("/")
-    .get(authentication,accessrole,checkUser, RoleHandler.list)
+    .get(authentication,checkUser,accessrole, RoleHandler.list)
 
 router.route("/schoolList")
     .get(authentication,checkUser,accessrole, RoleHandler.schoolList)
@@ -22,7 +22,7 @@ router.route("/:rid")
     .delete(authentication,accessrole, RoleHandler.destroy)
 
 router.route("/view/:rid")
-    .get(authentication,accessrole, RoleHandler.view)
+    .get(authentication,checkUser,accessrole, RoleHandler.view)
     
 router.route("/massDelete")
     .post(authentication,accessrole, RoleHandler.massDelete)

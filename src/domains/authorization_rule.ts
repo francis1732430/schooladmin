@@ -96,7 +96,6 @@ export class AuthorizationRuleUseCase extends BaseUseCase {
             console.log(perm);
             return Promise.then(() => {
                 permissionVal = perm;
-                console.log("vvvvvvvvvvvvv",permissionVal.isChecked,permissionVal.isChecked == 'true'?"allow":"deny")
                 return this.findOne(q => {
                     q.where(AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID, perm.schoolId);                 
                     q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, roleId);  

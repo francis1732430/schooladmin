@@ -24,7 +24,9 @@ export class UserHandler extends BaseHandler {
 
     public static create(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
-        req.body.createdBy = "1";
+        req.body.createdBy = session.userId;
+        let checkuser: BearerObject = req[Properties.CHECK_USER];
+        req.body.schoolId=checkuser.schoolId;
         let user = AdminUserModel.fromRequest(req);
         let status = req.body.status;
         console.log(user);
@@ -37,14 +39,6 @@ export class UserHandler extends BaseHandler {
             ));
         }
         
-        // if (!Utils.requiredCheck(user.password)) {
-        //     return Utils.responseError(res, new Exception(
-        //         ErrorCode.RESOURCE.INVALID_EMAIL,
-        //         MessageInfo.MI_USER_PASSWORD_NOT_EMPTY,
-        //         false,
-        //         HttpStatus.BAD_REQUEST
-        //     ));
-        // }
         if (!Utils.validateEmail(user.email)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_EMAIL,
@@ -79,15 +73,27 @@ export class UserHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        if (!Utils.requiredCheck(user.roleId)) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.USER.ROLEID_EMPTY,
-                MessageInfo.MI_ROLEID_NOT_EMPTY,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
+        if(checkuser.global && checkuser.global == true){
+            if (!Utils.requiredCheck(user.roleId)) {
+                return Utils.responseError(res, new Exception(
+                    ErrorCode.USER.ROLEID_EMPTY,
+                    MessageInfo.MI_ROLEID_NOT_EMPTY,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+            }
         }
-
+        
+        if(checkuser.school && checkuser.school == true){
+            if (!Utils.requiredCheck(user.roleName)) {
+                return Utils.responseError(res, new Exception(
+                    ErrorCode.USER.ROLEID_EMPTY,
+                    MessageInfo.MI_ROLE_NAME_NOT_FOUND,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+            }
+        }
         if (!Utils.requiredCheck(status)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.STATUS,
@@ -500,10 +506,68 @@ export class UserHandler extends BaseHandler {
 
     public static update(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
+        let checkuser: BearerObject = req[Properties.CHECK_USER];
         let rid = req.params.rid || "";
         let user = AdminUserModel.fromRequest(req);
         user.createdBy = parseInt(session.userId);
+        if (!Utils.requiredCheck(user.email)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_EMAIL,
+                MessageInfo.MI_INVALID_EMAIL,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+        
+        if (!Utils.validateEmail(user.email)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_EMAIL,
+                MessageInfo.MI_INVALID_EMAIL,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+        if (!Utils.requiredCheck(user.firstname)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.USER.FIRSTNAME_EMPTY,
+                MessageInfo.MI_FIRSTNAME_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+        if (!Utils.requiredCheck(user.lastname)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.USER.LASTNAME_EMPTY,
+                MessageInfo.MI_LASTNAME_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+
+        if (!Utils.requiredCheck(status)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.STATUS,
+                MessageInfo.MI_STATUS_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
         return Promise.then(() => {
+            return AdminUserUseCase.findOne( q => {
+                q.whereNot(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.RID}`,rid);
+                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.EMAIL}`,user.email);
+                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+        }).then((object) => {
+            if(object != null){
+                Utils.responseError(res, new Exception(
+                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
+                    MessageInfo.MI_EMAIL_ALREADY_USE,
+                    false, 
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
             return AdminUserUseCase.findById(rid);
         })
             .then(object => {

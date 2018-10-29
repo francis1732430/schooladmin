@@ -542,6 +542,52 @@ export class PermissionHandler extends BaseHandler {
         })
 
     }
+
+    public static getModule(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        console.log(session);
+        let userId = parseInt(session.userId);
+        console.log(userId);
+        if(userId != 1){
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_PERMISSION_DENIED,
+                false, HttpStatus.BAD_REQUEST
+            ));
+
+        }
+        
+            return Promise.then(() => {
+
+                return AuthorizationRuleSetUseCase.findByQuery( q => {
+
+                    q.leftJoin(`${AuthorizationRuleSetTableSchema.TABLE_NAME} as parent`,`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.PARENT_ID}`,`parent.${AuthorizationRuleSetTableSchema.FIELDS.MODULE_ID}`);
+                    q.orderBy(`${AuthorizationRuleSetTableSchema.TABLE_NAME}.${AuthorizationRuleSetTableSchema.FIELDS.LEVEL}`);
+                })
+            }).then((object) => {
+                let idToNodeMap = {}; 
+                let ret = []; let root = [];
+                 let parentNode:any; 
+                 object.models.forEach(function (object) {
+                     let datum=AuthorizationRuleSetModel.fromDto(object);
+                 let tempModuleId = datum.moduleId;
+                 let tempParentId = datum.parentId;
+                 delete datum.moduleId; 
+                 delete datum.parentId; 
+                 datum["moduleName"] = datum.moduleNames; 
+                 datum["isChecked"] = false;  
+                datum["subModules"] = []; 
+                 delete datum.moduleNames; 
+                 idToNodeMap[tempModuleId] = datum; 
+                 if (tempParentId === 0) { 
+                 root.push(datum);  } else {
+                  parentNode = idToNodeMap[tempParentId]; 
+                 console.log('mm',parentNode)  
+                 parentNode.subModules.push(datum)}});
+                 res.json(root);
+            })
+        
+     }
     
 }
 

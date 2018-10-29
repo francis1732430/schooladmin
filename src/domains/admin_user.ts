@@ -20,43 +20,63 @@ export class AdminUserUseCase extends BaseUseCase {
 
     public create(user:AdminUserModel):Promise<any> {
         let roleInfo:any;
+        let roleId;
         return Promise.then(() => {
-            // return this.findByQuery(q => {
-            //     q.where(AdminUserTableSchema.FIELDS.USER_ID, user.createdBy);
-            //     q.limit(1);
-            // }, []);
+            return this.findByQuery(q => {
+                //q.where(AdminUserTableSchema.FIELDS.USER_ID, user.createdBy);
+                q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`)
+               q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,user.createdBy);
+                q.limit(1);
+            }, []);
         })
         .then(object => {
-            // if (object != null && object.models != null && object.models[0] != null) {
+            if (object != null && object.models != null && object.models[0] != null) {
+                 roleId=object.models[0].get('role_id');
                 return this.findByQuery(q => {
                     q.where(AdminUserTableSchema.FIELDS.EMAIL, user.email);
                     q.where(AdminUserTableSchema.FIELDS.IS_DELETED, 0);
                     q.limit(1);
                 }, []);
-            // }
+             }
 
-            // return Promise.reject(new Exception(
-            //     ErrorCode.RESOURCE.USER_NOT_FOUND,
-            //     MessageInfo.MI_USER_NOT_EXIST,
-            //     false,
-            //     HttpStatus.BAD_REQUEST
-            // ));
+            return Promise.reject(new Exception(
+                ErrorCode.RESOURCE.USER_NOT_FOUND,
+                MessageInfo.MI_USER_NOT_EXIST,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
         })
         .then(object => {
+
             if (object != null && object.models.length == 0) {
-                return AuthorizationRoleUseCase.findByQuery(q => {
+            if(user.roleId && user.roleId != undefined && user.roleId != null){
+
+                return AuthorizationRoleUseCase.findOne(q => {
                     q.where(AuthorizationRoleTableSchema.FIELDS.ROLE_ID, user.roleId);
                     q.where(AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE, 'G');
-                    q.limit(1);
                 }, []);
             }
-
+            return Promise.void;
+        }
+        
             return Promise.reject(new Exception(
                 ErrorCode.RESOURCE.INVALID_EMAIL,
                 MessageInfo.MI_EMAIL_ALREADY_USE,
                 false,
                 HttpStatus.BAD_REQUEST
             ));
+        }).then((object) => {
+
+            if(object != null){
+               let roleName=object.get('role_name');
+               user.roleName=roleName;
+            }
+              return AuthorizationRoleUseCase.findByQuery(q => {
+                     q.where(AuthorizationRoleTableSchema.FIELDS.ROLE_ID, roleId);
+                     q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
+                     q.limit(1);
+                 }, []);
         })
         .then(object => {
             if (object != null && object.models != null && object.models[0] != null) {
@@ -95,10 +115,11 @@ export class AdminUserUseCase extends BaseUseCase {
                 authRole.userId = userData.userId;
                 authRole.roleType = 'U';
                 authRole.createdBy = user.createdBy;
-                authRole.parentId = user.roleId;
-                authRole.roleName = roleInfo["roleName"];
-                authRole.schoolId=roleInfo.schoolId;
-                console.log("nnnnn",authRole);
+                authRole.parentId = roleId;
+                authRole.roleName = user.roleName;
+                if(!user.roleId || user.roleId == undefined || user.roleId == null){
+                    authRole.schoolId=roleInfo.schoolId;
+                }
                 AuthorizationRoleDto.create(AuthorizationRoleDto, authRole.toDto()).save();
                 return  authRole.toDto();
             }
