@@ -26,7 +26,7 @@ export class UserHandler extends BaseHandler {
         let session: BearerObject = req[Properties.SESSION];
         req.body.createdBy = session.userId;
         let checkuser: BearerObject = req[Properties.CHECK_USER];
-        req.body.schoolId=checkuser.schoolId;
+        //req.body.schoolId=checkuser.schoolId;
         let user = AdminUserModel.fromRequest(req);
         let status = req.body.status;
         console.log(user);
@@ -73,8 +73,9 @@ export class UserHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
+        console.log("tttttttttt",checkuser);
         if(checkuser.global && checkuser.global == true){
-            if (!Utils.requiredCheck(user.roleId)) {
+            if ( !Utils.requiredCheck(user.roleId)) {
                 return Utils.responseError(res, new Exception(
                     ErrorCode.USER.ROLEID_EMPTY,
                     MessageInfo.MI_ROLEID_NOT_EMPTY,

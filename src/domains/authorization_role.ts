@@ -129,14 +129,21 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                         if (objects != null && objects.models != null && objects.models.length != null && objects.models.length === 1) {
                             let role = AuthorizationRoleModel.fromDto(objects.models[0])
                             return AuthorizationRuleUseCase.findByQuery(q => {   
-                                if(checkuser && checkuser.tmp != null && checkuser.tmp != undefined && checkuser.tmp == true) {
+                                if(checkuser && checkuser.global == true) {
+                                    if(checkuser && checkuser.tmp == true){
+
                                         q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
                                         `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
                                         `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`,
                                         );
                                         q.where(AuthorizationRuleTableSchema.FIELDS.PERMISSION, 'allow');
                                         q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.roleId);
-                                        q.where(AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID, checkuser.schoolId);                         
+                                        q.where(AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID, checkuser.schoolId);
+                                    }else {
+                                        q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.IS_DELETED}`,0);
+                                        q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,'allow');
+                                        q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,role.roleId);
+                                    }                         
                                         
                                     } else {
                                         q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`,
@@ -160,8 +167,8 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                         return exception;
                     })
                     .then(object => {
-                        console.log("vvvvvvvvvvvvvvv",object);
-                        if (object != null && object.models != null && object.model.length != null && object.models.length === 1) {
+                        console.log("vvvvvvvvvvvvvvv",object.models.length);
+                        if (object != null && object.models != null && object.model.length != null && object.models.length != 0) {
                             return Promise.void;
                         } else {
                             let exception;

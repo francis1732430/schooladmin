@@ -35,6 +35,7 @@ export class AdminUserModel extends BaseModel {
     public approvalRole:string;
     public approvalStatusKey:string;
     public schoolId:number;
+    public assignedDistrict:number;
 
     public static fromRequest(req:Request):AdminUserModel {
         if (req != null && req.body) {
@@ -56,6 +57,7 @@ export class AdminUserModel extends BaseModel {
             user.password = Utils.hashPassword(AdminUserModel.getString(req.body.password));
             user.status = AdminUserModel.getNumber(req.body.status);
             user.schoolId = AdminUserModel.getNumber(req.body.schoolId);
+            user.assignedDistrict = AdminUserModel.getNumber(req.body.assignedDistrict);
             return user;
         }
         return null;
@@ -89,6 +91,7 @@ export class AdminUserModel extends BaseModel {
                 //let businessLegalName = object.get(StoreBusinessInfoTableSchema.FIELDS.BUSINESS_LEGAL_NAME);
                 let status = object.get(AdminUserTableSchema.FIELDS.IS_ACTIVE);
                 let schoolId = object.get(AdminUserTableSchema.FIELDS.SCHOOL_ID);
+                let assignedDistrict = object.get(AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID);
                 //let approvalStatusKey = object.get('approvalStatusKey')
                 let createdByName = object.get('createdByFname')+" "+object.get('createdByLname');
 
@@ -119,6 +122,7 @@ export class AdminUserModel extends BaseModel {
                 ret.createdByName = createdByName != null && createdByName !== "" ? createdByName : "";
                 //ret.roleIsDeleted = roleIsDeleted != null && roleIsDeleted !== "" ? roleIsDeleted : "";
                 ret.schoolId = schoolId != null && schoolId !== "" ? schoolId : "";
+                ret.assignedDistrict = assignedDistrict != null && assignedDistrict !== "" ? assignedDistrict : "";
                 //ret.approvalStatusKey = approvalStatusKey;
                
                 if (object.relations != null) {

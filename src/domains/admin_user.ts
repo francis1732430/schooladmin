@@ -115,10 +115,21 @@ export class AdminUserUseCase extends BaseUseCase {
                 authRole.userId = userData.userId;
                 authRole.roleType = 'U';
                 authRole.createdBy = user.createdBy;
-                authRole.parentId = roleId;
+                if(user.createdBy == 1){
+                    authRole.parentId = user.roleId;
+                }else {
+                    authRole.parentId = roleId;
+                }
+                
                 authRole.roleName = user.roleName;
+                authRole.assignedDistrict = user.assignedDistrict;
+                if(user.roleId && user.schoolId){
+                    authRole.schoolId=user.schoolId;
+                }
+                console.log("eeeeeeee",roleInfo);
                 if(!user.roleId || user.roleId == undefined || user.roleId == null){
-                    authRole.schoolId=roleInfo.schoolId;
+                    console.log("eeeeeeee1",roleInfo);
+                    authRole.schoolId=user.schoolId;
                 }
                 AuthorizationRoleDto.create(AuthorizationRoleDto, authRole.toDto()).save();
                 return  authRole.toDto();

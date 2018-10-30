@@ -31,19 +31,19 @@ router.route("/export")
     .get(authentication,accessrole, RoleHandler.export)
 
 router.route("/")
-    .post(authentication,accessrole, RoleHandler.create);
+    .post(authentication,checkUser,accessrole, RoleHandler.create);
 
 
 router.route("/exportSelected")
     .post(authentication, accessrole, RoleHandler.exportSelected);
 
 router.route("/createRole")
-      .post(authentication, accessrole,checkUser,RoleHandler.createMasterRole);
+      .post(authentication, checkUser,accessrole,RoleHandler.createMasterRole);
 
 router.route("/masterRoles")
-       .get(authentication, accessrole,checkUser,RoleHandler.masterRoles);
+       .get(authentication,checkUser,accessrole,RoleHandler.masterRoles);
        
 router.route("/schoolRole")
-     .post(authentication, accessrole,checkUser,RoleHandler.schoolCreate);            
+     .post(authentication,checkUser,accessrole,RoleHandler.schoolCreate);            
 
 export default router;
