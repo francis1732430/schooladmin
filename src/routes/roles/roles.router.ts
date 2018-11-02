@@ -16,7 +16,11 @@ router.route("/")
     .get(authentication,checkUser,accessrole, RoleHandler.list)
 
 router.route("/schoolList")
-    .get(authentication,checkUser,accessrole, RoleHandler.schoolList)
+    .get(authentication,checkUser,accessrole, RoleHandler.schoolList);
+
+router.route("/assignedSchool")
+    .get(authentication,checkUser,accessrole, RoleHandler.assignedSchoolList);
+    
 router.route("/:rid")
     .put(authentication,accessrole, RoleHandler.update)
     .delete(authentication,accessrole, RoleHandler.destroy)
