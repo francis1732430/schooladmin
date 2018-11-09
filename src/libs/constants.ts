@@ -438,6 +438,14 @@ export const MessageInfo = {
     MI_USER_PASSWORD_NOT_EMPTY:"User password not empty.",
     MI_PERMISSION_DENIED:"Permission denied.",
     MI_ROLE_ALREADY_ASSIGNED:"Role already assigned.",
+    MI_CLASS_NAME_IS_REQUIRED:"Class name is required.",
+    MI_STAFF_ID_IS_REQUIRED:"Staff id is required.",
+    MI_SUBJECT_ID_IS_REQUIRED:"Subject id is required.",
+    MI_STANDARD_ID_IS_REQUIRED:"Standard id is required.",
+    MI_STAFF_ID_NOT_FOUND:"Staff id not found.",
+    MI_STANDARD_ID_NOT_FOUND:"Standard id not found.",
+    MI_CLASS_ID_NOT_FOUND:"Class id not found.",
+    MI_STANDARD_NAME_IS_REQUIRED:"Standard name is required.",
 };
 
 export const DefaultVal = {

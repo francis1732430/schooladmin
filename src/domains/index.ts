@@ -12,3 +12,5 @@ export {default as DirectoryCityUseCase} from "./directory_city";
 export {default as DirectoryDistrictUseCase} from "./directory_district";
 export {default as DirectoryTalukUseCase} from "./directory_taluk";
 export {default as SchoolUseCase} from "./school_details";
+export {default as StandardEntityUseCase} from "./standard_entity";
+export {default as ClassEntityUseCase} from "./class_entity";

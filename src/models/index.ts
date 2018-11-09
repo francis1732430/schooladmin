@@ -12,4 +12,5 @@ export {DirectoryCityModel} from "./directory_city";
 export {DirectoryDistrictModel} from "./directory_district";
 export {DirectoryTalukModel} from "./directory_taluk";
 export {SchoolModel} from "./school_details";
-
+export {StandardEntityModel} from "./standard_entity";
+export {ClassEntityModel} from "./class_entity";

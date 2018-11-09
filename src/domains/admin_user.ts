@@ -598,9 +598,10 @@ export class AdminUserUseCase extends BaseUseCase {
         return Promise.then(() => {
      
             return this.findOne(q => {
+                q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`);
             q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,userid);
             q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
-            
+            q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);           
             })
 
         }).then((object) => {
@@ -621,6 +622,7 @@ export class AdminUserUseCase extends BaseUseCase {
                  obj.schoolId=schoolId;
              }
             }
+            obj.roleId=object.get('parent_id');
             console.log("nnnnnnnn",obj);
             return obj;
 

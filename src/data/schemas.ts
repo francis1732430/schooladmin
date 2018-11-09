@@ -278,3 +278,55 @@ export const SchoolTableSchema = {
         IS_DELETED:"is_deleted"
     },
 };
+
+export const StandardEntityTableSchema = {
+    TABLE_NAME: "standard_entity",
+    FIELDS: {
+        RID:"rid",
+        STANDARD_ID:"standard_id",
+        STANDARD_NAME: "standard_name",
+        SCHOOL_ID:"school_id",
+        SUBJECT_ID:"subject_ids",
+        CREATED_DATE:"created_date",
+        UPDATED_DATE:"updated_date",
+        IS_ACTIVE: "is_active",
+        CREATED_BY: "created_by",
+        IS_DELETED:"is_deleted"
+    },
+};
+
+export const ClassEntityTableSchema = {
+    TABLE_NAME: "class_entity",
+    FIELDS: {
+        RID:"rid",
+        CLASS_ID:"class_id",
+        CLASS_NAME: "class_name",
+        STAFF_ID:"staff_id",
+        STANDARD_ID:"standard_id",
+        SUBJECT_ID:"subject_ids",
+        SCHOOL_ID:"school_id",
+        CREATED_DATE:"created_date",
+        UPDATED_DATE:"updated_date",
+        IS_ACTIVE: "is_active",
+        CREATED_BY: "created_by",
+        IS_DELETED:"is_deleted"
+    },
+};
+export const SubjectTableSchema = {
+    TABLE_NAME: "subjects_schema",
+    FIELDS: {
+        RID:"rid",
+        SUBJECT_ID:"subject_id",
+        SUBJECT_NAME: "subject_name",
+        SYLLABUS_URL:"sylabus_url",
+        AUTHOR_NAME:"author_name",
+        MATERIAL_URL:"material_url",
+        REF_BOOKS:"ref_books",
+        SCHOOL_ID:"school_id",
+        CREATED_DATE:"created_date",
+        UPDATED_DATE:"updated_date",
+        IS_ACTIVE: "is_active",
+        CREATED_BY: "created_by",
+        IS_DELETED:"is_deleted"
+    },
+};

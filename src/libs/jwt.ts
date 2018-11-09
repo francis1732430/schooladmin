@@ -20,7 +20,8 @@ export interface BearerObject {
     school?:boolean;
     schoolId?:number;
     global?:boolean;
-    tmp?:boolean
+    tmp?:boolean;
+    roleId?:number;
 }
 
 export class JsonWebToken {
