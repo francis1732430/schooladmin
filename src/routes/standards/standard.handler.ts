@@ -44,14 +44,41 @@ export class StandardHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        
-       return Promise.then(() => {
+        if (!Utils.requiredCheck(standard.isActive)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_STATUS_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
 
+        if (!status || status != 0 && status != 1) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_STATUS_ERROR,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+
+        }
+       return Promise.then(() => {
+        return StandardEntityUseCase.subjectIdCheck(standard.subjectIds);
+       }).then((object) => {
+
+        if(object.obj1 == 1) {
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.NOT_FOUND,
+                MessageInfo.MI_SUBJECT_ID_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+        }
         return StandardEntityUseCase.create(standard);
        }).catch(err => {
         Utils.responseError(res, err);
       });
-
 
 
     }
@@ -95,7 +122,18 @@ export class StandardHandler extends BaseHandler {
                 ));
                 return Promise.break;
             }
+            return StandardEntityUseCase.subjectIdCheck(standard.subjectIds);
+        }).then((object) => {
  
+         if(object.obj1 == 1) {
+             Utils.responseError(res, new Exception(
+                 ErrorCode.RESOURCE.NOT_FOUND,
+                 MessageInfo.MI_SUBJECT_ID_NOT_FOUND,
+                 false,
+                 HttpStatus.BAD_REQUEST
+             ));
+             return Promise.break;
+         }
          return StandardEntityUseCase.updateById(rid,standard);
 
         }).then((object) => {
@@ -156,8 +194,16 @@ export class StandardHandler extends BaseHandler {
                             } else if(key=='standardName'){
                                 condition = `(${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
-                            } else if(key == 'subjectIds') {
-                                condition = `(${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SUBJECT_ID} LIKE "%${searchval}%")`;
+                            } else if (key == 'subjectIds') {
+                                let condition = "";
+                                let subjectIds = searchobj[key].split(',');
+                                subjectIds.forEach((subjectId, i) => {
+                                    if (i == 0) {
+                                        condition = `${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SUBJECT_ID} LIKE "%${subjectId}%"`;
+                                    } else {
+                                        condition = `(${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SUBJECT_ID} LIKE "%${subjectId}%" or ${condition})`;
+                                    }
+                                });
                                 q.andWhereRaw(condition);
                             } else if(key == 'isActive') {
                                 condition = `(${StandardEntityTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
@@ -199,10 +245,18 @@ export class StandardHandler extends BaseHandler {
                                   } else if(key=='standardName'){
                                       condition = `(${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME} LIKE "%${searchval}%")`;
                                       q.andWhereRaw(condition);
-                                  } else if(key == 'subjectIds') {
-                                      condition = `(${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SUBJECT_ID} LIKE "%${searchval}%")`;
-                                      q.andWhereRaw(condition);
-                                  } else if(key == 'isActive') {
+                                  } else if (key == 'subjectIds') {
+                                    let condition = "";
+                                    let subjectIds = searchobj[key].split(',');
+                                    subjectIds.forEach((subjectId, i) => {
+                                        if (i == 0) {
+                                            condition = `${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SUBJECT_ID} LIKE "%${subjectId}%"`;
+                                        } else {
+                                            condition = `(${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SUBJECT_ID} LIKE "%${subjectId}%" or ${condition})`;
+                                        }
+                                    });
+                                    q.andWhereRaw(condition);
+                                } else if(key == 'isActive') {
                                       condition = `(${StandardEntityTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                       q.andWhereRaw(condition);
                                   } else if(key == 'createdDate') {
@@ -245,27 +299,33 @@ export class StandardHandler extends BaseHandler {
             })
             .then((object) => {
                 let ret = [];
-               // console.log(object);
                 //noinspection TypeScriptUnresolvedVariable
                 if (object != null && object.models != null) {
                     //noinspection TypeScriptUnresolvedVariable
-                    object.models.forEach(obj => {
-                        let standardUseData = StandardEntityModel.fromDto(obj, ["createdBy","password"]) 
-                        ret.push(standardUseData);
-                    });
-                }
-                
+                    let subjectData;
+                    return Promise.each(object.models, (obj, i) => {
 
-                res.header(Properties.HEADER_TOTAL, total.toString(10));
+                        return Promise.then(() => {
+                            subjectData = StandardEntityModel.fromDto(obj, ["createdBy"]);
+                            return StandardEntityUseCase.subjectIdCheck(subjectData.subjectIds);
+                        }).then((obj) => {
+                            subjectData["subjects"] = obj.obj2;
+                            delete subjectData["subjectIds"];
+                            ret.push(subjectData);
 
-                if (offset != null) {
-                    res.header(Properties.HEADER_OFFSET, offset.toString(10));
-                }
-                if (limit != null) {
-                    res.header(Properties.HEADER_LIMIT, limit.toString(10));
-                }
+                        })
 
-                res.json(ret);
+                    }).then(obj => {
+                        res.header(Properties.HEADER_TOTAL, total.toString(10));
+                        if (offset != null) {
+                            res.header(Properties.HEADER_OFFSET, offset.toString(10));
+                        }
+                        if (limit != null) {
+                            res.header(Properties.HEADER_LIMIT, limit.toString(10));
+                        }
+                        res.json(ret);
+                    })
+                }
             })
             .catch(err => {
                 Utils.responseError(res, err);
@@ -279,6 +339,7 @@ export class StandardHandler extends BaseHandler {
         let userId=session.userId;
         let adminuser:any;
         let role:any;
+        let result;
         return Promise.then(() =>{
             return StandardEntityUseCase.findOne( q => {
                 q.select(`${StandardEntityTableSchema.TABLE_NAME}.*`);
@@ -286,21 +347,23 @@ export class StandardHandler extends BaseHandler {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
             }) 
         })
-        .then((object) => {
-            adminuser = object;
-            
-            if (adminuser == null) {
+        .then(object => {
+            if (object !== null) {
+                 result = StandardEntityModel.fromDto(object);
+                return StandardEntityUseCase.subjectIdCheck(result.subjectIds);
+            } else {
                 Utils.responseError(res, new Exception(
-                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
+                    ErrorCode.RESOURCE.NOT_FOUND,
                     MessageInfo.MI_STANDARD_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
                 return Promise.break;
-            } else {
-                let standardData = StandardEntityModel.fromDto(adminuser, ["password","createdBy"])
-                res.json(standardData);
             }
+        }).then(obj => {
+            result["subjects"] = obj.obj2;
+            delete result["subjectIds"];
+            res.json(result);
         })
         .catch(err => {
             Utils.responseError(res, err);
@@ -332,8 +395,8 @@ public static massDelete(req: express.Request, res: express.Response): any {
         standardRids = JSON.parse(rids);
     }else{
         Utils.responseError(res, new Exception(
-            ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-            MessageInfo.MI_USER_NOT_EXIST,
+            ErrorCode.RESOURCE.NOT_FOUND,
+            MessageInfo.MI_STAFF_ID_NOT_FOUND,
             false,
             HttpStatus.BAD_REQUEST
         ));
@@ -349,8 +412,8 @@ public static massDelete(req: express.Request, res: express.Response): any {
             return ret;
         } else {
             Utils.responseError(res, new Exception(
-                ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                MessageInfo.MI_USER_NOT_EXIST,
+                ErrorCode.RESOURCE.NOT_FOUND,
+                MessageInfo.MI_STANDARD_ID_NOT_FOUND,
                 false,
                 HttpStatus.BAD_REQUEST
             ));

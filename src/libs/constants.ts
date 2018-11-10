@@ -446,6 +446,16 @@ export const MessageInfo = {
     MI_STANDARD_ID_NOT_FOUND:"Standard id not found.",
     MI_CLASS_ID_NOT_FOUND:"Class id not found.",
     MI_STANDARD_NAME_IS_REQUIRED:"Standard name is required.",
+    MI_SUBJECT_ID_NOT_FOUND:"Subject id not found.",
+    MI_SUBJECT_NAME_IS_REQUIRED:"Subject name is required.",
+    MI_EXAM_TYPE_NAME_IS_REQUIRED:"Exam type name is required.",
+    MI_EXAM_START_DATE_IS_REQUIRED:"Exam start date is required.",
+    MI_EXAM_END_DATE_IS_REQUIRED:"Exam end date is required.",
+    MI_EXAM_START_TIME_IS_REQUIRED:"Exam start time is required.",
+    MI_EXAM_TOTAL_MARK_IS_REQUIRED:"Exam total mark is required.",
+    MI_EXAM_MIN_MARK_IS_REQUIRED:"Exam min mark is required.",
+    MI_EXAM_TYPE_NAME_ALREADY_EXISTS:"Exam type name already exists.",
+    MI_EXAM_ID_NOT_FOUND:"Exam id not found.",
 };
 
 export const DefaultVal = {

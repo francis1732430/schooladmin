@@ -397,8 +397,8 @@ export class ClassHandler extends BaseHandler {
             
             if (adminuser == null) {
                 Utils.responseError(res, new Exception(
-                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
+                    ErrorCode.RESOURCE.NOT_FOUND,
+                    MessageInfo.MI_CLASS_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));

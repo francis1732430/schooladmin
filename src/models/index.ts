@@ -14,3 +14,6 @@ export {DirectoryTalukModel} from "./directory_taluk";
 export {SchoolModel} from "./school_details";
 export {StandardEntityModel} from "./standard_entity";
 export {ClassEntityModel} from "./class_entity";
+export {SubjectEntityModel} from "./subject";
+export {ExamTypesModel} from "./exam_types";
+export {ExamModel} from "./exams";

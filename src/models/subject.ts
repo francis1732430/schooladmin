@@ -32,7 +32,7 @@ export class SubjectEntityModel extends BaseModel {
         if (object != null) {
             let rid = object.get(SubjectTableSchema.FIELDS.RID);
             let subjectId = object.get(SubjectTableSchema.FIELDS.SUBJECT_ID);
-            let standardName = object.get(SubjectTableSchema.FIELDS.SUBJECT_NAME);
+            let subjectName = object.get(SubjectTableSchema.FIELDS.SUBJECT_NAME);
             let schoolId = object.get(SubjectTableSchema.FIELDS.SCHOOL_ID);
             let sylabusUrl = object.get(SubjectTableSchema.FIELDS.SYLLABUS_URL);
             let authorName = object.get(SubjectTableSchema.FIELDS.AUTHOR_NAME);
@@ -43,10 +43,13 @@ export class SubjectEntityModel extends BaseModel {
             let updatedDate = object.get(SubjectTableSchema.FIELDS.UPDATED_DATE); 
             let ret = new SubjectEntityModel();
             ret.rid = rid != null && rid !== "" ? rid : undefined;
-            ret.standardId = standardId != null && standardId !== "" ? standardId : undefined;
-            ret.standardName = standardName != null && standardName !== "" ? standardName : undefined;
+            ret.subjectId = subjectId != null && subjectId !== "" ? subjectId : undefined;
+            ret.subjectName = subjectName != null && subjectName !== "" ? subjectName : undefined;
             ret.schoolId = schoolId != null && schoolId !== "" ? schoolId : undefined;
-            ret.subjectIds = subjectIds != null && subjectIds !== "" ? subjectIds : undefined;
+            ret.sylabusUrl = sylabusUrl != null && sylabusUrl !== "" ? sylabusUrl : undefined;
+            ret.authorName = authorName != null && authorName !== "" ? authorName : undefined;
+            ret.materialUrl = materialUrl != null && materialUrl !== "" ? materialUrl : undefined;
+            ret.refBooks = refBooks != null && refBooks !== "" ? refBooks : undefined;
             ret.isActive = isActive != null && isActive !== "" ? isActive : undefined;
             ret.createdDate = createdDate != null && createdDate !== "" ? createdDate : undefined;
             ret.updatedDate = updatedDate != null && updatedDate !== "" ? updatedDate : undefined;
@@ -65,13 +68,16 @@ export class SubjectEntityModel extends BaseModel {
 
     public toDto():any {
         let obj = {};
-        obj[StandardEntityTableSchema.FIELDS.STANDARD_ID] = this.standardId;
-        obj[StandardEntityTableSchema.FIELDS.STANDARD_NAME] = this.standardName;
-        obj[StandardEntityTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
-        obj[StandardEntityTableSchema.FIELDS.SUBJECT_ID] = this.subjectIds;
-        obj[StandardEntityTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
+        obj[SubjectTableSchema.FIELDS.SUBJECT_ID] = this.subjectId;
+        obj[SubjectTableSchema.FIELDS.SUBJECT_NAME] = this.subjectName;
+        obj[SubjectTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
+        obj[SubjectTableSchema.FIELDS.SYLLABUS_URL] = this.sylabusUrl;
+        obj[SubjectTableSchema.FIELDS.AUTHOR_NAME] = this.authorName;
+        obj[SubjectTableSchema.FIELDS.MATERIAL_URL] = this.materialUrl;
+        obj[SubjectTableSchema.FIELDS.REF_BOOKS] = this.refBooks;
+        obj[SubjectTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
         return obj;
     }
 }
 
-export default StandardEntityModel;
+export default SubjectEntityModel;

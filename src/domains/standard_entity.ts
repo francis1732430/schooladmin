@@ -2,13 +2,14 @@
  *    on 22/05/18.
  */
 import {StandardDto} from "../data/models";
-import {StandardEntityTableSchema} from "../data/schemas";
+import {StandardEntityTableSchema,SubjectTableSchema} from "../data/schemas";
 import {BearerObject, Logger} from "../libs";
 import {ErrorCode, HttpStatus, Properties, MessageInfo} from "../libs/constants";
 import {Utils} from "../libs/utils";
 import {Exception, StandardEntityModel} from "../models";
 import {Promise} from "thenfail";
 import {BaseUseCase} from "./base";
+import {SubjectEntityUseCase} from "../domains";
 
 export class StandardEntityUseCase extends BaseUseCase {
 
@@ -65,6 +66,46 @@ export class StandardEntityUseCase extends BaseUseCase {
         }).catch(err => {
             return Promise.reject(Utils.parseDtoError(err));
         }).enclose();
+    }
+
+    public subjectIdCheck(codes:any) {
+        let obj=[];
+        let arr1=[];
+        let data=[];
+        let updatedata={};
+            let arr = codes.split(',').filter(id => {
+                arr1.push(id.replace(/['"]+/g, ''));
+            });
+            console.log(arr1[0]);
+        return new Promise(function(resolve,reject) {
+            Promise.each(arr1,(code,i) => {
+                return Promise.then(() => {
+                    return SubjectEntityUseCase.findOne( q => {
+                        q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,code);
+                        q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
+                    });
+                }).then( object => {
+                 console.log(object);
+                 if(object != null){
+                     let subjectobj= {subjectId:object.get(SubjectTableSchema.FIELDS.SUBJECT_ID),subjectName:object.get(SubjectTableSchema.FIELDS.SUBJECT_NAME)};
+                     data.push(subjectobj);
+                 }
+
+
+                 obj[0]= object != null && (obj[0] == 1 || obj[0] == undefined)  ?1:0;
+                     if(i == arr1.length-1){
+
+
+                        updatedata.obj1=obj[0];
+                        updatedata.obj2=data;
+                        resolve(updatedata);
+                    }
+                }).catch(err => {
+                    return Promise.reject(Utils.parseDtoError(err));
+                }).enclose();
+            });
+        });
+
     }
 }
 

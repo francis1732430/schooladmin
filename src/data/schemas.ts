@@ -330,3 +330,46 @@ export const SubjectTableSchema = {
         IS_DELETED:"is_deleted"
     },
 };
+
+export const ExamTypesTableSchema = {
+    TABLE_NAME: "exam_types",
+    FIELDS: {
+        RID:"rid",
+        EXAM_TYPE_ID:"exam_type_id",
+        TYPE_NAME: "type_name",
+        CREATED_BY:"created_by",
+        DUE_DATE:"due_date",
+        TO_DATE:"to_date",
+        NOONS:"noons",
+        TOTAL_MARK:"total_mark",
+        MIN_MARK:"min_mark",
+        SCHOOL_ID:"school_id",
+        CREATED_DATE:"created_date",
+        UPDATED_DATE:"updated_date",
+        IS_ACTIVE: "is_active",
+        IS_DELETED:"is_deleted",
+        START_TIME:"start_time"
+    },
+};
+
+export const ExamTableSchema = {
+    TABLE_NAME: "exam_schema",
+    FIELDS: {
+        RID:"rid",
+        EXAM_ID:"exam_id",
+        SUBJECT_NAME: "subject_name",
+        QUESTION_URL:"question_url",
+        SYLLABUS_URL:"sylabus_url",
+        EXAM_TYPE:"exam_type",
+        EXAM_DATE:"exam_date",
+        STANDARD_ID:"standard_id",
+        SECTION_ID:"section_id",
+        SCHOOL_ID:"school_id",
+        CREATED_DATE:"created_date",
+        UPDATED_DATE:"updated_date",
+        IS_ACTIVE: "is_active",
+        IS_DELETED:"is_deleted",
+        START_TIME:"start_time",
+        CREATED_BY:"created_by"
+    },
+};
