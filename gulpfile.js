@@ -54,6 +54,13 @@ gulp.task('ts:compile', function () {
         .pipe(gulp.dest('./build'));
 });
 
+gulp.task('package:copy', function () {
+    gulp.src('package.json')
+        .pipe(plumber())
+        .pipe(sourcemaps.init())
+        .pipe(gulp.dest('./build/'));
+});
+
 gulp.task('ts:compile:release', function () {
     return tsProject
         .src(tsFiles, {base: './src'})
@@ -86,7 +93,7 @@ gulp.task('zip', () => {
 });
 
 gulp.task('build', (cb) => {
-    runSequence('clean', 'ts:compile', 'files:copy', cb);
+    runSequence('clean', 'ts:compile', 'files:copy','package:copy', cb);
 });
 
 gulp.task('build:release', (cb) => {

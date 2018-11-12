@@ -456,6 +456,14 @@ export const MessageInfo = {
     MI_EXAM_MIN_MARK_IS_REQUIRED:"Exam min mark is required.",
     MI_EXAM_TYPE_NAME_ALREADY_EXISTS:"Exam type name already exists.",
     MI_EXAM_ID_NOT_FOUND:"Exam id not found.",
+    MI_EXAM_DATE_IS_REQUIRED:"Exam date is required.",
+    MI_SECTION_ID_IS_REQUIRED:"Exam date is required.",
+    MI_SUBJECT_NAME_ALREADY_EXISTS:"Subject name already exists.",
+    MI_EXAM_TYPE_ID_NOT_FOUND:"Exam type id not found.",
+    MI_STUDENT_ID_IS_REQUIRED:"Student id is required.",
+    MI_EXAM_TYPE_ID_IS_REQUIRED:"Exam type id is required.",
+    MI_EXAM_MARKS_IS_REQUIRED:"Exam marks is required.",
+    MI_EXAM_RESULT_ID_NOT_FOUND:"Exam result id not found.",
 };
 
 export const DefaultVal = {

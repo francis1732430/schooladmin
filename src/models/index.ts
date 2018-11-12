@@ -17,3 +17,5 @@ export {ClassEntityModel} from "./class_entity";
 export {SubjectEntityModel} from "./subject";
 export {ExamTypesModel} from "./exam_types";
 export {ExamModel} from "./exams";
+export {ExamResultModel} from "./exam_result";
+export {LeaveRequestModel} from "./leave_request";

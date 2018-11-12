@@ -14,7 +14,7 @@ import { Uploader } from "../../libs";
 let fs = require('fs');  
 var dateFormat = require('dateformat');
 let knex=require('knex');
-export class ExamsHandler extends BaseHandler {
+export class ExamTypesHandler extends BaseHandler {
     constructor() {
         super();
     }
@@ -110,7 +110,11 @@ export class ExamsHandler extends BaseHandler {
             return Promise.break;
            }
         return ExamTypesUseCase.create(exams);
-       }).catch(err => {
+       }).then((object) => {
+        let examData={};
+        examData["message"] = "Exam Types created successfully";
+        res.json(examData);
+      }).catch(err => {
         Utils.responseError(res, err);
       });
     }
@@ -531,4 +535,4 @@ public static massDelete(req: express.Request, res: express.Response): any {
 
 }
 
-export default ExamsHandler;
+export default ExamTypesHandler;

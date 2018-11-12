@@ -373,3 +373,47 @@ export const ExamTableSchema = {
         CREATED_BY:"created_by"
     },
 };
+
+export const ExamResultTableSchema = {
+    TABLE_NAME: "result_schema",
+    FIELDS: {
+        RID:"rid",
+        EXAM_RESULT_ID:"exam_result_id",
+        STUDENT_ID: "student_id",
+        STANDARD_ID:"standard_id",
+        CLASS_ID:"class_id",
+        EXAM_TYPE_ID:"exam_type_id",
+        SUBJECT_ID:"subject_id",
+        MARKS:"marks",
+        STATUS:"status",
+        SCHOOL_ID:"school_id",
+        CREATED_DATE:"created_date",
+        UPDATED_DATE:"updated_date",
+        IS_ACTIVE: "is_active",
+        IS_DELETED:"is_deleted",
+        CREATED_BY:"created_by"
+    },
+};
+export const LeaveRequestTableSchema = {
+    TABLE_NAME: "leave_request",
+    FIELDS: {
+        RID:"rid",
+        REQUEST_ID:"request_id",
+        LEAVE_TYPE: "leave_type",
+        SENT_BY:"sent_by",
+        SENT_TO:"sent_to",
+        APPROVAL_STATUS:"approval_status",
+        DESCRIPTION:"description",
+        DUE_DATE:"due_date",
+        TO_DATE:"to_date",
+        ATTACHMENTS:"attachments",
+        NOTIFIED:"notified",
+        APPROVED_BY:"approved_by",
+        SCHOOL_ID:"school_id",
+        CREATED_DATE:"created_date",
+        UPDATED_DATE:"updated_date",
+        IS_ACTIVE: "is_active",
+        IS_DELETED:"is_deleted",
+        CREATED_BY:"created_by"
+    },
+};

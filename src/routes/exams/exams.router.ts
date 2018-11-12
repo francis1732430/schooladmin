@@ -1,26 +1,26 @@
 import {authentication} from "../../middlewares/authentication";
 import {accessrole} from "../../middlewares/accessrole";
-import ExamTypesHandler from "./exams.handler";
+import ExamsHandler from "./exams.handler";
 import * as express from "express";
 const router = express.Router();
 
 router.route("/")
-    .get(authentication,accessrole, ExamTypesHandler.list)
-    .post(ExamTypesHandler.create);
+    .get(authentication,accessrole, ExamsHandler.list)
+    .post(ExamsHandler.create);
 
 router.route("/view/:rid")
-    .get(authentication,accessrole,ExamTypesHandler.view)
+    .get(authentication,accessrole,ExamsHandler.view)
 
     
 router.route("/:rid")
-    .put(authentication,accessrole,ExamTypesHandler.update)
-    .delete(authentication,accessrole,ExamTypesHandler.destroy);
+    .put(authentication,accessrole,ExamsHandler.update)
+    .delete(authentication,accessrole,ExamsHandler.destroy);
 
 // router.route("/export")
 //     .get(authentication,accessrole, UserHandler.export);
 
 router.route("/massDelete")
-    .post(authentication,accessrole, ExamTypesHandler.massDelete);
+    .post(authentication,accessrole, ExamsHandler.massDelete);
 
 // router.route("/exportSelected")
 //     .post(authentication, accessrole, UserHandler.exportSelected);

@@ -20,7 +20,9 @@ import {
     ClassEntityTableSchema,
     SubjectTableSchema,
     ExamTypesTableSchema,
-    ExamTableSchema
+    ExamTableSchema,
+    ExamResultTableSchema,
+    LeaveRequestTableSchema
 } from "./schemas";
 import * as Bookshelf from "bookshelf";
 import * as UUID from "node-uuid";
@@ -184,5 +186,17 @@ export class ExamTypesDto extends BaseDto {
 export class ExamsDto extends BaseDto {
     get tableName():string {
         return ExamTableSchema.TABLE_NAME;
+    }
+}
+
+export class ExamResultDto extends BaseDto {
+    get tableName():string {
+        return ExamResultTableSchema.TABLE_NAME;
+    }
+}
+
+export class LeaveRequestDto extends BaseDto {
+    get tableName():string {
+        return LeaveRequestTableSchema.TABLE_NAME;
     }
 }
