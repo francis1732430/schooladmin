@@ -19,3 +19,4 @@ export {ExamTypesModel} from "./exam_types";
 export {ExamModel} from "./exams";
 export {ExamResultModel} from "./exam_result";
 export {LeaveRequestModel} from "./leave_request";
+export {AttendenceModel} from "./attendence";

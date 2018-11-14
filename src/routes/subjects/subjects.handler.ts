@@ -155,7 +155,7 @@ export class SubjectHandler extends BaseHandler {
              q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
 
-             q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+             q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);       
              q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
                 q.whereRaw(condition);               
                 if (searchobj) {

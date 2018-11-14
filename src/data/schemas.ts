@@ -417,3 +417,23 @@ export const LeaveRequestTableSchema = {
         CREATED_BY:"created_by"
     },
 };
+
+export const AttendenceTableSchema = {
+    TABLE_NAME: "attendance_schema",
+    FIELDS: {
+        RID:"rid",
+        ATTENDENCE_ID:"attendence_id",
+        STANDARD_ID:"standard_id",
+        CLASS_ID: "class_id",
+        USER_ID:"user_id",
+        STATUS:"status",
+        NOTIFIED:"notified",
+        REASON:"reason",
+        SCHOOL_ID:"school_id",
+        CREATED_DATE:"created_date",
+        UPDATED_DATE:"updated_date",
+        IS_ACTIVE: "is_active",
+        IS_DELETED:"is_deleted",
+        CREATED_BY:"created_by"
+    },
+};

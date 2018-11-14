@@ -123,6 +123,7 @@ export class UserHandler extends BaseHandler {
     public static list(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
         let checkuser:BearerObject = req[Properties.CHECK_USER];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let offset = parseInt(req.query.offset) || null;
         let limit = parseInt(req.query.limit) || null;
         let sortKey;
@@ -155,7 +156,7 @@ export class UserHandler extends BaseHandler {
            
                 if(checkuser.global == true){
                     if(checkuser.tmp == true){
-                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
+                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
                     }
                     else if(session.userId=='1') {
                         condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
@@ -165,9 +166,9 @@ export class UserHandler extends BaseHandler {
                     }
                 } else if(checkuser.school == true) {
                     if(session.userId=='1') {
-                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
                     } else {
-                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
                     }
                 }else {
                     condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=0`;
@@ -228,25 +229,26 @@ export class UserHandler extends BaseHandler {
                     q.innerJoin(`${AdminUserTableSchema.TABLE_NAME} AS user`, `user.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY}`);
                     q.leftJoin(`${SchoolTableSchema.TABLE_NAME}`,  `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`);
                     let condition;
-                    if(checkuser.global == true){
-                        if(checkuser.tmp == true){
-                                condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
-                        }
-                        else if(session.userId=='1') {
-                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
-    
-                        } else {
-                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
-                        }
-                    } else if(checkuser.school == true) {
-                        if(session.userId=='1') {
-                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
-                        } else {
-                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${checkuser.schoolId}`;
-                        }
-                    }else {
-                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=0`;
+                   
+                if(checkuser.global == true){
+                    if(checkuser.tmp == true){
+                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
                     }
+                    else if(session.userId=='1') {
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
+
+                    } else {
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
+                    }
+                } else if(checkuser.school == true) {
+                    if(session.userId=='1') {
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
+                    } else {
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
+                    }
+                }else {
+                    condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=0`;
+                }
                     
                     q.whereRaw(condition);               
     

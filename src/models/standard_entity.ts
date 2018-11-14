@@ -6,7 +6,7 @@ export class StandardEntityModel extends BaseModel {
     public standardId:number;
     public standardName:string;
     public schoolId:number;
-    public subjectIds:number;
+    public subjectIds:string;
     public isActive:number;
 
     public static fromRequest(req:Request):StandardEntityModel {
@@ -15,7 +15,7 @@ export class StandardEntityModel extends BaseModel {
             Standard.standardId=StandardEntityModel.getNumber(req.body.standardId);
             Standard.standardName=StandardEntityModel.getString(req.body.standardName);
             Standard.schoolId=StandardEntityModel.getNumber(req.body.schoolId);
-            Standard.subjectIds=StandardEntityModel.getNumber(req.body.subjectIds);
+            Standard.subjectIds=StandardEntityModel.getString(req.body.subjectIds);
             Standard.isActive=StandardEntityModel.getNumber(req.body.isActive);
             return Standard;
         }

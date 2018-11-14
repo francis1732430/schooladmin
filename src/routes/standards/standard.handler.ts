@@ -25,7 +25,7 @@ export class StandardHandler extends BaseHandler {
         req.body.schoolId=schoolId;
         req.body.createdBy=session.userId;
         let standard = StandardEntityModel.fromRequest(req);
-        let status = req.body.status;
+        let status = req.body.isActive;
         if (!Utils.requiredCheck(standard.standardName)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -65,8 +65,7 @@ export class StandardHandler extends BaseHandler {
        return Promise.then(() => {
         return StandardEntityUseCase.subjectIdCheck(standard.subjectIds);
        }).then((object) => {
-
-        if(object.obj1 == 1) {
+        if(object.obj1 == 0) {
             Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.NOT_FOUND,
                 MessageInfo.MI_SUBJECT_ID_NOT_FOUND,
@@ -76,6 +75,10 @@ export class StandardHandler extends BaseHandler {
             return Promise.break;
         }
         return StandardEntityUseCase.create(standard);
+       }).then((object) => {
+        let standardData={};
+        standardData["message"] = "Standard created successfully";
+        res.json(standardData);
        }).catch(err => {
         Utils.responseError(res, err);
       });
@@ -87,6 +90,7 @@ export class StandardHandler extends BaseHandler {
         let session: BearerObject = req[Properties.SESSION];
         let rid = req.params.rid || "";
         let standard = StandardEntityModel.fromRequest(req);
+        let status = req.body.isActive;
         if (!Utils.requiredCheck(standard.standardName)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -105,7 +109,24 @@ export class StandardHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-       
+        if (!Utils.requiredCheck(standard.isActive)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_STATUS_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+
+        if (!status || status != 0 && status != 1) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_STATUS_ERROR,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+
+        }
         return Promise.then(() => {
             return StandardEntityUseCase.findOne(q => {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.RID}`,rid);
@@ -125,7 +146,7 @@ export class StandardHandler extends BaseHandler {
             return StandardEntityUseCase.subjectIdCheck(standard.subjectIds);
         }).then((object) => {
  
-         if(object.obj1 == 1) {
+         if(object.obj1 == 0) {
              Utils.responseError(res, new Exception(
                  ErrorCode.RESOURCE.NOT_FOUND,
                  MessageInfo.MI_SUBJECT_ID_NOT_FOUND,
@@ -175,13 +196,13 @@ export class StandardHandler extends BaseHandler {
         return Promise.then(() => {
             return StandardEntityUseCase.countByQuery(q => {
                 let condition;
-             if(checkuser.roleId != 18) {
+             if(checkuser.roleId != 18 || checkuser.tmp == true) {
              q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
 
              q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
-                q.whereRaw(condition);               
+              //  q.whereRaw(condition);               
                 if (searchobj) {
                     for (let key in searchobj) {
                         if(searchobj[key]!=null && searchobj[key]!=''){
@@ -226,13 +247,13 @@ export class StandardHandler extends BaseHandler {
                    q.select(`${StandardEntityTableSchema.TABLE_NAME}.*`);
                    //q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as staffName`));
                    let condition;
-                   if(checkuser.roleId != 18) {
+                   if(checkuser.roleId != 18 || checkuser.tmp == true) {
                    q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.CREATED_BY}`,session.userId);
                    }                
       
                    q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                    q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
-                      q.whereRaw(condition);               
+                     // q.whereRaw(condition);               
                       if (searchobj) {
                           for (let key in searchobj) {
                               if(searchobj[key]!=null && searchobj[key]!=''){
@@ -269,7 +290,7 @@ export class StandardHandler extends BaseHandler {
                               }
                           }
                       }  
-
+                     
                     if (offset != null) {
                         q.offset(offset);
                     }

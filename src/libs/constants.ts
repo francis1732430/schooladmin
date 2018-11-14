@@ -464,6 +464,21 @@ export const MessageInfo = {
     MI_EXAM_TYPE_ID_IS_REQUIRED:"Exam type id is required.",
     MI_EXAM_MARKS_IS_REQUIRED:"Exam marks is required.",
     MI_EXAM_RESULT_ID_NOT_FOUND:"Exam result id not found.",
+    MI_LEAVE_TYPE_ID_NOT_FOUND:"Leave type id is required.",
+    MI_SENT_BY_ID_IS_REQUIRED:"Sent by id is required.",
+    MI_SENT_TO_ID_NOT_REQUIRED:"Sent to id is required.",
+    MI_DESCRIPTION_IS_REQUIRED:"Description  is required.",
+    MI_DUE_DATE_IS_REQUIRED:"Due date is required.",
+    MI_TO_DATE_IS_REQUIRED:"To date is required.",
+    MI_SENT_BY_ID_NOT_FOUND:"Sent by id not found.",
+    MI_SENT_TO_ID_NOT_FOUND:"Sent to id not found.",
+    MI_LEAVE_REQUEST_ID_NOT_FOUND:"Leave request id not found.",
+    MI_ATTENDENCE_ID_IS_REQUIRED:"Attendence id is required.",
+    MI_CLASS_ID_IS_REQUIRED:"Class id is required.",
+    MI_ATTENDENCE_STATUS_IS_REQUIRED:"Attendence status is required.",
+    MI_ATTENDENCE_REASON_IS_REQUIRED:"Attendence reason is required.",
+    MI_ATTENDENCE_ID_NOT_FOUND:"Attendence id not found.",
+    MI_REASON_IS_REQUIRED:"Reason is required.",
 };
 
 export const DefaultVal = {

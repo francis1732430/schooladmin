@@ -136,9 +136,12 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                                         `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,
                                         `${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`,
                                         );
-                                        q.where(AuthorizationRuleTableSchema.FIELDS.PERMISSION, 'allow');
-                                        q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.roleId);
-                                        q.where(AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID, checkuser.schoolId);
+                                        
+                                        if(userId != '1'){
+                                            q.where(AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID, checkuser.schoolId);
+                                            q.where(AuthorizationRuleTableSchema.FIELDS.PERMISSION, 'allow');
+                                            q.where(AuthorizationRuleTableSchema.FIELDS.ROLE_ID, role.roleId);
+                                        }
                                     }else {
                                         q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.IS_DELETED}`,0);
                                         q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.PERMISSION}`,'allow');

@@ -19,3 +19,4 @@ export {default as ExamTypesUseCase} from "./exam_types";
 export {default as ExamUseCase} from "./exam";
 export {default as ExamResultUseCase} from "./exam_result";
 export {default as LeaveRequestUseCase} from "./leave_request";
+export {default as AttendenceUseCase} from "./attendence";

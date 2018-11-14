@@ -13,20 +13,20 @@ router.route("/")
     .post(authentication,checkUser,accessrole, UserHandler.create);
 
 router.route("/view/:rid")
-    .get(authentication,accessrole,UserHandler.getById)
+    .get(authentication,checkUser,accessrole,UserHandler.getById)
 
     
 router.route("/:rid")
-    .put(authentication,accessrole,UserHandler.update)
-    .delete(authentication,accessrole,UserHandler.destroy);
+    .put(authentication,checkUser,accessrole,UserHandler.update)
+    .delete(authentication,checkUser,accessrole,UserHandler.destroy);
 
 router.route("/export")
-    .get(authentication,accessrole, UserHandler.export);
+    .get(authentication,checkUser,accessrole, UserHandler.export);
 
 router.route("/massDelete")
-    .post(authentication,accessrole, UserHandler.massDelete);
+    .post(authentication,checkUser,accessrole,UserHandler.massDelete);
 
 router.route("/exportSelected")
-    .post(authentication, accessrole, UserHandler.exportSelected);
+    .post(authentication,checkUser,accessrole, UserHandler.exportSelected);
 
 export default router;

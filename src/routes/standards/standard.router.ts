@@ -1,26 +1,27 @@
 import {authentication} from "../../middlewares/authentication";
 import {accessrole} from "../../middlewares/accessrole";
 import StandardHandler from "./standard.handler";
+import {checkUser} from "../../middlewares/checkuser";
 import * as express from "express";
 const router = express.Router();
 
 router.route("/")
-    .get(authentication,accessrole, StandardHandler.list)
-    .post(StandardHandler.create);
+    .get(authentication,checkUser,accessrole,StandardHandler.list)
+    .post(authentication,checkUser,accessrole,StandardHandler.create);
 
 router.route("/view/:rid")
-    .get(authentication,accessrole,StandardHandler.view)
+    .get(authentication,checkUser,accessrole,StandardHandler.view)
 
     
 router.route("/:rid")
-    .put(authentication,accessrole,StandardHandler.update)
-    .delete(authentication,accessrole,StandardHandler.destroy);
+    .put(authentication,checkUser,accessrole,StandardHandler.update)
+    .delete(authentication,checkUser,accessrole,StandardHandler.destroy);
 
 // router.route("/export")
 //     .get(authentication,accessrole, UserHandler.export);
 
 router.route("/massDelete")
-    .post(authentication,accessrole, StandardHandler.massDelete);
+    .post(authentication,checkUser,accessrole,StandardHandler.massDelete);
 
 // router.route("/exportSelected")
 //     .post(authentication, accessrole, UserHandler.exportSelected);
