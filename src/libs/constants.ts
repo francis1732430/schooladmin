@@ -479,6 +479,10 @@ export const MessageInfo = {
     MI_ATTENDENCE_REASON_IS_REQUIRED:"Attendence reason is required.",
     MI_ATTENDENCE_ID_NOT_FOUND:"Attendence id not found.",
     MI_REASON_IS_REQUIRED:"Reason is required.",
+    MI_ATTENDENCE_IS_REQUIRED:"Attendence is required.",
+    MI_WEAK_ID_IS_REQUIRED:"Weak id is required.",
+    MI_START_TIME_IS_REQUIRED:"Start time is required.",
+    MI_END_TIME_IS_REQUIRED:"End time is required.",
 };
 
 export const DefaultVal = {

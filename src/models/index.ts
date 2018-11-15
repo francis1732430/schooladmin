@@ -20,3 +20,4 @@ export {ExamModel} from "./exams";
 export {ExamResultModel} from "./exam_result";
 export {LeaveRequestModel} from "./leave_request";
 export {AttendenceModel} from "./attendence";
+export {TimeTableModel} from "./time_table";

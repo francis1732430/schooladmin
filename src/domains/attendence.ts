@@ -89,7 +89,9 @@ export class AttendenceUseCase extends BaseUseCase {
             })
         }).then(() => {
             return count;
-        })
+        }).catch(err => {
+            return Promise.reject(Utils.parseDtoError(err));
+        }).enclose();
         
     }
 
@@ -115,7 +117,9 @@ export class AttendenceUseCase extends BaseUseCase {
             })
         }).then(() => {
             return count;
-        })
+        }).catch(err => {
+            return Promise.reject(Utils.parseDtoError(err));
+        }).enclose();
         
     }
 
@@ -124,26 +128,51 @@ export class AttendenceUseCase extends BaseUseCase {
         let count=0;
         return Promise.then(() => {
             return Promise.each(users,(objects) => {
-                return Promise.each(objects,(obj,i) => {
                     return Promise.then(() => {
-        if(i== 2){
     return AdminUserUseCase.findOne( q => {
-        q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,obj.userId);
+        q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,objects.userId);
         q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
-           })
-            }                 
+           })                
     }).then((obj1) => {
-                  if(i==2 && obj1 == null || count==1){
+                  if(obj1 == null || count==1){
                    count=1;
                   }
                     })
                 })
-    
-            })
         }).then(() => {
             return count;
-        })
+        }).catch(err => {
+            return Promise.reject(Utils.parseDtoError(err));
+        }).enclose();
         
+    }
+
+    public createAttendence(attendence:AttendenceModel,attendences:any):Promise<any> {
+        return Promise.then(() => {
+
+            return Promise.each(attendences,(object) => {
+
+                return Promise.then(() => {
+                    let obj = [];                
+                    obj[AttendenceTableSchema.FIELDS.STANDARD_ID] = attendence.standardId;
+                    obj[AttendenceTableSchema.FIELDS.ATTENDENCE_ID] = attendence.attendenceId;
+                    obj[AttendenceTableSchema.FIELDS.SCHOOL_ID] = attendence.schoolId;
+                    obj[AttendenceTableSchema.FIELDS.CLASS_ID] = attendence.classId;
+                    obj[AttendenceTableSchema.FIELDS.USER_ID] = object.userId;
+                    obj[AttendenceTableSchema.FIELDS.STATUS] = object.status;
+                    obj[AttendenceTableSchema.FIELDS.NOTIFIED] = object.isNotified;
+                    obj[AttendenceTableSchema.FIELDS.REASON] = object.reason;
+                    obj[AttendenceTableSchema.FIELDS.CREATED_BY] = attendence.createdBy;
+                    obj[AttendenceTableSchema.FIELDS.IS_ACTIVE] = object.isActive;
+                        
+                    return AttendenceDto.create(AttendenceDto, obj).save();
+                }).catch(err => {
+                    return Promise.reject(Utils.parseDtoError(err));
+                }).enclose();
+            })
+        }).catch(err => {
+            return Promise.reject(Utils.parseDtoError(err));
+        }).enclose();
     }
 }
 

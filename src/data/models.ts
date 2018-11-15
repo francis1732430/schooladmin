@@ -23,7 +23,8 @@ import {
     ExamTableSchema,
     ExamResultTableSchema,
     LeaveRequestTableSchema,
-    AttendenceTableSchema
+    AttendenceTableSchema,
+    TimeTableTableSchema
 } from "./schemas";
 import * as Bookshelf from "bookshelf";
 import * as UUID from "node-uuid";
@@ -205,5 +206,11 @@ export class LeaveRequestDto extends BaseDto {
 export class AttendenceDto extends BaseDto {
     get tableName():string {
         return AttendenceTableSchema.TABLE_NAME;
+    }
+}
+
+export class TimeTablesDto extends BaseDto {
+    get tableName():string {
+        return TimeTableTableSchema.TABLE_NAME;
     }
 }
