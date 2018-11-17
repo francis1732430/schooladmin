@@ -457,3 +457,32 @@ export const TimeTableTableSchema = {
         CREATED_BY:"created_by"
     },
 };
+
+export const WeakTableSchema = {
+    TABLE_NAME:"weakdays",
+    FIELDS: {
+        RID:"rid",
+        WEAK_ID:"weak_id",
+        WEAK_NAME:"weak_name",
+        IS_ACTIVE: "status",
+        SCHOOL_ID: "school_id",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted"
+    },
+};
+
+export const TimingTableSchema = {
+    TABLE_NAME:"timings",
+    FIELDS: {
+        RID:"rid",
+        TIME_ID:"id",
+        TIME:"timing",
+        NOON:"noon",
+        IS_ACTIVE: "status",
+        SCHOOL_ID: "school_id",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted"
+    }
+}

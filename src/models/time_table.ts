@@ -25,6 +25,7 @@ export class TimeTableModel extends BaseModel {
             time.weakId=TimeTableModel.getNumber(req.body.weakId);
             time.staffId=TimeTableModel.getNumber(req.body.staffId);
             time.isActive=TimeTableModel.getNumber(req.body.isActive);
+            time.createdBy=TimeTableModel.getNumber(req.body.createdBy);
             return time;
         }
         return null;
@@ -35,6 +36,7 @@ export class TimeTableModel extends BaseModel {
             let rid = object.get(TimeTableTableSchema.FIELDS.RID);
             let timeTableId = object.get(TimeTableTableSchema.FIELDS.TIME_TABLE_ID);
             let standardId = object.get(TimeTableTableSchema.FIELDS.STANDARD_ID);
+            let classId = object.get(TimeTableTableSchema.FIELDS.CLASS_ID);
             let schoolId = object.get(TimeTableTableSchema.FIELDS.SCHOOL_ID);
             let startTime = object.get(TimeTableTableSchema.FIELDS.START_TIME);
             let endTime = object.get(TimeTableTableSchema.FIELDS.END_TIME);
@@ -52,6 +54,7 @@ export class TimeTableModel extends BaseModel {
             ret.endTime = endTime != null && endTime !== "" ? endTime : undefined;
             ret.weakId = weakId != null && weakId !== "" ? weakId : undefined;
             ret.staffId = staffId != null && staffId !== "" ? staffId : undefined;
+            ret.classId = classId != null && classId !== "" ? classId : undefined;
             ret.isActive = isActive != null && isActive !== "" ? isActive : undefined;
             ret.createdDate = createdDate != null && createdDate !== "" ? createdDate : undefined;
             ret.updatedDate = updatedDate != null && updatedDate !== "" ? updatedDate : undefined;
@@ -72,12 +75,14 @@ export class TimeTableModel extends BaseModel {
         let obj = {};
         obj[TimeTableTableSchema.FIELDS.TIME_TABLE_ID] = this.timeTableId;
         obj[TimeTableTableSchema.FIELDS.STANDARD_ID] = this.standardId;
+        obj[TimeTableTableSchema.FIELDS.CLASS_ID] = this.classId;
         obj[TimeTableTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
         obj[TimeTableTableSchema.FIELDS.START_TIME] = this.startTime;
         obj[TimeTableTableSchema.FIELDS.END_TIME] = this.endTime;
         obj[TimeTableTableSchema.FIELDS.WEAK_ID] = this.weakId;
         obj[TimeTableTableSchema.FIELDS.STAFF_ID] = this.staffId;
         obj[TimeTableTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
+        obj[TimeTableTableSchema.FIELDS.CREATED_BY] = this.createdBy;
         return obj;
     }
 }

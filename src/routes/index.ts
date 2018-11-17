@@ -16,6 +16,7 @@ import exams from "./exams/exams.router";
 import results from "./exam_result/results.router";
 import subjects from "./subjects/subjects.router";
 import leaverequest from "./leave_request/leave.router";
+import calender from "./time_tables/time_tables.router";
 
 import me from "./me/me.router";
 import * as express from "express";
@@ -38,6 +39,8 @@ router.use("/exams",exams);
 router.use("/examresults",results);
 router.use("/subjects",subjects);
 router.use("/leaverequest",leaverequest);
+router.use("/calender",calender);
+
 
 router.get("/", (req:express.Request, res:express.Response) => {
     res.end();

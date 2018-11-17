@@ -21,3 +21,5 @@ export {ExamResultModel} from "./exam_result";
 export {LeaveRequestModel} from "./leave_request";
 export {AttendenceModel} from "./attendence";
 export {TimeTableModel} from "./time_table";
+export {WeakDayModel} from "./weak_days";
+export {TimingModel} from "./timing";

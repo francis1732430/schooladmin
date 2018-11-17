@@ -29,4 +29,6 @@ router.route("/massDelete")
 router.route("/exportSelected")
     .post(authentication,checkUser,accessrole, UserHandler.exportSelected);
 
+    router.route("/getUsers")
+    .get(authentication,checkUser,accessrole, UserHandler.getUsers);
 export default router;
