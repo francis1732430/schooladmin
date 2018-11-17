@@ -18,9 +18,9 @@ router.route("/master")
     .get(authentication, PermissionHandler.master);
 
 router.route("/selectModule")
-    .get(PermissionHandler.selectModule);    
+    .get(authentication,checkUser,accessrole,PermissionHandler.selectModule);    
     router.route("/getModule")
     .get(authentication,checkUser,accessrole,PermissionHandler.getModule);
 router.route("/selectSchool")
-    .get(PermissionHandler.selectSchool);
+    .get(authentication,checkUser,accessrole,PermissionHandler.selectSchool);
 export default router;

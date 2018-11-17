@@ -8,7 +8,7 @@ export class StandardEntityModel extends BaseModel {
     public schoolId:number;
     public subjectIds:string;
     public isActive:number;
-
+    public createdBy:number;
     public static fromRequest(req:Request):StandardEntityModel {
         if (req != null && req.body) {
             let Standard = new StandardEntityModel();
@@ -17,6 +17,7 @@ export class StandardEntityModel extends BaseModel {
             Standard.schoolId=StandardEntityModel.getNumber(req.body.schoolId);
             Standard.subjectIds=StandardEntityModel.getString(req.body.subjectIds);
             Standard.isActive=StandardEntityModel.getNumber(req.body.isActive);
+            Standard.createdBy=StandardEntityModel.getNumber(req.body.createdBy);
             return Standard;
         }
         return null;
@@ -61,6 +62,7 @@ export class StandardEntityModel extends BaseModel {
         obj[StandardEntityTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
         obj[StandardEntityTableSchema.FIELDS.SUBJECT_ID] = this.subjectIds;
         obj[StandardEntityTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
+        obj[StandardEntityTableSchema.FIELDS.CREATED_BY] = this.createdBy;
         return obj;
     }
 }

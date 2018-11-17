@@ -25,7 +25,7 @@ export class ClassHandler extends BaseHandler {
         req.body.schoolId=schoolId;
         req.body.createdBy=session.userId;
         let class_entity = ClassEntityModel.fromRequest(req);
-        let status = req.body.status;
+        let status = req.body.isActive;
         if (!Utils.requiredCheck(class_entity.sectionName)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -34,7 +34,6 @@ export class ClassHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        
         
         if (!Utils.requiredCheck(class_entity.staffId)) {
             return Utils.responseError(res, new Exception(
@@ -51,6 +50,25 @@ export class ClassHandler extends BaseHandler {
                 false,
                 HttpStatus.BAD_REQUEST
             ));
+        }
+
+        if (!Utils.requiredCheck(class_entity.isActive)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_STATUS_NOT_EMPTY,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+
+        if (!status || status != 0 && status != 1) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_STATUS_ERROR,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+
         }
         
        return Promise.then(() => {
@@ -103,6 +121,7 @@ export class ClassHandler extends BaseHandler {
 
     public static update(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
         let class_entity = ClassEntityModel.fromRequest(req);
         if (!Utils.requiredCheck(class_entity.sectionName)) {
@@ -232,7 +251,7 @@ export class ClassHandler extends BaseHandler {
 
              q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.IS_DELETED}`,0);
-                q.whereRaw(condition);               
+                //q.whereRaw(condition);               
                 if (searchobj) {
                     for (let key in searchobj) {
                         if(searchobj[key]!=null && searchobj[key]!=''){
@@ -268,7 +287,7 @@ export class ClassHandler extends BaseHandler {
         })
             .then((totalObject) => {
                 total = totalObject;
-                return AdminUserUseCase.findByQuery(q => {
+                return ClassEntityUseCase.findByQuery(q => {
                    q.select(`${ClassEntityTableSchema.TABLE_NAME}.*`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME}`);
                    q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as staffName`));
                     q.leftJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.STAFF_ID}`);
@@ -280,7 +299,7 @@ export class ClassHandler extends BaseHandler {
     
                  q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                  q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.IS_DELETED}`,0);
-                    q.whereRaw(condition);               
+                   // q.whereRaw(condition);               
                     if (searchobj) {
                         for (let key in searchobj) {
                             if(searchobj[key]!=null && searchobj[key]!=''){

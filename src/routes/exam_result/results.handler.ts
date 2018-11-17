@@ -25,7 +25,7 @@ export class ExamResultHandler extends BaseHandler {
         req.body.schoolId=schoolId;
         req.body.createdBy=session.userId;
         let result = ExamResultModel.fromRequest(req);
-        let status = req.body.status;
+        let status = req.body.isActive;
         if (!Utils.requiredCheck(result.studentId)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -70,6 +70,15 @@ export class ExamResultHandler extends BaseHandler {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
                 MessageInfo.MI_EXAM_MARKS_IS_REQUIRED,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+
+        if (!Utils.requiredCheck(result.status)) { let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_EXAM_RESULT_STATUS_IS_REQUIRED,
                 false,
                 HttpStatus.BAD_REQUEST
             ));
@@ -103,7 +112,7 @@ export class ExamResultHandler extends BaseHandler {
             })
         }).then((object) => {
 
-            if(object != null) {
+            if(object == null) {
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
                     MessageInfo.MI_USER_NOT_EXIST,
@@ -114,6 +123,7 @@ export class ExamResultHandler extends BaseHandler {
             }
             return ExamTypesUseCase.findOne( q => {
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.EXAM_TYPE_ID}`,result.examTypeId);
+                q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -130,6 +140,7 @@ export class ExamResultHandler extends BaseHandler {
             }
             return StandardEntityUseCase.findOne( q => {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,result.standardId);
+                q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -145,6 +156,7 @@ export class ExamResultHandler extends BaseHandler {
             }
             return ClassEntityUseCase.findOne( q => {
                 q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,result.sectionId);
+                q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object) => {
@@ -159,6 +171,7 @@ export class ExamResultHandler extends BaseHandler {
             }
             return SubjectEntityUseCase.findOne( q => {
                 q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,result.subjectId);
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object) => {
@@ -184,9 +197,10 @@ export class ExamResultHandler extends BaseHandler {
 
     public static update(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
         let result = ExamResultModel.fromRequest(req);
-        let status = req.body.status;
+        let status = req.body.isActive;
         if (!Utils.requiredCheck(result.studentId)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -236,6 +250,15 @@ export class ExamResultHandler extends BaseHandler {
             ));
         }
        
+        if (!Utils.requiredCheck(result.status)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_EXAM_RESULT_STATUS_IS_REQUIRED,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+
         if (!Utils.requiredCheck(result.isActive)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -272,13 +295,13 @@ export class ExamResultHandler extends BaseHandler {
                 ));
                 return Promise.break; 
             }
-            return AdminUserUseCase.findOne( q => {
+           return AdminUserUseCase.findOne( q => {
                 q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,result.studentId);
                 q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object) => {
-  
-            if(object != null) {
+
+            if(object == null) {
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
                     MessageInfo.MI_USER_NOT_EXIST,
@@ -288,7 +311,8 @@ export class ExamResultHandler extends BaseHandler {
                 return Promise.break;  
             }
             return ExamTypesUseCase.findOne( q => {
-                q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.EXAM_TYPE_ID}`,result.examType);
+                q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.EXAM_TYPE_ID}`,result.examTypeId);
+                q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -305,6 +329,7 @@ export class ExamResultHandler extends BaseHandler {
             }
             return StandardEntityUseCase.findOne( q => {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,result.standardId);
+                q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -320,6 +345,7 @@ export class ExamResultHandler extends BaseHandler {
             }
             return ClassEntityUseCase.findOne( q => {
                 q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,result.sectionId);
+                q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object) => {
@@ -333,10 +359,10 @@ export class ExamResultHandler extends BaseHandler {
                 return Promise.break; 
             }
             return SubjectEntityUseCase.findOne( q => {
-                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,result.studentId);
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,result.subjectId);
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
             })
-            
         }).then((object) => {
             if(object == null) {
                 Utils.responseError(res, new Exception(
@@ -397,7 +423,7 @@ export class ExamResultHandler extends BaseHandler {
              q.leftJoin(`${SubjectTableSchema.TABLE_NAME}`,`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.SUBJECT_ID}`);
              q.where(`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.IS_DELETED}`,0);
-                q.whereRaw(condition);               
+                //q.whereRaw(condition);               
                 if (searchobj) {
                     for (let key in searchobj) {
                         if(searchobj[key]!=null && searchobj[key]!=''){
@@ -471,7 +497,7 @@ export class ExamResultHandler extends BaseHandler {
              q.leftJoin(`${SubjectTableSchema.TABLE_NAME}`,`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.SUBJECT_ID}`);
              q.where(`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.IS_DELETED}`,0);
-                q.whereRaw(condition);               
+               // q.whereRaw(condition);               
                 if (searchobj) {
                     for (let key in searchobj) {
                         if(searchobj[key]!=null && searchobj[key]!=''){
@@ -582,8 +608,8 @@ export class ExamResultHandler extends BaseHandler {
                     //noinspection TypeScriptUnresolvedVariable
                     object.models.forEach(obj => {
                         let examData = ExamResultModel.fromDto(obj, ["createdBy","password"]); 
-                         examData['examTypeName']=object.get('type_name');
-                         examData['studentName']=object.get('studentName'); 
+                         examData['examTypeName']=obj.get('type_name');
+                         examData['studentName']=obj.get('studentName'); 
                          examData['standardName']=obj.get('standard_name');
                          examData['sectionName']=obj.get('class_name');
                          examData['subjectName']=obj.get('subject_name');

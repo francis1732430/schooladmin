@@ -48,7 +48,7 @@ export class UserHandler extends BaseHandler {
             ));
         }
         let generatedPassword = Utils.randomPassword(8);
-        user.password =  Utils.hashPassword(generatedPassword);
+         user.password =  Utils.hashPassword(generatedPassword);
         if (!Utils.requiredCheck(user.firstname)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.USER.FIRSTNAME_EMPTY,
@@ -476,18 +476,18 @@ export class UserHandler extends BaseHandler {
                 q.leftJoin(`${AdminUserTableSchema.TABLE_NAME} AS user`, `user.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY}`);
                 q.leftJoin(`${SchoolTableSchema.TABLE_NAME}`,  `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`);
                 let condition 
-                if(session.userId=='1') {
+               // if(session.userId=='1') {
                     condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.RID}="${rid}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0`;
-                } else {
-                    condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.RID}="${rid}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0`;
-                }
+                //} else {
+                    //condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.RID}="${rid}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0`;
+                //}
                 q.whereRaw(condition); 
             }) 
         })
         .then((object) => {
             adminuser = object;
             
-            if (adminuser == null) {
+            if (adminuser == null && adminuser.models.length == 0) {
                 Utils.responseError(res, new Exception(
                     ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
                     MessageInfo.MI_USER_NOT_EXIST,
@@ -498,7 +498,7 @@ export class UserHandler extends BaseHandler {
             } else {
                 let adminUseData = AdminUserModel.fromDto(adminuser.models[0], ["password","createdBy"])
                // adminUseData["roleName"] = roles[adminUseData["roleId"]]; 
-               adminUseData["schoolName"]=object.get("school_name");
+               adminUseData["schoolName"]=object.models[0].get("school_name");
                 res.json(adminUseData);
             }
         })
@@ -511,6 +511,7 @@ export class UserHandler extends BaseHandler {
         let session: BearerObject = req[Properties.SESSION];
         let checkuser: BearerObject = req[Properties.CHECK_USER];
         let rid = req.params.rid || "";
+        let isActive=req.body.status;
         let user = AdminUserModel.fromRequest(req);
         user.createdBy = parseInt(session.userId);
         if (!Utils.requiredCheck(user.email)) {
@@ -547,13 +548,23 @@ export class UserHandler extends BaseHandler {
             ));
         }
 
-        if (!Utils.requiredCheck(status)) {
+        if (!Utils.requiredCheck(user.status)) {
             return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.STATUS,
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
                 MessageInfo.MI_STATUS_NOT_EMPTY,
                 false,
                 HttpStatus.BAD_REQUEST
             ));
+        }
+
+        if (!isActive || isActive != 0 && isActive != 1) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_STATUS_ERROR,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+
         }
         return Promise.then(() => {
             return AdminUserUseCase.findOne( q => {

@@ -68,7 +68,7 @@ export class StandardEntityUseCase extends BaseUseCase {
         }).enclose();
     }
 
-    public subjectIdCheck(codes:any) {
+    public subjectIdCheck(codes:any,schoolId:any) {
         let obj=[];
         let arr1=[];
         let data=[];
@@ -82,6 +82,7 @@ export class StandardEntityUseCase extends BaseUseCase {
                 return Promise.then(() => {
                     return SubjectEntityUseCase.findOne( q => {
                         q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,code);
+                        q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                         q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
                     });
                 }).then( object => {

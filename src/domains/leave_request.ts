@@ -31,7 +31,7 @@ export class LeaveRequestUseCase extends BaseUseCase {
             .then(object => {
                 if(object != null && object != undefined) {
                     let result = LeaveRequestModel.fromDto(object);
-                    let data = result.toDto();
+                    let data = leave.toDto();
                     return object.save(data, {patch: true});
                 }  
                   return Promise.void;

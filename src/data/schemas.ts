@@ -357,7 +357,7 @@ export const ExamTableSchema = {
     FIELDS: {
         RID:"rid",
         EXAM_ID:"exam_id",
-        SUBJECT_NAME: "subject_name",
+        SUBJECT_ID: "subject_id",
         QUESTION_URL:"question_url",
         SYLLABUS_URL:"sylabus_url",
         EXAM_TYPE:"exam_type",

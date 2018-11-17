@@ -463,6 +463,7 @@ export const MessageInfo = {
     MI_STUDENT_ID_IS_REQUIRED:"Student id is required.",
     MI_EXAM_TYPE_ID_IS_REQUIRED:"Exam type id is required.",
     MI_EXAM_MARKS_IS_REQUIRED:"Exam marks is required.",
+    MI_EXAM_RESULT_STATUS_IS_REQUIRED:"Exam result status is required.",
     MI_EXAM_RESULT_ID_NOT_FOUND:"Exam result id not found.",
     MI_LEAVE_TYPE_ID_NOT_FOUND:"Leave type id is required.",
     MI_SENT_BY_ID_IS_REQUIRED:"Sent by id is required.",

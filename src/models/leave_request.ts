@@ -34,6 +34,7 @@ export class LeaveRequestModel extends BaseModel {
             leave.createdBy=LeaveRequestModel.getNumber(req.body.createdBy);
             leave.isActive=LeaveRequestModel.getNumber(req.body.isActive);
             leave.schoolId=LeaveRequestModel.getNumber(req.body.schoolId);
+            leave.approvedBy=LeaveRequestModel.getNumber(req.body.approvedBy);
             return leave;
         }
         return null;
@@ -52,6 +53,7 @@ export class LeaveRequestModel extends BaseModel {
             let toDate = object.get(LeaveRequestTableSchema.FIELDS.TO_DATE);
             let attachments = object.get(LeaveRequestTableSchema.FIELDS.ATTACHMENTS);
             let notified = object.get(LeaveRequestTableSchema.FIELDS.NOTIFIED);
+            let approvedBy = object.get(LeaveRequestTableSchema.FIELDS.APPROVED_BY);
             let createdBy = object.get(LeaveRequestTableSchema.FIELDS.CREATED_BY);
             let isActive = object.get(LeaveRequestTableSchema.FIELDS.IS_ACTIVE);
             let createdDate = object.get(LeaveRequestTableSchema.FIELDS.CREATED_DATE);
@@ -65,6 +67,7 @@ export class LeaveRequestModel extends BaseModel {
             ret.approvalStatus = approvalStatus != null && approvalStatus !== "" ? approvalStatus : undefined;
             ret.description = description != null && description !== "" ? description : undefined;
             ret.dueDate = dueDate!= null && dueDate !== "" ? dueDate : undefined;
+            ret.approvedBy= approvedBy != null && approvedBy !== "" ? approvedBy : undefined;
             ret.createdBy= createdBy != null && createdBy !== "" ? createdBy : undefined;
             ret.toDate = toDate != null && toDate !== "" ? toDate : undefined;
             ret.notified = notified != null && notified !== "" ? notified : undefined;
@@ -98,6 +101,8 @@ export class LeaveRequestModel extends BaseModel {
         obj[LeaveRequestTableSchema.FIELDS.CREATED_BY] = this.createdBy;
         obj[LeaveRequestTableSchema.FIELDS.NOTIFIED] = this.notified;
         obj[LeaveRequestTableSchema.FIELDS.ATTACHMENTS] = this.attachments;
+        obj[LeaveRequestTableSchema.FIELDS.APPROVED_BY] = this.approvedBy;
+        obj[LeaveRequestTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
         obj[LeaveRequestTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
         return obj;
     }

@@ -31,6 +31,23 @@ export class AttendenceModel extends BaseModel {
         return null;
     }
 
+    public static fromRequestDetails(req:Request):AttendenceModel {
+        if (req != null && req.body) {
+            let attendence = new AttendenceModel();
+            attendence.standardId=AttendenceModel.getNumber(req.body.standardId);
+            attendence.attendenceId=AttendenceModel.getNumber(req.body.attendenceId);
+            attendence.schoolId=AttendenceModel.getNumber(req.body.schoolId);
+            attendence.classId=AttendenceModel.getNumber(req.body.classId);
+            attendence.userId=AttendenceModel.getNumber(req.body.userId);
+            attendence.status=AttendenceModel.getNumber(req.body.status);
+            attendence.isNotified=AttendenceModel.getNumber(req.body.isNotified);
+            attendence.reason=AttendenceModel.getString(req.body.reason);
+            attendence.isActive=AttendenceModel.getNumber(req.body.isActive);
+            attendence.createdBy=AttendenceModel.getNumber(req.body.createdBy);
+            return attendence;
+        }
+        return null;
+    }
     public static fromDto(object:any, filters?:string[]):AttendenceModel {
         if (object != null) {
             let rid = object.get(AttendenceTableSchema.FIELDS.RID);

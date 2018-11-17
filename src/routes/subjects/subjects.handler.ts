@@ -25,7 +25,7 @@ export class SubjectHandler extends BaseHandler {
         req.body.schoolId=schoolId;
         req.body.createdBy=session.userId;
         let subject = SubjectEntityModel.fromRequest(req);
-        let status = req.body.status;
+        let status = req.body.isActive;
         if (!Utils.requiredCheck(subject.subjectName)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -54,17 +54,38 @@ export class SubjectHandler extends BaseHandler {
 
         }
        return Promise.then(() => {
+           return SubjectEntityUseCase.findOne(q => {
+               q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_NAME}`,subject.subjectName);
+               q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+               q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
+           })
+       }).then((object) => {
+           if(object != null) {
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.NOT_FOUND,
+                MessageInfo.MI_SUBJECT_NAME_ALREADY_EXISTS,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+           }
         return SubjectEntityUseCase.create(subject);
-       }).catch(err => {
+       }).then((object) => {
+
+        let subjectData={}
+        subjectData["message"] = "Subject created successfully";
+        res.json(subjectData);
+    }).catch(err => {
         Utils.responseError(res, err);
       });
     }
 
     public static update(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
         let subject = SubjectEntityModel.fromRequest(req);
-        let status = req.body.status;
+        let status = req.body.isActive;
         if (!Utils.requiredCheck(subject.subjectName)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -109,7 +130,22 @@ export class SubjectHandler extends BaseHandler {
                 ));
                 return Promise.break;
             }
-           
+            return SubjectEntityUseCase.findOne(q => {
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_NAME}`,subject.subjectName);
+                q.whereNot(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.RID}`,rid);
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+        }).then((object) => {
+            if(object != null) {
+             Utils.responseError(res, new Exception(
+                 ErrorCode.RESOURCE.NOT_FOUND,
+                 MessageInfo.MI_SUBJECT_NAME_ALREADY_EXISTS,
+                 false,
+                 HttpStatus.BAD_REQUEST
+             ));
+             return Promise.break;
+            }
          return SubjectEntityUseCase.updateById(rid,subject);
 
         }).then((object) => {
@@ -157,7 +193,7 @@ export class SubjectHandler extends BaseHandler {
 
              q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);       
              q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
-                q.whereRaw(condition);               
+               // q.whereRaw(condition);               
                 if (searchobj) {
                     for (let key in searchobj) {
                         if(searchobj[key]!=null && searchobj[key]!=''){
@@ -208,7 +244,7 @@ export class SubjectHandler extends BaseHandler {
 
              q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
-                q.whereRaw(condition);               
+              //  q.whereRaw(condition);               
                 if (searchobj) {
                     for (let key in searchobj) {
                         if(searchobj[key]!=null && searchobj[key]!=''){

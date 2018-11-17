@@ -88,6 +88,7 @@ export class ExamResultModel extends BaseModel {
         obj[ExamResultTableSchema.FIELDS.CLASS_ID] = this.sectionId;
         obj[ExamResultTableSchema.FIELDS.CREATED_BY] = this.createdBy;
         obj[ExamResultTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
+        obj[ExamResultTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
         return obj;
     }
 }

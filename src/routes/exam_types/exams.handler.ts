@@ -25,7 +25,7 @@ export class ExamTypesHandler extends BaseHandler {
         req.body.schoolId=schoolId;
         req.body.createdBy=session.userId;
         let exams = ExamTypesModel.fromRequest(req);
-        let status = req.body.status;
+        let status = req.body.isActive;
         if (!Utils.requiredCheck(exams.typeName)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -50,7 +50,7 @@ export class ExamTypesHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        if (!Utils.requiredCheck(exams.noons)) {
+        if (!Utils.requiredCheck(exams.startTime)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
                 MessageInfo.MI_EXAM_START_TIME_IS_REQUIRED,
@@ -74,7 +74,6 @@ export class ExamTypesHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-
         if (!Utils.requiredCheck(exams.isActive)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -121,9 +120,10 @@ export class ExamTypesHandler extends BaseHandler {
 
     public static update(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
         let exams = ExamTypesModel.fromRequest(req);
-        let status = req.body.status;
+        let status = req.body.isActive;
         if (!Utils.requiredCheck(exams.typeName)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -148,7 +148,7 @@ export class ExamTypesHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        if (!Utils.requiredCheck(exams.noons)) {
+        if (!Utils.requiredCheck(exams.startTime)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
                 MessageInfo.MI_EXAM_START_TIME_IS_REQUIRED,
@@ -209,7 +209,7 @@ export class ExamTypesHandler extends BaseHandler {
                 return Promise.break;
             }
             return ExamTypesUseCase.findOne( q => {
-                q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,exams.schoolId);
+                q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.TYPE_NAME}`,exams.typeName);
                 q.whereNot(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.RID}`,rid);
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);            
@@ -271,7 +271,7 @@ export class ExamTypesHandler extends BaseHandler {
 
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
-                q.whereRaw(condition);               
+                //q.whereRaw(condition);               
                 if (searchobj) {
                     for (let key in searchobj) {
                         if(searchobj[key]!=null && searchobj[key]!=''){
@@ -328,7 +328,7 @@ export class ExamTypesHandler extends BaseHandler {
 
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
-                q.whereRaw(condition);               
+                //q.whereRaw(condition);               
                 if (searchobj) {
                     for (let key in searchobj) {
                         if(searchobj[key]!=null && searchobj[key]!=''){

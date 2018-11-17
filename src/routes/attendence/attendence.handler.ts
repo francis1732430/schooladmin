@@ -159,16 +159,16 @@ export class AttendenceHandler extends BaseHandler {
         let session: BearerObject = req[Properties.SESSION];
         let rid = req.params.rid || "";
         let schoolId:BearerObject = req[Properties.SCHOOL_ID];
-        let attendence = AttendenceModel.fromRequest(req);
-        let status = req.body.status;
-        if (!Utils.requiredCheck(attendence.attendenceId)) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.REQUIRED_ERROR,
-                MessageInfo.MI_ATTENDENCE_ID_IS_REQUIRED,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-        }
+        let attendence = AttendenceModel.fromRequestDetails(req);
+        let status = req.body.isActive;
+        // if (!Utils.requiredCheck(attendence.attendenceId)) {
+        //     return Utils.responseError(res, new Exception(
+        //         ErrorCode.RESOURCE.REQUIRED_ERROR,
+        //         MessageInfo.MI_ATTENDENCE_ID_IS_REQUIRED,
+        //         false,
+        //         HttpStatus.BAD_REQUEST
+        //     ));
+        // }
         
         
         if (!Utils.requiredCheck(attendence.standardId)) {
@@ -230,6 +230,7 @@ export class AttendenceHandler extends BaseHandler {
             }
             return StandardEntityUseCase.findOne(q => {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,attendence.standardId);
+               q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                    q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
                 });
            }).then((object) => {
@@ -264,6 +265,7 @@ export class AttendenceHandler extends BaseHandler {
     
            return ClassEntityUseCase.findOne(q => {
             q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,attendence.classId);
+            q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.IS_DELETED}`,0);
             });
        }).then((object) => {

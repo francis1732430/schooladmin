@@ -88,6 +88,8 @@ export class StandardHandler extends BaseHandler {
 
     public static update(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+        //req.body.schoolId=schoolId;
         let rid = req.params.rid || "";
         let standard = StandardEntityModel.fromRequest(req);
         let status = req.body.isActive;
@@ -143,7 +145,7 @@ export class StandardHandler extends BaseHandler {
                 ));
                 return Promise.break;
             }
-            return StandardEntityUseCase.subjectIdCheck(standard.subjectIds);
+            return StandardEntityUseCase.subjectIdCheck(standard.subjectIds,schoolId);
         }).then((object) => {
  
          if(object.obj1 == 0) {
@@ -328,7 +330,7 @@ export class StandardHandler extends BaseHandler {
 
                         return Promise.then(() => {
                             subjectData = StandardEntityModel.fromDto(obj, ["createdBy"]);
-                            return StandardEntityUseCase.subjectIdCheck(subjectData.subjectIds);
+                            return StandardEntityUseCase.subjectIdCheck(subjectData.subjectIds,schoolId);
                         }).then((obj) => {
                             subjectData["subjects"] = obj.obj2;
                             delete subjectData["subjectIds"];
@@ -356,6 +358,7 @@ export class StandardHandler extends BaseHandler {
 
     public static view(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
         let userId=session.userId;
         let adminuser:any;
@@ -371,7 +374,7 @@ export class StandardHandler extends BaseHandler {
         .then(object => {
             if (object !== null) {
                  result = StandardEntityModel.fromDto(object);
-                return StandardEntityUseCase.subjectIdCheck(result.subjectIds);
+                return StandardEntityUseCase.subjectIdCheck(result.subjectIds,schoolId);
             } else {
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.NOT_FOUND,

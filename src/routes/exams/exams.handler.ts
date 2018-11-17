@@ -1,12 +1,12 @@
 import { MessageInfo } from '../../libs/constants';
-import {ExamUseCase,ExamTypesUseCase,StandardEntityUseCase,ClassEntityUseCase} from "../../domains";
+import {ExamUseCase,ExamTypesUseCase,StandardEntityUseCase,ClassEntityUseCase,SubjectEntityUseCase} from "../../domains";
 import { ErrorCode, HttpStatus, MessageInfo, Properties, DefaultVal ,DATE_FORMAT} from "../../libs/constants";
 import { Utils } from "../../libs/utils";
 import {  Mailer } from "../../libs";
 import { Exception, ExamModel} from "../../models";
 import * as express from "express";
 import { Promise } from "thenfail";
-import { ExamTableSchema,ExamTypesTableSchema,StandardEntityTableSchema,ClassEntityTableSchema} from "../../data/schemas";
+import { ExamTableSchema,ExamTypesTableSchema,StandardEntityTableSchema,ClassEntityTableSchema,SubjectTableSchema} from "../../data/schemas";
 import { BaseHandler } from "../base.handler";
 import { BearerObject } from "../../libs/jwt";
 import * as formidable from "formidable";
@@ -25,8 +25,8 @@ export class ExamsHandler extends BaseHandler {
         req.body.schoolId=schoolId;
         req.body.createdBy=session.userId;
         let exams = ExamModel.fromRequest(req);
-        let status = req.body.status;
-        if (!Utils.requiredCheck(exams.subjectName)) {
+        let status = req.body.isActive;
+        if (!Utils.requiredCheck(exams.subjectId)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
                 MessageInfo.MI_SUBJECT_NAME_IS_REQUIRED,
@@ -89,16 +89,17 @@ export class ExamsHandler extends BaseHandler {
 
         return Promise.then(() => {
 
-            return ExamUseCase.findOne( q => {
-                q.where(`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.SUBJECT_NAME}`,exams.subjectName);
-                q.where(`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.IS_DELETED}`,0);
+            return SubjectEntityUseCase.findOne( q => {
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,exams.subjectId);
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object) => {
 
-            if(object != null) {
+            if(object == null) {
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-                    MessageInfo.MI_SUBJECT_NAME_ALREADY_EXISTS,
+                    MessageInfo.MI_SUBJECT_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -106,6 +107,7 @@ export class ExamsHandler extends BaseHandler {
             }
             return ExamTypesUseCase.findOne( q => {
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.EXAM_TYPE_ID}`,exams.examType);
+                q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -122,6 +124,7 @@ export class ExamsHandler extends BaseHandler {
             }
             return StandardEntityUseCase.findOne( q => {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,exams.standardId);
+                q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -137,6 +140,7 @@ export class ExamsHandler extends BaseHandler {
             }
             return ClassEntityUseCase.findOne( q => {
                 q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,exams.sectionId);
+                q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object) => {
@@ -162,10 +166,11 @@ export class ExamsHandler extends BaseHandler {
 
     public static update(req: express.Request, res: express.Response): any {
         let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
         let exams = ExamModel.fromRequest(req);
-        let status = req.body.status;
-        if (!Utils.requiredCheck(exams.subjectName)) {
+        let status = req.body.isActive;
+        if (!Utils.requiredCheck(exams.subjectId)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
                 MessageInfo.MI_SUBJECT_NAME_IS_REQUIRED,
@@ -242,17 +247,17 @@ export class ExamsHandler extends BaseHandler {
                 ));
                 return Promise.break; 
             }
-            return ExamUseCase.findOne( q => {
-                q.where(`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.SUBJECT_NAME}`,exams.subjectName);
-                q.whereNot(`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.RID}`,rid);
-                q.where(`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.IS_DELETED}`,0);
+            return SubjectEntityUseCase.findOne( q => {
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,exams.subjectId);
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+                q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object) => {
 
-            if(object != null) {
+            if(object == null) {
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-                    MessageInfo.MI_SUBJECT_NAME_ALREADY_EXISTS,
+                    MessageInfo.MI_SUBJECT_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -260,6 +265,7 @@ export class ExamsHandler extends BaseHandler {
             }
             return ExamTypesUseCase.findOne( q => {
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.EXAM_TYPE_ID}`,exams.examType);
+                q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -276,6 +282,7 @@ export class ExamsHandler extends BaseHandler {
             }
             return StandardEntityUseCase.findOne( q => {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,exams.standardId);
+                q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
@@ -291,6 +298,7 @@ export class ExamsHandler extends BaseHandler {
             }
             return ClassEntityUseCase.findOne( q => {
                 q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,exams.sectionId);
+                q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object) => {
@@ -303,7 +311,6 @@ export class ExamsHandler extends BaseHandler {
                 ));
                 return Promise.break; 
             }
-
             return ExamUseCase.updateById(rid,exams);
         }).then((object) => {
 
@@ -352,7 +359,7 @@ export class ExamsHandler extends BaseHandler {
              q.leftJoin(`${ClassEntityTableSchema.TABLE_NAME}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.SECTION_ID}`);
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
-                q.whereRaw(condition);               
+               // q.whereRaw(condition);               
                 if (searchobj) {
                     for (let key in searchobj) {
                         if(searchobj[key]!=null && searchobj[key]!=''){
@@ -406,8 +413,8 @@ export class ExamsHandler extends BaseHandler {
         })
             .then((totalObject) => {
                 total = totalObject;
-                return ExamTypesUseCase.findByQuery(q => {
-                   q.select(`${ExamTypesTableSchema.TABLE_NAME}.*`);
+                return ExamUseCase.findByQuery(q => {
+                   q.select(`${ExamTableSchema.TABLE_NAME}.*`,`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.TYPE_NAME}`);
                    let condition;
                    if(checkuser.roleId != 18) {
                    q.where(`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.CREATED_BY}`,session.userId);
@@ -417,7 +424,7 @@ export class ExamsHandler extends BaseHandler {
                    q.leftJoin(`${ClassEntityTableSchema.TABLE_NAME}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.SECTION_ID}`);
                    q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                    q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
-                      q.whereRaw(condition);               
+                     // q.whereRaw(condition);               
                       if (searchobj) {
                           for (let key in searchobj) {
                               if(searchobj[key]!=null && searchobj[key]!=''){
@@ -517,6 +524,7 @@ export class ExamsHandler extends BaseHandler {
                     //noinspection TypeScriptUnresolvedVariable
                     object.models.forEach(obj => {
                         let examData = ExamModel.fromDto(obj, ["createdBy","password"]); 
+                        examData["typeName"]=obj.get('type_name');
                         ret.push(examData);
                     });
                 }

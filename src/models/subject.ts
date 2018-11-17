@@ -23,6 +23,7 @@ export class SubjectEntityModel extends BaseModel {
             Subject.materialUrl=SubjectEntityModel.getString(req.body.materialUrl);
             Subject.refBooks=SubjectEntityModel.getString(req.body.refBooks);
             Subject.isActive=SubjectEntityModel.getNumber(req.body.isActive);
+            Subject.createdBy=SubjectEntityModel.getNumber(req.body.createdBy);
             return Subject;
         }
         return null;
@@ -76,6 +77,7 @@ export class SubjectEntityModel extends BaseModel {
         obj[SubjectTableSchema.FIELDS.MATERIAL_URL] = this.materialUrl;
         obj[SubjectTableSchema.FIELDS.REF_BOOKS] = this.refBooks;
         obj[SubjectTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
+        obj[SubjectTableSchema.FIELDS.CREATED_BY] = this.createdBy;
         return obj;
     }
 }

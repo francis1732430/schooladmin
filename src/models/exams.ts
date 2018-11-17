@@ -4,7 +4,7 @@ import {Request} from "express";
 
 export class ExamModel extends BaseModel {
     public examId:number;
-    public subjectName:string;
+    public subjectId:string;
     public questionUrl:string;
     public sylabusUrl:string;
     public examType:number;
@@ -20,7 +20,7 @@ export class ExamModel extends BaseModel {
         if (req != null && req.body) {
             let exam = new ExamModel();
             exam.examId=ExamModel.getNumber(req.body.examId);
-            exam.subjectName=ExamModel.getString(req.body.subjectName);
+            exam.subjectId=ExamModel.getString(req.body.subjectId);
             exam.questionUrl=ExamModel.getString(req.body.questionUrl);
             exam.sylabusUrl=ExamModel.getString(req.body.sylabusUrl);
             exam.examType=ExamModel.getNumber(req.body.examType);
@@ -40,7 +40,7 @@ export class ExamModel extends BaseModel {
         if (object != null) {
             let rid = object.get(ExamTableSchema.FIELDS.RID);
             let examId = object.get(ExamTableSchema.FIELDS.EXAM_ID);
-            let subjectName = object.get(ExamTableSchema.FIELDS.SUBJECT_NAME);
+            let subjectId = object.get(ExamTableSchema.FIELDS.SUBJECT_ID);
             let questionUrl = object.get(ExamTableSchema.FIELDS.QUESTION_URL);
             let sylabusUrl = object.get(ExamTableSchema.FIELDS.SYLLABUS_URL);
             let examType = object.get(ExamTableSchema.FIELDS.EXAM_TYPE);
@@ -55,7 +55,7 @@ export class ExamModel extends BaseModel {
             let ret = new ExamModel();
             ret.rid = rid != null && rid !== "" ? rid : undefined;
             ret.examId = examId!= null && examId !== "" ? examId: undefined;
-            ret.subjectName = subjectName != null && subjectName !== "" ? subjectName : undefined;
+            ret.subjectId = subjectId != null && subjectId !== "" ? subjectId : undefined;
             ret.questionUrl = questionUrl != null && questionUrl !== "" ? questionUrl : undefined;
             ret.sylabusUrl = sylabusUrl != null && sylabusUrl !== "" ? sylabusUrl : undefined;
             ret.examType = examType != null && examType !== "" ? examType : undefined;
@@ -83,7 +83,7 @@ export class ExamModel extends BaseModel {
     public toDto():any {
         let obj = {};
         obj[ExamTableSchema.FIELDS.EXAM_ID] = this.examId;
-        obj[ExamTableSchema.FIELDS.SUBJECT_NAME] = this.subjectName;
+        obj[ExamTableSchema.FIELDS.SUBJECT_ID] = this.subjectId;
         obj[ExamTableSchema.FIELDS.QUESTION_URL] = this.questionUrl;
         obj[ExamTableSchema.FIELDS.SYLLABUS_URL] = this.sylabusUrl;
         obj[ExamTableSchema.FIELDS.EXAM_TYPE] = this.examType;
@@ -93,6 +93,7 @@ export class ExamModel extends BaseModel {
         obj[ExamTableSchema.FIELDS.CREATED_BY] = this.createdBy;
         obj[ExamTableSchema.FIELDS.START_TIME] = this.startTime;
         obj[ExamTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
+        obj[ExamTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
         return obj;
     }
 }

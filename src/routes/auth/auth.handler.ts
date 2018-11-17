@@ -14,6 +14,7 @@ import {BaseHandler,languge} from "../base.handler";
 import {AdminUserModel} from "../../models/admin_user";
 const Something = '../../locale/my';
 import {Language} from '../../locale/my';
+let knex=require('knex');
 let util = require('util'); 
 
 
@@ -80,12 +81,14 @@ export class AuthHandler extends BaseHandler {
         let lastname;
         let email;
         let phoneNumber;
+        let parentId;
         return Promise.then(() => {
             console.log("userInfo");
            return AdminUserUseCase.findByQuery(q => {
                 q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,
                 `${AuthorizationRoleTableSchema.TABLE_NAME}.*`
                 );
+                q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as userName`));
                  let condition=`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.EMAIL} = "${emailOrPhone}"  or  ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.PHONE_NUMBER1} = "${emailOrPhone}"`;
                  q.whereRaw(condition)
                 q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`, 0);
@@ -104,11 +107,12 @@ export class AuthHandler extends BaseHandler {
                     if(object.models[0].get(AdminUserTableSchema.FIELDS.IS_ACTIVE)==1) {
                         if(object.models[0].get(AuthorizationRoleTableSchema.FIELDS.IS_DELETED)==0) {
                             //noinspection TypeScriptUnresolvedVariable
-                            console.log("rrrrrrrr");
+                            console.log("rrrrrrrr",object.models[0].get("parent_id"));
+                            parentId=object.models[0].get("parent_id");
                             userId = object.models[0].get(AdminUserTableSchema.FIELDS.USER_ID);
                             email = object.models[0].get(AdminUserTableSchema.FIELDS.EMAIL);
                             phoneNumber = object.models[0].get(AdminUserTableSchema.FIELDS.PHONE_NUMBER1);
-                            firstname = object.models[0].get(AdminUserTableSchema.FIELDS.FIRSTNAME);
+                            userName = object.models[0].get("userName");
                             lastname = object.models[0].get(AdminUserTableSchema.FIELDS.LASTNAME);
                             let hash = object.models[0].get(AdminUserTableSchema.FIELDS.PASSWORD);
                             console.log(Utils.hashPassword(password));
@@ -182,8 +186,11 @@ export class AuthHandler extends BaseHandler {
                 console.log(object);
                 let data = AdminUserSessionModel.fromDto(object);
                 data.userInfo = {};//firstname+' '+lastname;
-                data.userInfo.firstName = firstname; 
-                data.userInfo.lastName = lastname;
+                data.userInfo.userName = userName; 
+                data.userInfo.type="school";
+                if(parentId == 0 || parentId == 32 || parentId == 33 || parentId ==221){
+                    data.userInfo.type="global";
+                }
                 data.userInfo.email = email;
                 data.userInfo.role = userInfo['roleName'];
                 data.message = MessageInfo.MI_LOGIN;
