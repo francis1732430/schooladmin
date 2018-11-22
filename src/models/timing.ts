@@ -26,15 +26,15 @@ export class TimingModel extends BaseModel{
         return null;
     }
 
-    public static objRequest(req:Request):TimingModel {
+    // public static objRequest(req:Request):TimingModel {
 
-        let timing = new TimingModel();
-             timing.TimeId = TimingModel.getString(req.weakId);
-             timing.Time = TimingModel.getString(req.Time); 
-            timing.noon = TimingModel.getNumber(req.weakName);
-            timing.isActive = TimingModel.getNumber(req.isActive);
-            return timing;
-    }
+    //     let timing = new TimingModel();
+    //          timing.TimeId = TimingModel.getString(req.weakId);
+    //          timing.Time = TimingModel.getString(req.Time); 
+    //         timing.noon = TimingModel.getNumber(req.weakName);
+    //         timing.isActive = TimingModel.getNumber(req.isActive);
+    //         return timing;
+    // }
 
     public static fromDto(object:any,filters?:string[]):TimingModel {
 
@@ -43,6 +43,7 @@ export class TimingModel extends BaseModel{
             let Time = object.get(TimingTableSchema.FIELDS.TIME);
             let noon = object.get(TimingTableSchema.FIELDS.NOON);
             let isActive = object.get(TimingTableSchema.FIELDS);
+            
             let createdDate = object.get(TimingTableSchema.FIELDS.CREATED_DATE);
             let updatedDate = object.get(TimingTableSchema.FIELDS.UPDATED_DATE);
             let ret = new TimingModel();

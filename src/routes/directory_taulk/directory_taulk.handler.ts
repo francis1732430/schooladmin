@@ -1,4 +1,4 @@
-import { DirectoryTalukUseCase }from '../../domains';
+import { DirectoryTalukUseCase , DirectoryDistrictUseCase }from '../../domains';
 import { BaseHandler }from '../base.handler';
 import Promise from 'thenfail';
 import { DirectoryTalukModel }from '../../models';
@@ -27,16 +27,41 @@ export class District_taluka extends BaseHandler{
     public static taluka_create(req:express.Request ,res:express.Response){
 
         let taluka = DirectoryTalukModel.fromRequest(req);
+        let districtId = req.body.districtId;
+
+        if(!Utils.requiredCheck(taluka.cityName)){
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.INVALID_Districts_Name,
+                MessageInfo.MI_CITY_ID_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
 
         return Promise.then(()=>{
-            return DirectoryTalukUseCase.create(taluka);
+            return DirectoryDistrictUseCase.findById(districtId);
             
         }).then((object)=>{
 
-            let data ={};
+            if(object == null){
+
+                return Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_Districts_Name,
+                    MessageInfo.MI_DISTRICT_IS_NOTVALID,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));  
+            }
+            return Promise.break;
+           
+           
+        }).then((obj)=>{
+
+            console.log(obj)
+             let data ={};
             data["message"]="sucessfully created";
             res.json(data);
-           
+
         }).catch(err =>{
             Utils.responseError(res,err);
         })

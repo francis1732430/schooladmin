@@ -50,7 +50,7 @@ export class DirectoryTalukUseCase extends BaseUseCase {
             if(object){
                 let taluka = DirectoryTalukModel.fromDto(object);
                 let admin = {};
-                //admin[WeakTableSchema.FIELDS.IS_DELETED] = 1;
+                admin[DirectoryTalukTableSchema.FIELDS.IS_DELETED] = 1;
                 return object.save(admin, {patch:true})
             }else{
                 return Promise.reject(new Exception(

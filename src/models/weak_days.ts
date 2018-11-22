@@ -23,21 +23,22 @@ export class WeakDayModel extends BaseModel {
         return null;
     }
 
-    public static objRequest(req:Request):WeakDayModel {
+    // public static objRequest(req:Request):WeakDayModel {
 
-        let weakDay = new WeakDayModel();
-             weakDay.weakId = WeakDayModel.getString(req.weakId); 
-            weakDay.weakName = WeakDayModel.getString(req.weakName);
-            weakDay.isActive = WeakDayModel.getNumber(req.isActive);
-            return weakDay;
-    }
+    //     let weakDay = new WeakDayModel();
+    //          weakDay.weakId = WeakDayModel.getString(req.weakId); 
+    //         weakDay.weakName = WeakDayModel.getString(req.weakName);
+    //         weakDay.isActive = WeakDayModel.getNumber(req.isActive);
+    //         return weakDay;
+    // }
 
     public static fromDto(object:any,filters?:string[]):WeakDayModel {
 
         if(object != null){
             let weakId = object.get(WeakTableSchema.FIELDS.WEAK_ID);
             let weakName = object.get(WeakTableSchema.FIELDS.WEAK_NAME);
-            let isActive = object.get(WeakTableSchema.FIELDS);
+            let isActive = object.get(WeakTableSchema.FIELDS.IS_ACTIVE);
+
             let createdDate = object.get(WeakTableSchema.FIELDS.CREATED_DATE);
             let updatedDate = object.get(WeakTableSchema.FIELDS.UPDATED_DATE);
             let ret = new WeakDayModel();

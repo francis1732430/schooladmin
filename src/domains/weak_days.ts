@@ -54,7 +54,7 @@ export class WeakDayUseCase extends BaseUseCase{
             if(object){
                 let district = WeakDayModel.fromDto(object);
                 let admin = {};
-                //admin[WeakTableSchema.FIELDS.IS_DELETED] = 1;
+                admin[WeakTableSchema.FIELDS.IS_DELETED] = 1;
                 return object.save(admin, {patch:true})
             }else{
                 return Promise.reject(new Exception(

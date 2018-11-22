@@ -56,7 +56,7 @@ export class PreventUseCase extends BaseUseCase{
             if(object){
                 let prever = PreventModel.fromDto(object);
                 let admin = {};
-                //admin[WeakTableSchema.FIELDS.IS_DELETED] = 1;
+                admin[PreventionsTableSchemas.FIELDS.IS_DELETED] = 1;
                 return object.save(admin, {patch:true})
             }else{
                 return Promise.reject(new Exception(

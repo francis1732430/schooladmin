@@ -63,7 +63,7 @@ export class DirectoryDistrictModel extends BaseModel {
         let obj = {};
         obj[DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID] = this.districtId;
         obj[DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME] = this.districtName;
-        //obj[DirectoryDistrictTableSchema.FIELDS.STATE_NAME] = this.stateName;
+        obj[DirectoryDistrictTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
         obj[DirectoryDistrictTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
         return obj;
     }
