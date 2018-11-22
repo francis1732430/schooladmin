@@ -15,7 +15,10 @@ import {
     DirectoryCityTableSchema,
     DirectoryDistrictTableSchema,
     DirectoryTalukTableSchema,
-    SchoolTableSchema
+    SchoolTableSchema,
+    WeakTableSchema,
+    TimingTableSchema,
+    PreventionsTableSchemas
 } from "./schemas";
 import * as Bookshelf from "bookshelf";
 import * as UUID from "node-uuid";
@@ -149,5 +152,26 @@ export class DirectoryTalukDto extends BaseDto {
 export class SchoolDto extends BaseDto {
     get tableName():string {
         return SchoolTableSchema.TABLE_NAME;
+    }
+
+   
+}
+export class WeakTDto extends BaseDto {
+    get tableName():string {
+        return WeakTableSchema.TABLE_NAME;
+    }
+}
+
+export class TimingTDto extends BaseDto {
+
+    get tableName():string {
+        return TimingTableSchema.TABLE_NAME;
+    }
+}
+
+export class PrevenTDto extends BaseDto {
+
+    get tableName():string {
+        return PreventionsTableSchemas.TABLE_NAME;
     }
 }

@@ -12,4 +12,6 @@ export {DirectoryCityModel} from "./directory_city";
 export {DirectoryDistrictModel} from "./directory_district";
 export {DirectoryTalukModel} from "./directory_taluk";
 export {SchoolModel} from "./school_details";
-
+export {WeakDayModel}from "./weak_days";
+export { TimingModel }from "./timing";
+export {PreventModel}from "./prevention";

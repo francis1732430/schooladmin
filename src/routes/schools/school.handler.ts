@@ -193,7 +193,7 @@ export class SchoolHandler extends BaseHandler {
             if(object == null) {
                  Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.NOT_FOUND,
-                    MessageInfo.MI_DISTRICT_ID_NOT_FOUND,
+                    MessageInfo.MI_DISTRICT_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -440,7 +440,7 @@ export class SchoolHandler extends BaseHandler {
                 if(object == null) {
                      Utils.responseError(res, new Exception(
                         ErrorCode.RESOURCE.NOT_FOUND,
-                        MessageInfo.MI_DISTRICT_ID_NOT_FOUND,
+                        MessageInfo.MI_DISTRICT_NOT_FOUND,
                         false,
                         HttpStatus.BAD_REQUEST
                     ));

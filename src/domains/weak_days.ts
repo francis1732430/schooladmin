@@ -1,22 +1,24 @@
-import {DirectoryDistrictDto} from "../data/models";
-import {DirectoryDistrictTableSchema} from "../data/schemas";
+import { WeakTDto }from "../data/models";
+import { WeakTableSchema }from "../data/schemas";
 import {BearerObject, Logger} from "../libs";
 import {ErrorCode, HttpStatus, Properties, MessageInfo} from "../libs/constants";
 import {Utils} from "../libs/utils";
-import {Exception, DirectoryDistrictModel} from "../models";
+import {Exception, WeakDayModel} from "../models";
 import {Promise} from "thenfail";
 import {BaseUseCase} from "./base";
 
-export class DirectoryDistrictUseCase extends BaseUseCase {
 
-    constructor() {
+export class WeakDayUseCase extends BaseUseCase{
+
+    constructor(){ 
         super();
-        this.mysqlModel = DirectoryDistrictDto;
+        this.mysqlModel = WeakTDto;
     }
-    public create(district:DirectoryDistrictModel):Promise<any> {
-        console.log("rr",district);
+
+     public create(weakDay:WeakDayModel):Promise<any> {
+        console.log("rr",weakDay);
         return Promise.then(() => {
-                return DirectoryDistrictDto.create(DirectoryDistrictDto, district.toDto()).save();
+                return WeakTDto.create(WeakTDto, weakDay.toDto()).save();
             })
             .catch(err => {
                 return Promise.reject(Utils.parseDtoError(err));
@@ -24,16 +26,16 @@ export class DirectoryDistrictUseCase extends BaseUseCase {
             .enclose();
     }
 
-    public update(rid:string,district:DirectoryDistrictModel):Promise<any> {
+    public update(rid:string,weakDay:WeakDayModel):Promise<any> {
 
-        console.log("update",district);
+        console.log("update",weakDay);
         return Promise.then(()=>{
             return this.findById(rid)
         })
         .then(obj=>{
             if(obj != null && obj != undefined){
-                let dist = DirectoryDistrictModel.fromDto(obj);
-                let data = district.toDto();
+                let dist = WeakDayModel.fromDto(obj);
+                let data = weakDay.toDto();
                 return obj.save(data, {patch:true})
             }
             return Promise.void;
@@ -50,9 +52,9 @@ export class DirectoryDistrictUseCase extends BaseUseCase {
 
         }).then((object)=>{
             if(object){
-                let district = DirectoryDistrictModel.fromDto(object);
+                let district = WeakDayModel.fromDto(object);
                 let admin = {};
-                admin[DirectoryDistrictTableSchema.FIELDS.IS_DELETED] = 1;
+                //admin[WeakTableSchema.FIELDS.IS_DELETED] = 1;
                 return object.save(admin, {patch:true})
             }else{
                 return Promise.reject(new Exception(
@@ -66,7 +68,6 @@ export class DirectoryDistrictUseCase extends BaseUseCase {
             return Promise.reject(Utils.parseDtoError(err));
         }).enclose();
     }
-    
 }
 
-export default new DirectoryDistrictUseCase();
+export default new WeakDayUseCase();
