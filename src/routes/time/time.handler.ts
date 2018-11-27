@@ -26,32 +26,19 @@ export class TimeHabdler extends BaseHandler{
 
         let timeDay = TimingModel.fromRequest(req);
 
-        // if(!Utils.requiredCheck(timeDay.noon)){
-        //     return Utils.responseError(res, new Exception(
-        //         ErrorCode.RESOURCE.INVALID_Weak_Name,
-        //         MessageInfo.MI_WEAKNAME_IS_REQUIRED,
-        //         false,
-        //         HttpStatus.BAD_REQUEST
-        //     ));
-        // }
+        if(!Utils.requiredCheck(timeDay.Time)){
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_TIME_IS_REQUIRED,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
 
         return Promise.then(()=>{
             return TimingDayUseCase.create(timeDay);
-            // return WeakDayUseCase.findOne(q=>{
-            //     q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,weakDay.weakName);
-            // })
+            
         }).then((object)=>{
-
-            // if(object != null){
-            //     Utils.responseError(res, new Exception(
-            //         ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-            //         MessageInfo.MI_WEAKNAME_IS_NOT,
-            //         false,
-            //         HttpStatus.BAD_REQUEST
-            //     ));
-            //     return Promise.break;
-            // }
-
             let data ={};
             data["message"]="sucessfully created";
             res.json(data);
@@ -81,28 +68,13 @@ export class TimeHabdler extends BaseHandler{
             if(obj == null){
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-                    MessageInfo.MI_WEAKNAME_IS_NOT,
+                    MessageInfo.MI_TIME_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
                 return Promise.break;
             }
-            return TimingDayUseCase.findOne(q=>{
-                q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.TIME}`,timeDay.Time);
-                q.whereNot(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.RID}`,rid);
-                q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.IS_DELETED}`,0)
-            })
-        }).then((obj)=>{
-            if (obj != null) {
-                Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_Districts_Name,
-                MessageInfo.MI_DISTRICT_NOT_FOUND,
-                false,
-                HttpStatus.BAD_REQUEST
-                ));
-                return Promise.break;
-            }
-            
+              
             return TimingDayUseCase.update(rid,timeDay);
         }).then((object)=>{
 
@@ -131,8 +103,8 @@ export class TimeHabdler extends BaseHandler{
             console.log('321',object)
             if(object == null){
                 Utils.responseError(res, new Exception(
-                    ErrorCode.RESOURCE.INVALID_Districts_Name,
-                    MessageInfo.MI_DISTRICT_NOT_FOUND,
+                    ErrorCode.RESOURCE.NOT_FOUND,
+                    MessageInfo.MI_TIME_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                     ));
@@ -186,13 +158,16 @@ export class TimeHabdler extends BaseHandler{
                             console.log(searchobj[key]);
                             let searchval = searchobj[key];
                             let ColumnKey = Utils.changeSearchKey(key);
-                            if(key=='weakId'){
+                            if(key=='id'){
                                 condition = `(${TimingTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
-                            } else if(key=='weakName'){
+                            } else if(key=='time'){
                                 condition = `(${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.TIME} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
-                            }else if(key == 'isActive') {
+                            } else if(key=='noon'){
+                                condition = `(${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.NOON} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key == 'isActive') {
                                 condition = `(${TimingTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key == 'createdDate') {
@@ -219,17 +194,20 @@ export class TimeHabdler extends BaseHandler{
                     if(searchobj){
                         for(let key in searchobj){
                             if(searchobj[key] != null && searchobj[key] != ''){
-
+    
                                 console.log(searchobj[key]);
                                 let searchval = searchobj[key];
                                 let ColumnKey = Utils.changeSearchKey(key);
-                                if(key=='weakId'){
+                                if(key=='id'){
                                     condition = `(${TimingTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
-                                } else if(key=='weakName'){
+                                } else if(key=='time'){
                                     condition = `(${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.TIME} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
-                                }else if(key == 'isActive') {
+                                } else if(key=='noon'){
+                                    condition = `(${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.NOON} LIKE "%${searchval}%")`;
+                                    q.andWhereRaw(condition);
+                                } else if(key == 'isActive') {
                                     condition = `(${TimingTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
                                 } else if(key == 'createdDate') {
@@ -239,11 +217,9 @@ export class TimeHabdler extends BaseHandler{
                                     condition = `(${TimingTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
                                 }
-
                             }
                         }
                     }
-
                     if(offset != null){
                         q.offset(offset)
                     }
@@ -254,10 +230,12 @@ export class TimeHabdler extends BaseHandler{
                     if (sortKey != null && sortValue != '') {
                         if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
                             let ColumnSortKey = Utils.changeSearchKey(sortKey);
-                            if (sortKey == 'districtId') {
+                            if (sortKey == 'id') {
                                 q.orderBy(ColumnSortKey, sortValue);
-                            } else if (sortKey == 'districtName') {
+                            } else if (sortKey == 'time') {
                                 q.orderBy(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.TIME}`, sortValue);
+                            } else if (sortKey == 'noon') {
+                                q.orderBy(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.NOON}`, sortValue);
                             } else if (sortKey == 'isActive') {
                                 q.orderBy(ColumnSortKey, sortValue);
                             } else if (sortKey == 'createdDate') {
@@ -312,8 +290,8 @@ export class TimeHabdler extends BaseHandler{
                 return data;
             }else{
                 Utils.responseError(res, new Exception(
-                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
+                    ErrorCode.RESOURCE.NOT_FOUND,
+                    MessageInfo.MI_TIME_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -348,8 +326,8 @@ export class TimeHabdler extends BaseHandler{
 
             if(obj == null){
                 Utils.responseError(res, new Exception(
-                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
+                    ErrorCode.RESOURCE.NOT_FOUND,
+                    MessageInfo.MI_TIME_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));

@@ -440,10 +440,13 @@ export const MessageInfo = {
     MI_YOU_ARE_NOT_ALLOWED_EDIT_SCHOOL:"You are not allowed edit School.",
     MI_SCHOOL_IS_ALREADY_APPROVED:"School is already approved.",
     MI_USER_PASSWORD_NOT_EMPTY:"User password not empty.",
-    MI_DISTRICT_IS_VALID:"Districts alreadt exits",
+    MI_DISTRICT_ALREADY_EXISTS:"Districts alreadt exits",
     MI_DISTRICT_IS_NOTVALID:"Districts id not found",
     MI_WEAKNAME_IS_REQUIRED:"Weak_name is Required",
-    MI_WEAKNAME_IS_NOT:"weak name is failed"
+    MI_WEAKNAME_IS_ALREADY_EXISTS:"Weak name is already exists.",
+    MI_TIME_IS_REQUIRED:"Time is Required",
+    MI_TIME_ID_NOT_FOUND:"Time is not found.",
+    MI_WEAK_ID_NOT_FOUND:"Weak id not found.",
 };
 
 export const DefaultVal = {

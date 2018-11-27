@@ -36,26 +36,30 @@ export class weakHandler extends BaseHandler{
         }
 
         return Promise.then(()=>{
-            return WeakDayUseCase.create(weakDay);
-            // return WeakDayUseCase.findOne(q=>{
-            //     q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,weakDay.weakName);
-            // })
+            
+            return WeakDayUseCase.findOne(q => {
+                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,weakDay.weakName);
+                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0);
+            })
+            
         }).then((object)=>{
 
-            // if(object != null){
-            //     Utils.responseError(res, new Exception(
-            //         ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-            //         MessageInfo.MI_WEAKNAME_IS_NOT,
-            //         false,
-            //         HttpStatus.BAD_REQUEST
-            //     ));
-            //     return Promise.break;
-            // }
+            if(object != null){
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
+                    MessageInfo.MI_WEAKNAME_IS_ALREADY_EXISTS,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));
+                return Promise.break;
+            }
 
+            return WeakDayUseCase.create(weakDay);
+           
+        }).then(() => {
             let data ={};
             data["message"]="sucessfully created";
             res.json(data);
-           
         }).catch(err =>{
             Utils.responseError(res,err);
         })
@@ -81,7 +85,7 @@ export class weakHandler extends BaseHandler{
             if(obj == null){
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-                    MessageInfo.MI_WEAKNAME_IS_NOT,
+                    MessageInfo.MI_WEAK_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -95,8 +99,8 @@ export class weakHandler extends BaseHandler{
         }).then((obj)=>{
             if (obj != null) {
                 Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_Districts_Name,
-                MessageInfo.MI_DISTRICT_NOT_FOUND,
+                ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
+                MessageInfo.MI_WEAKNAME_IS_ALREADY_EXISTS,
                 false,
                 HttpStatus.BAD_REQUEST
                 ));
@@ -131,8 +135,8 @@ export class weakHandler extends BaseHandler{
             console.log('321',object)
             if(object == null){
                 Utils.responseError(res, new Exception(
-                    ErrorCode.RESOURCE.INVALID_Districts_Name,
-                    MessageInfo.MI_DISTRICT_NOT_FOUND,
+                    ErrorCode.RESOURCE.NOT_FOUND,
+                    MessageInfo.MI_WEAK_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                     ));
@@ -253,9 +257,9 @@ export class weakHandler extends BaseHandler{
                     if (sortKey != null && sortValue != '') {
                         if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
                             let ColumnSortKey = Utils.changeSearchKey(sortKey);
-                            if (sortKey == 'districtId') {
+                            if (sortKey == 'weakId') {
                                 q.orderBy(ColumnSortKey, sortValue);
-                            } else if (sortKey == 'districtName') {
+                            } else if (sortKey == 'weakName') {
                                 q.orderBy(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`, sortValue);
                             } else if (sortKey == 'isActive') {
                                 q.orderBy(ColumnSortKey, sortValue);
@@ -310,8 +314,8 @@ export class weakHandler extends BaseHandler{
                 return data;
             }else{
                 Utils.responseError(res, new Exception(
-                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
+                    ErrorCode.RESOURCE.NOT_FOUND,
+                    MessageInfo.MI_WEAK_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -345,8 +349,8 @@ export class weakHandler extends BaseHandler{
 
             if(obj == null){
                 Utils.responseError(res, new Exception(
-                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
+                    ErrorCode.RESOURCE.NOT_FOUND,
+                    MessageInfo.MI_WEAK_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));

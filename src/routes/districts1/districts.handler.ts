@@ -56,7 +56,7 @@ export class DistrictsHandler extends BaseHandler {
             if(object != null) {
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-                    MessageInfo.MI_DISTRICT_NOT_FOUND,
+                    MessageInfo.MI_DISTRICT_ALREADY_EXISTS,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -105,7 +105,7 @@ export class DistrictsHandler extends BaseHandler {
             if(Object == null){
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.INVALID_Districts_id,
-                    MessageInfo.MI_DISTRICT_IS_NOTVALID,
+                    MessageInfo.MI_DISTRICT_NOT_FOUND,
                     false, 
                     HttpStatus.BAD_REQUEST
                 ));
@@ -318,8 +318,8 @@ export class DistrictsHandler extends BaseHandler {
                 return data;
             }else{
                 Utils.responseError(res, new Exception(
-                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
+                    ErrorCode.RESOURCE.REQUIRED_ERROR,
+                    MessageInfo.MI_DISTRICT_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -351,8 +351,8 @@ export class DistrictsHandler extends BaseHandler {
                 console.log('obj',object);
             if(object == null){
                 Utils.responseError(res, new Exception(
-                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
+                    ErrorCode.RESOURCE.REQUIRED_ERROR,
+                    MessageInfo.MI_DISTRICT_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));

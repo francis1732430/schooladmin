@@ -32,17 +32,6 @@ export class PreventModel extends BaseModel {
         return null;
     }
 
-    public static objRequest(req:Request):PreventModel {
-
-        let prevent = new PreventModel();
-        prevent.preventId = PreventModel.getString(req.preventId);
-        prevent.preventTitle = PreventModel.getString(req.preventTitle);
-        prevent.preventCommand = PreventModel.getString(req.preventCommand);
-        prevent.isActive = PreventModel.getNumber(req.isActive);
-        return prevent;
-    }
-
-
     public static fromDto(object:any,filters?:string[]):PreventModel {
 
         if(object != null){

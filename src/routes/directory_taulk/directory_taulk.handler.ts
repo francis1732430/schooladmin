@@ -38,6 +38,15 @@ export class District_taluka extends BaseHandler{
             ));
         }
 
+        if(!Utils.requiredCheck(taluka.districtId)){
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_DISTRICT_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+
         return Promise.then(()=>{
             return DirectoryDistrictUseCase.findById(districtId);
             
@@ -82,6 +91,15 @@ export class District_taluka extends BaseHandler{
             ));
         }
 
+        if(!Utils.requiredCheck(taluka.districtId)){
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_DISTRICT_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+
         return Promise.then(()=>{
             return DirectoryTalukUseCase.findById(rid);
         }).then((obj)=>{
@@ -91,21 +109,6 @@ export class District_taluka extends BaseHandler{
                     MessageInfo.MI_WEAKNAME_IS_NOT,
                     false,
                     HttpStatus.BAD_REQUEST
-                ));
-                return Promise.break;
-            }
-            return DirectoryTalukUseCase.findOne(q=>{
-                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME}`,taluka.cityName);
-                q.whereNot(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.RID}`,rid);
-                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0)
-            })
-        }).then((obj)=>{
-            if (obj != null) {
-                Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_Districts_Name,
-                MessageInfo.MI_DISTRICT_NOT_FOUND,
-                false,
-                HttpStatus.BAD_REQUEST
                 ));
                 return Promise.break;
             }
@@ -186,7 +189,7 @@ export class District_taluka extends BaseHandler{
             return DirectoryTalukUseCase.countByQuery(q=>{
                 let condition;
                 q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
-
+                 q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`);
                 if(searchobj){
                     for(let key in searchobj){
                         if(searchobj[key] != null && searchobj[key] != ''){
@@ -194,13 +197,17 @@ export class District_taluka extends BaseHandler{
                             console.log(searchobj[key]);
                             let searchval = searchobj[key];
                             let ColumnKey = Utils.changeSearchKey(key);
-                            if(key=='weakId'){
+                            if(key=='cityId'){
                                 condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
-                            } else if(key=='weakName'){
+                            } else if(key=='cityName'){
                                 condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
-                            }else if(key == 'isActive') {
+                            } else if(key=='district_name'){
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } 
+                            else if(key == 'isActive') {
                                 condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key == 'createdDate') {
@@ -219,25 +226,29 @@ export class District_taluka extends BaseHandler{
                 total=totalObj;
                 return DirectoryTalukUseCase.findByQuery(q=>{
 
-                    q.select(`${DirectoryTalukTableSchema.TABLE_NAME}.*`);
+                    q.select(`${DirectoryTalukTableSchema.TABLE_NAME}.*`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME} as districtName`);
 
                     let condition;
                     q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
-
+                    q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`);
                     if(searchobj){
                         for(let key in searchobj){
                             if(searchobj[key] != null && searchobj[key] != ''){
-
+    
                                 console.log(searchobj[key]);
                                 let searchval = searchobj[key];
                                 let ColumnKey = Utils.changeSearchKey(key);
-                                if(key=='weakId'){
+                                if(key=='cityId'){
                                     condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
-                                } else if(key=='weakName'){
+                                } else if(key=='cityName'){
                                     condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
-                                }else if(key == 'isActive') {
+                                } else if(key=='district_name'){
+                                    condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
+                                    q.andWhereRaw(condition);
+                                } 
+                                else if(key == 'isActive') {
                                     condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
                                 } else if(key == 'createdDate') {
@@ -247,7 +258,6 @@ export class District_taluka extends BaseHandler{
                                     condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
                                 }
-
                             }
                         }
                     }
@@ -262,11 +272,13 @@ export class District_taluka extends BaseHandler{
                     if (sortKey != null && sortValue != '') {
                         if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
                             let ColumnSortKey = Utils.changeSearchKey(sortKey);
-                            if (sortKey == 'districtId') {
+                            if (sortKey == 'cityId') {
                                 q.orderBy(ColumnSortKey, sortValue);
-                            } else if (sortKey == 'districtName') {
+                            } else if (sortKey == 'cityName') {
                                 q.orderBy(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME}`, sortValue);
-                            } else if (sortKey == 'isActive') {
+                            } else if (sortKey == 'districtName') {
+                                q.orderBy(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`, sortValue);
+                            }else if (sortKey == 'isActive') {
                                 q.orderBy(ColumnSortKey, sortValue);
                             } else if (sortKey == 'createdDate') {
                                 q.orderBy(ColumnSortKey, sortValue);
@@ -283,6 +295,7 @@ export class District_taluka extends BaseHandler{
             if(object != null && object.models != null){
                 object.models.forEach(obj=>{
                     let districtList = DirectoryTalukModel.fromDto(obj,["createdBy","password"]);
+                    districtList['districtName']=obj.get('district_name');
                     data.push(districtList);
                 })
             }
@@ -346,7 +359,9 @@ export class District_taluka extends BaseHandler{
             return DirectoryTalukUseCase.findOne(q=>{
 
                 q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.RID}`,rid);
+                q.select(`${DirectoryTalukTableSchema.TABLE_NAME}.*`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME} as districtName`);
                 q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
+                q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`);
 
 
             })
@@ -357,7 +372,7 @@ export class District_taluka extends BaseHandler{
             if(obj == null){
                 Utils.responseError(res, new Exception(
                     ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
+                    MessageInfo.MI_CITY_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
