@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^2.0.0",
+    "@types/node": "^10.12.5",
     "aws-sdk": "^2.342.0",
     "bcrypt": "^0.8.7",
     "bluebird": "^3.4.3",

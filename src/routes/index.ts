@@ -7,6 +7,8 @@ import permission from "./permission/permission.router";
 import settings from "./settings/settings.router";
 import locations from "./locations/locations.router";
 import district from "./district/locations.router";
+import district1 from "./districts1/district.router";
+import directory_taulk from "./directory_taulk/directory_taluk.router";
 import schools from "./schools/school.router";
 import standards from "./standards/standard.router";
 import attendence from "./attendence/attendence.router";
@@ -19,6 +21,9 @@ import leaverequest from "./leave_request/leave.router";
 import calender from "./time_tables/time_tables.router";
 
 import me from "./me/me.router";
+import WeakDays from "./weakdays/weakdays.routes"
+import Timing from "./time/time.routes";
+import Prevent from "./prevent/prevent.router";
 import * as express from "express";
 const router = express.Router();
 router.use("/auth", auth);
@@ -40,7 +45,11 @@ router.use("/examresults",results);
 router.use("/subjects",subjects);
 router.use("/leaverequest",leaverequest);
 router.use("/calender",calender);
-
+router.use("/district1",district1)
+router.use("/taluka",directory_taulk)
+router.use("/weak",WeakDays)
+router.use("/time",Timing);
+router.use("/prevent",Prevent);
 
 router.get("/", (req:express.Request, res:express.Response) => {
     res.end();

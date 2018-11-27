@@ -55,6 +55,7 @@ export class TimingDayUseCase extends BaseUseCase{
                 let time = TimingModel.fromDto(object);
                 let admin = {};
                 //admin[WeakTableSchema.FIELDS.IS_DELETED] = 1;
+                admin[TimingTableSchema.FIELDS.IS_DELETED] = 1;
                 return object.save(admin, {patch:true})
             }else{
                 return Promise.reject(new Exception(

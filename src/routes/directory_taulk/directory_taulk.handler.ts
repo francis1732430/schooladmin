@@ -1,14 +1,16 @@
-import { WeakDayUseCase }from '../../domains'
-import baseHandler, { BaseHandler } from '../base.handler';
+import { DirectoryTalukUseCase , DirectoryDistrictUseCase }from '../../domains';
+import { BaseHandler }from '../base.handler';
 import Promise from 'thenfail';
-import { WeakDayModel } from '../../models';
+import { DirectoryTalukModel }from '../../models';
+
 
 import { Utils } from "../../libs/utils";
 import { ErrorCode, HttpStatus, MessageInfo, Properties, DefaultVal ,DATE_FORMAT} from "../../libs/constants";
 import { Exception, SchoolModel, AdminUserModel} from "../../models";
-//mport { DirectoryTalukUseCase } from '../../domains';
+
 import * as express from "express"
-import { WeakTableSchema } from '../../data/schemas';
+import { DirectoryTalukTableSchema ,DirectoryDistrictTableSchema } from '../../data/schemas';
+
 import { Expression } from 'aws-sdk/clients/costexplorer';
 import { promises } from 'fs';
 import { BearerObject } from "../../libs/jwt";
@@ -16,84 +18,71 @@ import { BearerObject } from "../../libs/jwt";
 
 
 
-export class weakHandler extends BaseHandler{
-   
+export class District_taluka extends BaseHandler{
+
     constructor(){
         super();
     }
 
-    public static create_weak(req:express.Request , res:express.Response){
+    public static taluka_create(req:express.Request ,res:express.Response){
 
-        let weakDay = WeakDayModel.fromRequest(req);
+        let taluka = DirectoryTalukModel.fromRequest(req);
+        let districtId = req.body.districtId;
 
-        if(!Utils.requiredCheck(weakDay.weakName)){
+        if(!Utils.requiredCheck(taluka.cityName)){
             return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.INVALID_Weak_Name,
-                MessageInfo.MI_WEAKNAME_IS_REQUIRED,
+                ErrorCode.RESOURCE.INVALID_Districts_Name,
+                MessageInfo.MI_CITY_ID_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+
+        if(!Utils.requiredCheck(taluka.districtId)){
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_DISTRICT_NOT_FOUND,
                 false,
                 HttpStatus.BAD_REQUEST
             ));
         }
 
         return Promise.then(()=>{
-<<<<<<< HEAD
-            return WeakDayUseCase.create(weakDay);
-            // return WeakDayUseCase.findOne(q=>{
-            //     q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,weakDay.weakName);
-            // })
-        }).then((object)=>{
-
-            // if(object != null){
-            //     Utils.responseError(res, new Exception(
-            //         ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-            //         MessageInfo.MI_WEAKNAME_IS_NOT,
-            //         false,
-            //         HttpStatus.BAD_REQUEST
-            //     ));
-            //     return Promise.break;
-            // }
-
-            let data ={};
-            data["message"]="sucessfully created";
-            res.json(data);
-           
-=======
-            
-            return WeakDayUseCase.findOne(q => {
-                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,weakDay.weakName);
-                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0);
-            })
+            return DirectoryDistrictUseCase.findById(districtId);
             
         }).then((object)=>{
 
-            if(object != null){
-                Utils.responseError(res, new Exception(
-                    ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-                    MessageInfo.MI_WEAKNAME_IS_ALREADY_EXISTS,
+            if(object == null){
+
+                return Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_Districts_Name,
+                    MessageInfo.MI_DISTRICT_IS_NOTVALID,
                     false,
                     HttpStatus.BAD_REQUEST
-                ));
-                return Promise.break;
+                ));  
             }
-
-            return WeakDayUseCase.create(weakDay);
+            return Promise.break;
            
-        }).then(() => {
-            let data ={};
+           
+        }).then((obj)=>{
+
+            console.log(obj)
+             let data ={};
             data["message"]="sucessfully created";
             res.json(data);
->>>>>>> city/feature
+
         }).catch(err =>{
             Utils.responseError(res,err);
         })
     }
 
-    public static update_weak(req:express.Request,res:express.Response){
+
+    public static district_taluka_update(req:express.Request,res:express.Response){
 
 
         let rid = req.params.rid || "";
-        let weakDay = WeakDayModel.fromRequest(req);
-        if(!Utils.requiredCheck(weakDay.weakName)){
+        let taluka = DirectoryTalukModel.fromRequest(req);
+        if(!Utils.requiredCheck(taluka.cityName)){
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_Weak_Name,
                 MessageInfo.MI_WEAKNAME_IS_REQUIRED,
@@ -102,48 +91,33 @@ export class weakHandler extends BaseHandler{
             ));
         }
 
+        if(!Utils.requiredCheck(taluka.districtId)){
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_DISTRICT_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
+
         return Promise.then(()=>{
-            return WeakDayUseCase.findById(rid);
+            return DirectoryTalukUseCase.findById(rid);
         }).then((obj)=>{
             if(obj == null){
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-<<<<<<< HEAD
                     MessageInfo.MI_WEAKNAME_IS_NOT,
-=======
-                    MessageInfo.MI_WEAK_ID_NOT_FOUND,
->>>>>>> city/feature
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
                 return Promise.break;
             }
-            return WeakDayUseCase.findOne(q=>{
-                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,weakDay.weakName);
-                q.whereNot(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.RID}`,rid);
-                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0)
-            })
-        }).then((obj)=>{
-            if (obj != null) {
-                Utils.responseError(res, new Exception(
-<<<<<<< HEAD
-                ErrorCode.RESOURCE.INVALID_Districts_Name,
-                MessageInfo.MI_DISTRICT_NOT_FOUND,
-=======
-                ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-                MessageInfo.MI_WEAKNAME_IS_ALREADY_EXISTS,
->>>>>>> city/feature
-                false,
-                HttpStatus.BAD_REQUEST
-                ));
-                return Promise.break;
-            }
             
-            return WeakDayUseCase.update(rid,weakDay);
+            return DirectoryTalukUseCase.update(rid,taluka);
         }).then((object)=>{
 
             console.log('11',object);
-            let weak = WeakDayModel.fromDto(object);
+            let weak = DirectoryTalukModel.fromDto(object);
            weak["message"] = "updated sucess";
             res.json(weak);
         }).catch(err=>{
@@ -151,35 +125,31 @@ export class weakHandler extends BaseHandler{
         });
     }
 
+
     public static destory(req:express.Request,res:express.Response){
 
         let rid = req.params.rid || "";
 
         return Promise.then(()=>{
 
-            return WeakDayUseCase.findOne(q=>{
+            return DirectoryTalukUseCase.findOne(q=>{
 
-                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.RID}`,rid);
-                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0);
+                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.RID}`,rid);
+                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object)=>{
 
             console.log('321',object)
             if(object == null){
                 Utils.responseError(res, new Exception(
-<<<<<<< HEAD
                     ErrorCode.RESOURCE.INVALID_Districts_Name,
                     MessageInfo.MI_DISTRICT_NOT_FOUND,
-=======
-                    ErrorCode.RESOURCE.NOT_FOUND,
-                    MessageInfo.MI_WEAK_ID_NOT_FOUND,
->>>>>>> city/feature
                     false,
                     HttpStatus.BAD_REQUEST
                     ));
                     return Promise.break;
             }
-            return WeakDayUseCase.destroy(rid);
+            return DirectoryTalukUseCase.destroy(rid);
 
         }).then((obj)=>{
 
@@ -191,6 +161,7 @@ export class weakHandler extends BaseHandler{
             Utils.responseError(res,err);
         })
     }
+
 
     public static list(req:express.Request,res:express.Response){
 
@@ -215,10 +186,10 @@ export class weakHandler extends BaseHandler{
         let total = 0;
         return Promise.then(()=>{
 
-            return WeakDayUseCase.countByQuery(q=>{
+            return DirectoryTalukUseCase.countByQuery(q=>{
                 let condition;
-                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0);
-
+                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
+                 q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`);
                 if(searchobj){
                     for(let key in searchobj){
                         if(searchobj[key] != null && searchobj[key] != ''){
@@ -226,20 +197,24 @@ export class weakHandler extends BaseHandler{
                             console.log(searchobj[key]);
                             let searchval = searchobj[key];
                             let ColumnKey = Utils.changeSearchKey(key);
-                            if(key=='weakId'){
-                                condition = `(${WeakTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                            if(key=='cityId'){
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
-                            } else if(key=='weakName'){
-                                condition = `(${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME} LIKE "%${searchval}%")`;
+                            } else if(key=='cityName'){
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
-                            }else if(key == 'isActive') {
-                                condition = `(${WeakTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                            } else if(key=='district_name'){
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } 
+                            else if(key == 'isActive') {
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key == 'createdDate') {
-                                condition = `(${WeakTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key == 'updatedDate') {
-                                condition = `(${WeakTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             }
                         }
@@ -249,37 +224,40 @@ export class weakHandler extends BaseHandler{
         }).then((totalObj)=>{
 
                 total=totalObj;
-                return WeakDayUseCase.findByQuery(q=>{
+                return DirectoryTalukUseCase.findByQuery(q=>{
 
-                    q.select(`${WeakTableSchema.TABLE_NAME}.*`);
+                    q.select(`${DirectoryTalukTableSchema.TABLE_NAME}.*`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME} as districtName`);
 
                     let condition;
-                    q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0);
-
+                    q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
+                    q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`);
                     if(searchobj){
                         for(let key in searchobj){
                             if(searchobj[key] != null && searchobj[key] != ''){
-
+    
                                 console.log(searchobj[key]);
                                 let searchval = searchobj[key];
                                 let ColumnKey = Utils.changeSearchKey(key);
-                                if(key=='weakId'){
-                                    condition = `(${WeakTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                if(key=='cityId'){
+                                    condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
-                                } else if(key=='weakName'){
-                                    condition = `(${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME} LIKE "%${searchval}%")`;
+                                } else if(key=='cityName'){
+                                    condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
-                                }else if(key == 'isActive') {
-                                    condition = `(${WeakTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                } else if(key=='district_name'){
+                                    condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
+                                    q.andWhereRaw(condition);
+                                } 
+                                else if(key == 'isActive') {
+                                    condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
                                 } else if(key == 'createdDate') {
-                                    condition = `(${WeakTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                    condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
                                 } else if(key == 'updatedDate') {
-                                    condition = `(${WeakTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                    condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
                                 }
-
                             }
                         }
                     }
@@ -294,17 +272,13 @@ export class weakHandler extends BaseHandler{
                     if (sortKey != null && sortValue != '') {
                         if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
                             let ColumnSortKey = Utils.changeSearchKey(sortKey);
-<<<<<<< HEAD
-                            if (sortKey == 'districtId') {
+                            if (sortKey == 'cityId') {
                                 q.orderBy(ColumnSortKey, sortValue);
+                            } else if (sortKey == 'cityName') {
+                                q.orderBy(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME}`, sortValue);
                             } else if (sortKey == 'districtName') {
-=======
-                            if (sortKey == 'weakId') {
-                                q.orderBy(ColumnSortKey, sortValue);
-                            } else if (sortKey == 'weakName') {
->>>>>>> city/feature
-                                q.orderBy(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`, sortValue);
-                            } else if (sortKey == 'isActive') {
+                                q.orderBy(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`, sortValue);
+                            }else if (sortKey == 'isActive') {
                                 q.orderBy(ColumnSortKey, sortValue);
                             } else if (sortKey == 'createdDate') {
                                 q.orderBy(ColumnSortKey, sortValue);
@@ -320,7 +294,8 @@ export class weakHandler extends BaseHandler{
             let data = [];
             if(object != null && object.models != null){
                 object.models.forEach(obj=>{
-                    let districtList = WeakDayModel.fromDto(obj,["createdBy","password"]);
+                    let districtList = DirectoryTalukModel.fromDto(obj,["createdBy","password"]);
+                    districtList['districtName']=obj.get('district_name');
                     data.push(districtList);
                 })
             }
@@ -330,13 +305,14 @@ export class weakHandler extends BaseHandler{
         })
     }
 
+
     public static massdelete(req:express.Request,res:express.Response){
 
         let rids = req.body.rids || "";
-        let weakId =[];
+        let DistrictId =[];
 
         if(rids){
-            weakId = JSON.parse(rids);
+            DistrictId = JSON.parse(rids);
         }else{
 
             Utils.responseError(res, new Exception(
@@ -348,17 +324,17 @@ export class weakHandler extends BaseHandler{
         }
         return Promise.then(()=>{
 
-            if(weakId != null){
-                let data =[];
-                weakId.forEach(rid=>{
-                    let del = WeakDayUseCase.destroy(rid)
+            if(DistrictId != null){
+                let data =[]; 
+                DistrictId.forEach(rid=>{
+                    let del = DirectoryTalukUseCase.destroy(rid)
                 });
                 console.log('data of',data);
                 return data;
             }else{
                 Utils.responseError(res, new Exception(
-                    ErrorCode.RESOURCE.NOT_FOUND,
-                    MessageInfo.MI_WEAK_ID_NOT_FOUND,
+                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
+                    MessageInfo.MI_USER_NOT_EXIST,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -373,16 +349,19 @@ export class weakHandler extends BaseHandler{
             Utils.responseError(res, err);
         })
     }
-    public static view_weaks(req:express.Required,res:express.Response){
+
+    public static view_district_taluka(req:express.Required,res:express.Response){
 
         let rid = req.params.rid;
 
         return Promise.then(()=>{
 
-            return WeakDayUseCase.findOne(q=>{
+            return DirectoryTalukUseCase.findOne(q=>{
 
-                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.RID}`,rid);
-                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0);
+                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.RID}`,rid);
+                q.select(`${DirectoryTalukTableSchema.TABLE_NAME}.*`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME} as districtName`);
+                q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
+                q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`);
 
 
             })
@@ -392,13 +371,8 @@ export class weakHandler extends BaseHandler{
 
             if(obj == null){
                 Utils.responseError(res, new Exception(
-<<<<<<< HEAD
                     ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
-=======
-                    ErrorCode.RESOURCE.NOT_FOUND,
-                    MessageInfo.MI_WEAK_ID_NOT_FOUND,
->>>>>>> city/feature
+                    MessageInfo.MI_CITY_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -407,7 +381,7 @@ export class weakHandler extends BaseHandler{
             }else{
 
 
-                let weak2 = WeakDayModel.fromDto(obj);
+                let weak2 = DirectoryTalukModel.fromDto(obj);
                  res.json(weak2);
             }
         }).catch(err=>{
@@ -415,5 +389,4 @@ export class weakHandler extends BaseHandler{
         })
 
     }
-
 }

@@ -6,7 +6,7 @@ import {Request} from "express";
 export class DirectoryDistrictModel extends BaseModel {
     public districtId:string;
     public districtName:string;
-    public stateName:string;
+    //public stateName:string;
     public isActive:number;
     public createdDate:string;
     public updatedDate:string;
@@ -33,14 +33,14 @@ export class DirectoryDistrictModel extends BaseModel {
         if (object != null) {
             let districtId = object.get(DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID);
             let districtName = object.get(DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME);
-            let stateName = object.get(DirectoryDistrictTableSchema.FIELDS.STATE_NAME);
+            //let stateName = object.get(DirectoryDistrictTableSchema.FIELDS.STATE_NAME);
             let isActive = object.get(DirectoryDistrictTableSchema.FIELDS.IS_ACTIVE);
             let createdDate = object.get(DirectoryDistrictTableSchema.FIELDS.CREATED_DATE);
             let updatedDate = object.get(DirectoryDistrictTableSchema.FIELDS.UPDATED_DATE);
             let ret = new DirectoryDistrictModel();
             ret.districtId = districtId != null && districtId !== "" ? districtId : undefined;
             ret.districtName = districtName != null && districtName !== "" ? districtName : undefined;
-            ret.stateName = stateName != null && stateName !== "" ? stateName : undefined;
+            //ret.stateName = stateName != null && stateName !== "" ? stateName : undefined;
             ret.isActive = isActive != null && isActive !== "" ? isActive : undefined;
             ret.createdDate = createdDate != null && createdDate !== "" ? createdDate : undefined;
             ret.updatedDate = updatedDate != null && updatedDate !== "" ? updatedDate : undefined;
@@ -63,7 +63,7 @@ export class DirectoryDistrictModel extends BaseModel {
         let obj = {};
         obj[DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID] = this.districtId;
         obj[DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME] = this.districtName;
-        obj[DirectoryDistrictTableSchema.FIELDS.STATE_NAME] = this.stateName;
+        obj[DirectoryDistrictTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
         obj[DirectoryDistrictTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
         return obj;
     }

@@ -19,6 +19,7 @@ export const Properties = {
     FORM_VIDEO_CATEGORY: "category",
     FORM_VIDEO_THUMBNAIL: "thumbnail",
     SCHOOL_ID:"schoolId",
+    PREVENT_ID:"preventions_id",
     CHECK_USER:"checkuser",
     CATEGORIES: ['Freshman', 'Sophomore', 'Senior', 'Junior'],
     STATUS: {
@@ -221,7 +222,10 @@ export const ErrorCode = {
         REQUIRED_ERROR: 1023,
         DOCUMENT_TYPE_NAME: 1266,
         STATUS: 1267,
-        IS_VALID_ERROR: 1303
+        IS_VALID_ERROR: 1303,
+        INVALID_Districts_Name:1304,
+        INVALID_Districts_id:1305,
+        INVALID_Weak_Name:1306
     },
     AUTHENTICATION: {
         TYPE: "Unknown",
@@ -430,7 +434,7 @@ export const MessageInfo = {
     MI_POSTAL_CODE_IS_REQUIRED:"Postal code is required.",
     MI_ADDRESS_IS_REQUIRED:"Address is required.",
     MI_INVALID_PHONE_NUMBER:"Invalid phone number.",
-    MI_DISTRICT_ID_NOT_FOUND:"District not found.",
+    MI_DISTRICT_NOT_FOUND:"District not found.",
     MI_CITY_ID_NOT_FOUND:"City not found.",
     MI_SCHOOL_CREATION_FAILED:"School creation failed.",
     MI_YOU_ARE_NOT_ALLOWED_EDIT_SCHOOL:"You are not allowed edit School.",
@@ -484,6 +488,13 @@ export const MessageInfo = {
     MI_WEAK_ID_IS_REQUIRED:"Weak id is required.",
     MI_START_TIME_IS_REQUIRED:"Start time is required.",
     MI_END_TIME_IS_REQUIRED:"End time is required.",
+    MI_DISTRICT_ALREADY_EXISTS:"Districts alreadt exits",
+    MI_DISTRICT_IS_NOTVALID:"Districts id not found",
+    MI_WEAKNAME_IS_REQUIRED:"Weak_name is Required",
+    MI_WEAKNAME_IS_ALREADY_EXISTS:"Weak name is already exists.",
+    MI_TIME_IS_REQUIRED:"Time is Required",
+    MI_TIME_ID_NOT_FOUND:"Time is not found.",
+    MI_WEAK_ID_NOT_FOUND:"Weak id not found.",
 };
 
 export const DefaultVal = {

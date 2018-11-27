@@ -23,3 +23,4 @@ export {AttendenceModel} from "./attendence";
 export {TimeTableModel} from "./time_table";
 export {WeakDayModel} from "./weak_days";
 export {TimingModel} from "./timing";
+export {PreventModel}from "./prevention";

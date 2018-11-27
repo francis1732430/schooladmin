@@ -23,3 +23,5 @@ export {default as AttendenceUseCase} from "./attendence";
 export {default as TimeTableUseCase} from "./time_table";
 export {default as WeakDayUseCase} from "./weak_days";
 export {default as TimingDayUseCase} from "./timing";
+export {default as PreventUseCase}from "./prevent";
+

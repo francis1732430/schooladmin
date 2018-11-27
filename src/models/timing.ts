@@ -26,15 +26,6 @@ export class TimingModel extends BaseModel{
         return null;
     }
 
-    public static objRequest(req:Request):TimingModel {
-
-        let timing = new TimingModel();
-             timing.TimeId = TimingModel.getString(req.weakId);
-             timing.Time = TimingModel.getString(req.Time); 
-            timing.noon = TimingModel.getNumber(req.weakName);
-            timing.isActive = TimingModel.getNumber(req.isActive);
-            return timing;
-    }
 
     public static fromDto(object:any,filters?:string[]):TimingModel {
 

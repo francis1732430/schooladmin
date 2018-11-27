@@ -1,24 +1,24 @@
-import { WeakTDto }from "../data/models";
-import { WeakTableSchema }from "../data/schemas";
+import { PrevenTDto }from "../data/models";
+import { PreventionsTableSchemas , AdminUserTableSchema }from "../data/schemas";
 import {BearerObject, Logger} from "../libs";
 import {ErrorCode, HttpStatus, Properties, MessageInfo} from "../libs/constants";
 import {Utils} from "../libs/utils";
-import {Exception, WeakDayModel} from "../models";
+import {Exception, PreventModel} from "../models";
 import {Promise} from "thenfail";
 import {BaseUseCase} from "./base";
+import {AdminUserUseCase}from "../domains";
 
 
-export class WeakDayUseCase extends BaseUseCase{
+export class PreventUseCase extends BaseUseCase{
 
-    constructor(){ 
+    constructor(){
         super();
-        this.mysqlModel = WeakTDto;
     }
 
-     public create(weakDay:WeakDayModel):Promise<any> {
-        console.log("rr",weakDay);
+    public create(prevent:PreventModel):Promise<any> {
+        console.log("rr",prevent);
         return Promise.then(() => {
-                return WeakTDto.create(WeakTDto, weakDay.toDto()).save();
+                return PrevenTDto.create(PrevenTDto, prevent.toDto()).save();
             })
             .catch(err => {
                 return Promise.reject(Utils.parseDtoError(err));
@@ -26,16 +26,17 @@ export class WeakDayUseCase extends BaseUseCase{
             .enclose();
     }
 
-    public update(rid:string,weakDay:WeakDayModel):Promise<any> {
 
-        console.log("update",weakDay);
+    public update(rid:string,prevent:PreventModel):Promise<any> {
+
+        console.log("update",prevent);
         return Promise.then(()=>{
             return this.findById(rid)
         })
         .then(obj=>{
             if(obj != null && obj != undefined){
-                let dist = WeakDayModel.fromDto(obj);
-                let data = weakDay.toDto();
+                let dist = PreventModel.fromDto(obj);
+                let data = prevent.toDto();
                 return obj.save(data, {patch:true})
             }
             return Promise.void;
@@ -45,6 +46,7 @@ export class WeakDayUseCase extends BaseUseCase{
 
     }
 
+
     public destroy(rid:string):any{
 
         return Promise.then(()=>{
@@ -52,10 +54,9 @@ export class WeakDayUseCase extends BaseUseCase{
 
         }).then((object)=>{
             if(object){
-                let district = WeakDayModel.fromDto(object);
+                let prever = PreventModel.fromDto(object);
                 let admin = {};
-                //admin[WeakTableSchema.FIELDS.IS_DELETED] = 1;
-                admin[WeakTableSchema.FIELDS.IS_DELETED] = 1;
+                admin[PreventionsTableSchemas.FIELDS.IS_DELETED] = 1;
                 return object.save(admin, {patch:true})
             }else{
                 return Promise.reject(new Exception(
@@ -69,6 +70,8 @@ export class WeakDayUseCase extends BaseUseCase{
             return Promise.reject(Utils.parseDtoError(err));
         }).enclose();
     }
+
+   
 }
 
-export default new WeakDayUseCase();
+export default new PreventUseCase();
