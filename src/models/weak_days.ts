@@ -9,6 +9,7 @@ export class WeakDayModel extends BaseModel {
     public createdDate:string;
     public isActive:number;
     public updatedDate:string;
+    public schoolId:string;
     
 
     public static fromRequest(req:Request):WeakDayModel {
@@ -17,6 +18,7 @@ export class WeakDayModel extends BaseModel {
             let weakDay = new WeakDayModel();
             weakDay.weakId = WeakDayModel.getString(req.body.weakId);
             weakDay.weakName = WeakDayModel.getString(req.body.weakName);
+            weakDay.schoolId = WeakDayModel.getString(req.body.schoolId);
            weakDay.isActive = WeakDayModel.getNumber(req.body.isActive);
             return weakDay;
         }
@@ -27,12 +29,15 @@ export class WeakDayModel extends BaseModel {
     public static fromDto(object:any,filters?:string[]):WeakDayModel {
 
         if(object != null){
+
+            let rid = object.get(WeakTableSchema.FIELDS.RID);
             let weakId = object.get(WeakTableSchema.FIELDS.WEAK_ID);
             let weakName = object.get(WeakTableSchema.FIELDS.WEAK_NAME);
             let isActive = object.get(WeakTableSchema.FIELDS.IS_ACTIVE);
             let createdDate = object.get(WeakTableSchema.FIELDS.CREATED_DATE);
             let updatedDate = object.get(WeakTableSchema.FIELDS.UPDATED_DATE);
             let ret = new WeakDayModel();
+            ret.rid = rid != null && rid !== "" ? rid : undefined;
             ret.weakId = weakId != null && weakId !== "" ? weakId : undefined;
             ret.weakName = weakName != null && weakName !== "" ? weakName : undefined;
             ret.isActive = isActive != null && isActive !== "" ? isActive : undefined;
@@ -53,6 +58,7 @@ export class WeakDayModel extends BaseModel {
         obj[WeakTableSchema.FIELDS.WEAK_ID] = this.weakId;
         obj[WeakTableSchema.FIELDS.WEAK_NAME] = this.weakName;
         obj[WeakTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
+        obj[WeakTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
         return obj;
     }
     

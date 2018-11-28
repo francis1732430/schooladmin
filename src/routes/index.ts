@@ -34,7 +34,7 @@ router.use("/permission", permission);
 router.use("/me", me);
 router.use("/settings", settings);
 router.use("/locations", locations);
-router.use("/district", district);
+router.use("/district", district1);
 router.use("/schools", schools);
 router.use("/standards", standards);
 router.use("/attendence", attendence);

@@ -35,6 +35,8 @@ export class PreventModel extends BaseModel {
     public static fromDto(object:any,filters?:string[]):PreventModel {
 
         if(object != null){
+
+            let rid = object.get(PreventionsTableSchemas.FIELDS.RID);
             let preventId = object.get(PreventionsTableSchemas.FIELDS.PREVENTIONS_ID);
             let preventTitle = object.get(PreventionsTableSchemas.FIELDS.PREVENTIONS_TITLE);
             let preventCommand = object.get(PreventionsTableSchemas.FIELDS.PREVENTIONS_COMMAND);
@@ -44,6 +46,8 @@ export class PreventModel extends BaseModel {
             let image = object.get(PreventionsTableSchemas.FIELDS.IMAGES);
             let createdBy = object.get(PreventionsTableSchemas.FIELDS.CREATED_BY);
             let ret = new PreventModel();
+
+            ret.rid = rid != null && rid !== "" ? rid : undefined;
             ret.preventId = preventId != null && preventId !== "" ? preventId : undefined;
             ret.preventTitle = preventTitle != null && preventTitle !== "" ? preventTitle : undefined;
             ret.preventCommand = preventCommand != null && preventCommand !== "" ? preventCommand : undefined;

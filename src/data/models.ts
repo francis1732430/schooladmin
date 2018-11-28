@@ -27,7 +27,8 @@ import {
     TimeTableTableSchema,
     WeakTableSchema,
     TimingTableSchema,
-    PreventionsTableSchemas
+    PreventionsTableSchemas,
+    NeetCenterTableSchema
 } from "./schemas";
 import * as Bookshelf from "bookshelf";
 import * as UUID from "node-uuid";
@@ -235,5 +236,12 @@ export class PrevenTDto extends BaseDto {
 
     get tableName():string {
         return PreventionsTableSchemas.TABLE_NAME;
+    }
+}
+
+export class NeetCenterDto extends BaseDto {
+
+    get tableName():string {
+        return NeetCenterTableSchema.TABLE_NAME;
     }
 }

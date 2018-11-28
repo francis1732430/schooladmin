@@ -33,6 +33,7 @@ export class DirectoryTalukModel extends BaseModel {
 
     public static fromDto(object:any, filters?:string[]):DirectoryTalukModel {
         if (object != null) {
+            let rid = object.get(DirectoryTalukTableSchema.FIELDS.RID);
             let cityId = object.get(DirectoryTalukTableSchema.FIELDS.CITY_ID);
             let cityName = object.get(DirectoryTalukTableSchema.FIELDS.CITY_NAME);
             let districtId = object.get(DirectoryTalukTableSchema.FIELDS.DISTRICT_ID);
@@ -40,6 +41,7 @@ export class DirectoryTalukModel extends BaseModel {
             let createdDate = object.get(DirectoryTalukTableSchema.FIELDS.CREATED_DATE);
             let updatedDate = object.get(DirectoryTalukTableSchema.FIELDS.UPDATED_DATE);
             let ret = new DirectoryTalukModel();
+            ret.rid = rid != null && rid !== "" ? rid : undefined;
             ret.cityId = cityId != null && cityId !== "" ? cityId : undefined;
             ret.cityName = cityName != null && cityName !== "" ? cityName : undefined;
             ret.districtId = districtId != null && districtId !== "" ? districtId : undefined;

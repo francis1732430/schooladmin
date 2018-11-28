@@ -14,16 +14,6 @@ import { Expression } from 'aws-sdk/clients/costexplorer';
 import { promises } from 'fs';
 import { BearerObject } from "../../libs/jwt";
 
-
-
-
-
-
-
-
-
-
-
 export class DistrictsHandler extends BaseHandler {
 
     constructor(){
@@ -31,7 +21,8 @@ export class DistrictsHandler extends BaseHandler {
     }
 
     public static districtcreate (req:express.Request , res:express.Response):any {
-        
+        let session: BearerObject = req[Properties.SESSION];
+        req.body.createdBy=session.userId;
         let district = DirectoryDistrictModel.fromRequest(req); 
 
         if(!Utils.requiredCheck(district.districtName)){
@@ -42,9 +33,6 @@ export class DistrictsHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-
-       
-
         
         return Promise.then(() => {
             return DirectoryDistrictUseCase.findOne( q => {
@@ -75,6 +63,7 @@ export class DistrictsHandler extends BaseHandler {
     public static district_update(req:express.Request , res:express.Response):any{
 
         let rid = req.params.rid || "";
+        let session: BearerObject = req[Properties.SESSION];
         let district = DirectoryDistrictModel.fromRequest(req); 
         if(!Utils.requiredCheck(district.districtName)){
             return Utils.responseError(res, new Exception(
@@ -85,17 +74,6 @@ export class DistrictsHandler extends BaseHandler {
             ));
         }
 
-        // return Promise.then(()=>{
-       
-        //     return DirectoryDistrictUseCase.update(rid,district)
-        //     console.log('111',rid)
-        // }).then(object=>{
-        //     let data1= DirectoryDistrictModel.fromDto(object);
-        //     data1["message"] = "districts update sucessfully";
-        //     res.json(data1); 
-        // }).catch(err=>{
-        //     Utils.responseError(res,err);
-        // })
         return Promise.then(()=>{
 
             return DirectoryDistrictUseCase.findById(rid)
@@ -121,7 +99,7 @@ export class DistrictsHandler extends BaseHandler {
             if (Object != null) {
                 Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_Districts_Name,
-                MessageInfo.MI_DISTRICT_NOT_FOUND,
+                MessageInfo.MI_DISTRICT_ALREADY_EXISTS,
                 false,
                 HttpStatus.BAD_REQUEST
                 ));
@@ -143,7 +121,7 @@ export class DistrictsHandler extends BaseHandler {
     public static destory(req :express.Request , res:express.Response): any{
 
         let rid = req.params.rid || "";
-
+        let session: BearerObject = req[Properties.SESSION];
         return Promise.then(()=>{
             return DirectoryDistrictUseCase.findOne(q=>{
                 q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.RID}`,rid);
@@ -164,7 +142,7 @@ export class DistrictsHandler extends BaseHandler {
         }).then((obj)=>{
             console.log('222',obj);
             //res.status(MessageInfo.MI_USER_NOT_EXIST)
-            res.json(HttpStatus.NO_CONTENT);
+            res.json({});
         }).catch(err=>{
             Utils.responseError(res,err);
         })
@@ -172,6 +150,7 @@ export class DistrictsHandler extends BaseHandler {
 
     public static list(req:express.Request, res:express.Response){
 
+        let session: BearerObject = req[Properties.SESSION];
         let offset = parseInt(req.query.offset) || null;
         let limit = parseInt(req.query.limit) || null;
         let sortKey;
@@ -295,7 +274,7 @@ export class DistrictsHandler extends BaseHandler {
         
     }
     public static massdelete(req:express.Request, res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
         let rids = req.body.rids || "";
         let districtId = [];
         if(rids){
@@ -338,7 +317,7 @@ export class DistrictsHandler extends BaseHandler {
     public static view(req:express.Request,res:express.Response){
 
         let rid = req.params.rid;
-
+        let session: BearerObject = req[Properties.SESSION];
         return Promise.then(()=>{
             return DirectoryDistrictUseCase.findOne(q=>{
 

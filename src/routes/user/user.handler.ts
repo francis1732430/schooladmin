@@ -27,6 +27,7 @@ export class UserHandler extends BaseHandler {
         req.body.createdBy = session.userId;
         let checkuser: BearerObject = req[Properties.CHECK_USER];
         //req.body.schoolId=checkuser.schoolId;
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let user = AdminUserModel.fromRequest(req);
         let status = req.body.status;
         console.log(user);
@@ -218,9 +219,9 @@ export class UserHandler extends BaseHandler {
             .then((totalObject) => {
                 total = totalObject;
                 return AdminUserUseCase.findByQuery(q => {
-                    q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,
-                        `ar.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,
-                        `arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,
+                    q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`ar.*`,`ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} as rolesId`,
+                        `ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,
+                        `ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,
                         `user.${AdminUserTableSchema.FIELDS.FIRSTNAME} AS createdByFname`,
                         `user.${AdminUserTableSchema.FIELDS.LASTNAME}  AS createdByLname`,
                          `${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`);
@@ -259,7 +260,7 @@ export class UserHandler extends BaseHandler {
                                 let searchval = searchobj[key];
                                 let ColumnKey = Utils.changeSearchKey(key);
                                 if(key=='roleName'){
-                                    condition = `(arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
+                                    condition = `(ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
                                 } else if(key=='createdByName'){
                                     condition = `CONCAT(user.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', user.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
@@ -332,9 +333,17 @@ export class UserHandler extends BaseHandler {
                     //noinspection TypeScriptUnresolvedVariable
                     object.models.forEach(obj => {
                         let adminUseData = AdminUserModel.fromDto(obj, ["createdBy","password"])
-                        
+                      //  console.log(obj.get('rolesId'));
                        //adminUseData["roleName"] = roles[adminUseData["roleId"]]; 
-                        ret.push(adminUseData);
+                       if(obj != null) {
+                        // console.log(obj.get('rolesId'));
+                        if(obj.get('rolesId') != null){
+                            adminUseData['rolesId']=obj.get('rolesId');
+                            //adminUseData['parentId']=obj.get('parentId');
+                            ret.push(adminUseData);
+                        }
+                       
+                       }
                     });
                 }
                 
@@ -512,6 +521,7 @@ export class UserHandler extends BaseHandler {
         let checkuser: BearerObject = req[Properties.CHECK_USER];
         let rid = req.params.rid || "";
         let isActive=req.body.status;
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let user = AdminUserModel.fromRequest(req);
         user.createdBy = parseInt(session.userId);
         if (!Utils.requiredCheck(user.email)) {
@@ -594,13 +604,56 @@ export class UserHandler extends BaseHandler {
                     ));
                     return Promise.break;
                 } else {
-                    return AdminUserUseCase.updateById(rid, user);
+                    return AdminUserUseCase.updateById(rid, user,schoolId);
                 }
             })
-            .then(object => { 
-                let userData = AdminUserModel.fromDto(object, ["createdByName","password","createdDate","updatedDate","createdBy"]);
-                AuthorizationRoleUseCase.updateUserRole(req.body.roleId, userData["userId"]);
-                userData["roleId"] = req.body.roleId;
+            .then((object) => {
+
+                console.log(object)
+                return AuthorizationRoleUseCase.findOne(q => {
+
+                    q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,object.get('user_id'));
+                    q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+                    
+                })
+
+            }).then(object => { 
+               
+                if(object == null ){
+                    if (object == null) {
+                        Utils.responseError(res, new Exception(
+                            ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
+                            MessageInfo.MI_ROLE_NOT_FOUND,
+                            false, 
+                            HttpStatus.BAD_REQUEST
+                        ));
+                        return Promise.break;
+                    }   
+                }
+
+                if(user.assignedDistrict != null && user.assignedDistrict != undefined ) {
+                    if(session.userId == '1') {
+                        return  AuthorizationRoleUseCase.updateUserRole(object.get("role_id"),object.get("user_id"),user); 
+                    } else {
+                        if (object == null) {
+                            Utils.responseError(res, new Exception(
+                                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                                MessageInfo.MI_PERMISSION_DENIED,
+                                false, 
+                                HttpStatus.BAD_REQUEST
+                            ));
+                            return Promise.break;
+                        }   
+                    } 
+
+                }
+            }).then((object) => {
+
+                //let userData = AdminUserModel.fromDto(object, ["createdByName","password","createdDate","updatedDate","createdBy"]);
+               let userData={};
+               if(user.assignedDistrict != null && user.assignedDistrict != undefined){
+                userData["roleId"] = object.get("roleId");
+               }
                 userData["message"] = MessageInfo.MI_USER_UPDATED;
                 res.json(userData);
             })

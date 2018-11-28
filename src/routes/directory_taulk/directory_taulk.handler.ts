@@ -25,14 +25,15 @@ export class District_taluka extends BaseHandler{
     }
 
     public static taluka_create(req:express.Request ,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        req.body.createdBy=session.userId;
         let taluka = DirectoryTalukModel.fromRequest(req);
         let districtId = req.body.districtId;
 
         if(!Utils.requiredCheck(taluka.cityName)){
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_Districts_Name,
-                MessageInfo.MI_CITY_ID_NOT_FOUND,
+                MessageInfo.MI_CITY_NAME_IS_REQUIRED,
                 false,
                 HttpStatus.BAD_REQUEST
             ));
@@ -48,20 +49,24 @@ export class District_taluka extends BaseHandler{
         }
 
         return Promise.then(()=>{
-            return DirectoryDistrictUseCase.findById(districtId);
+            return DirectoryDistrictUseCase.findOne(q => {
+                q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,taluka.districtId);
+                q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.IS_DELETED}`,0);
+            });
             
         }).then((object)=>{
 
             if(object == null){
 
-                return Utils.responseError(res, new Exception(
+                Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.INVALID_Districts_Name,
                     MessageInfo.MI_DISTRICT_IS_NOTVALID,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));  
+                return Promise.break;
             }
-            return Promise.break;
+          return DirectoryTalukUseCase.create(taluka)
            
            
         }).then((obj)=>{
@@ -78,8 +83,7 @@ export class District_taluka extends BaseHandler{
 
 
     public static district_taluka_update(req:express.Request,res:express.Response){
-
-
+        let session: BearerObject = req[Properties.SESSION];
         let rid = req.params.rid || "";
         let taluka = DirectoryTalukModel.fromRequest(req);
         if(!Utils.requiredCheck(taluka.cityName)){
@@ -106,13 +110,29 @@ export class District_taluka extends BaseHandler{
             if(obj == null){
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-                    MessageInfo.MI_WEAKNAME_IS_NOT,
+                    MessageInfo.MI_CITY_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
                 return Promise.break;
             }
+            return DirectoryDistrictUseCase.findOne(q => {
+                q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,taluka.districtId);
+                q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.IS_DELETED}`,0);
+            });
             
+        }).then((object)=>{
+
+            if(object == null){
+
+                Utils.responseError(res, new Exception(
+                    ErrorCode.RESOURCE.INVALID_Districts_Name,
+                    MessageInfo.MI_DISTRICT_IS_NOTVALID,
+                    false,
+                    HttpStatus.BAD_REQUEST
+                ));  
+                return Promise.break;
+            }
             return DirectoryTalukUseCase.update(rid,taluka);
         }).then((object)=>{
 
@@ -127,7 +147,7 @@ export class District_taluka extends BaseHandler{
 
 
     public static destory(req:express.Request,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
         let rid = req.params.rid || "";
 
         return Promise.then(()=>{
@@ -155,7 +175,7 @@ export class District_taluka extends BaseHandler{
 
             console.log('222',obj);
             //res.status(MessageInfo.MI_USER_NOT_EXIST)
-            res.json(HttpStatus.NO_CONTENT);
+            res.json({});
 
         }).catch(err=>{
             Utils.responseError(res,err);
@@ -164,7 +184,7 @@ export class District_taluka extends BaseHandler{
 
 
     public static list(req:express.Request,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
         let offset = parseInt(req.query.offset) || null;
         let limit = parseInt(req.query.limit) || null;
         let sortKey;
@@ -307,7 +327,7 @@ export class District_taluka extends BaseHandler{
 
 
     public static massdelete(req:express.Request,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
         let rids = req.body.rids || "";
         let DistrictId =[];
 
@@ -351,7 +371,7 @@ export class District_taluka extends BaseHandler{
     }
 
     public static view_district_taluka(req:express.Required,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
         let rid = req.params.rid;
 
         return Promise.then(()=>{
@@ -382,7 +402,8 @@ export class District_taluka extends BaseHandler{
 
 
                 let weak2 = DirectoryTalukModel.fromDto(obj);
-                 res.json(weak2);
+                weak2['districtName']=obj.get('districtName')
+                res.json(weak2);
             }
         }).catch(err=>{
             Utils.responseError(res, err);

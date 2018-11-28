@@ -31,6 +31,7 @@ export class DirectoryDistrictModel extends BaseModel {
     }
     public static fromDto(object:any, filters?:string[]):DirectoryDistrictModel {
         if (object != null) {
+            let rid = object.get(DirectoryDistrictTableSchema.FIELDS.RID);
             let districtId = object.get(DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID);
             let districtName = object.get(DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME);
             //let stateName = object.get(DirectoryDistrictTableSchema.FIELDS.STATE_NAME);
@@ -38,6 +39,7 @@ export class DirectoryDistrictModel extends BaseModel {
             let createdDate = object.get(DirectoryDistrictTableSchema.FIELDS.CREATED_DATE);
             let updatedDate = object.get(DirectoryDistrictTableSchema.FIELDS.UPDATED_DATE);
             let ret = new DirectoryDistrictModel();
+            ret.rid = rid != null && rid !== "" ? rid : undefined;
             ret.districtId = districtId != null && districtId !== "" ? districtId : undefined;
             ret.districtName = districtName != null && districtName !== "" ? districtName : undefined;
             //ret.stateName = stateName != null && stateName !== "" ? stateName : undefined;

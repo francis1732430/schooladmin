@@ -495,6 +495,10 @@ export const MessageInfo = {
     MI_TIME_IS_REQUIRED:"Time is Required",
     MI_TIME_ID_NOT_FOUND:"Time is not found.",
     MI_WEAK_ID_NOT_FOUND:"Weak id not found.",
+    MI_CITY_NAME_IS_REQUIRED:"City name is required.",
+    MI_TIME_ALREADY_EXISTS:"Time is already exists.",
+    MI_PREVENT_TITLE_IS_REQUIRED:"Prevent title is required.",
+    MI_PREVENT_ID_NOT_FOUND:"Prevent id not found.",
 };
 
 export const DefaultVal = {

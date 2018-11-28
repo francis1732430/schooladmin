@@ -23,7 +23,10 @@ export class weakHandler extends BaseHandler{
     }
 
     public static create_weak(req:express.Request , res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+        req.body.schoolId=schoolId;
+        req.body.createdBy=session.userId;
         let weakDay = WeakDayModel.fromRequest(req);
 
         if(!Utils.requiredCheck(weakDay.weakName)){
@@ -36,31 +39,9 @@ export class weakHandler extends BaseHandler{
         }
 
         return Promise.then(()=>{
-<<<<<<< HEAD
-            return WeakDayUseCase.create(weakDay);
-            // return WeakDayUseCase.findOne(q=>{
-            //     q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,weakDay.weakName);
-            // })
-        }).then((object)=>{
-
-            // if(object != null){
-            //     Utils.responseError(res, new Exception(
-            //         ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-            //         MessageInfo.MI_WEAKNAME_IS_NOT,
-            //         false,
-            //         HttpStatus.BAD_REQUEST
-            //     ));
-            //     return Promise.break;
-            // }
-
-            let data ={};
-            data["message"]="sucessfully created";
-            res.json(data);
-           
-=======
-            
             return WeakDayUseCase.findOne(q => {
                 q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,weakDay.weakName);
+                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.SCHOOL_ID}`,weakDay.schoolId);
                 q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0);
             })
             
@@ -82,15 +63,14 @@ export class weakHandler extends BaseHandler{
             let data ={};
             data["message"]="sucessfully created";
             res.json(data);
->>>>>>> city/feature
         }).catch(err =>{
             Utils.responseError(res,err);
         })
     }
 
     public static update_weak(req:express.Request,res:express.Response){
-
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
         let weakDay = WeakDayModel.fromRequest(req);
         if(!Utils.requiredCheck(weakDay.weakName)){
@@ -108,11 +88,7 @@ export class weakHandler extends BaseHandler{
             if(obj == null){
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
-<<<<<<< HEAD
-                    MessageInfo.MI_WEAKNAME_IS_NOT,
-=======
                     MessageInfo.MI_WEAK_ID_NOT_FOUND,
->>>>>>> city/feature
                     false,
                     HttpStatus.BAD_REQUEST
                 ));
@@ -121,18 +97,14 @@ export class weakHandler extends BaseHandler{
             return WeakDayUseCase.findOne(q=>{
                 q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,weakDay.weakName);
                 q.whereNot(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.RID}`,rid);
+                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.SCHOOL_ID}`,weakDay.schoolId);
                 q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0)
             })
         }).then((obj)=>{
             if (obj != null) {
                 Utils.responseError(res, new Exception(
-<<<<<<< HEAD
-                ErrorCode.RESOURCE.INVALID_Districts_Name,
-                MessageInfo.MI_DISTRICT_NOT_FOUND,
-=======
                 ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
                 MessageInfo.MI_WEAKNAME_IS_ALREADY_EXISTS,
->>>>>>> city/feature
                 false,
                 HttpStatus.BAD_REQUEST
                 ));
@@ -152,9 +124,9 @@ export class weakHandler extends BaseHandler{
     }
 
     public static destory(req:express.Request,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
-
         return Promise.then(()=>{
 
             return WeakDayUseCase.findOne(q=>{
@@ -167,13 +139,9 @@ export class weakHandler extends BaseHandler{
             console.log('321',object)
             if(object == null){
                 Utils.responseError(res, new Exception(
-<<<<<<< HEAD
-                    ErrorCode.RESOURCE.INVALID_Districts_Name,
-                    MessageInfo.MI_DISTRICT_NOT_FOUND,
-=======
+
                     ErrorCode.RESOURCE.NOT_FOUND,
                     MessageInfo.MI_WEAK_ID_NOT_FOUND,
->>>>>>> city/feature
                     false,
                     HttpStatus.BAD_REQUEST
                     ));
@@ -193,7 +161,8 @@ export class weakHandler extends BaseHandler{
     }
 
     public static list(req:express.Request,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let offset = parseInt(req.query.offset) || null;
         let limit = parseInt(req.query.limit) || null;
         let sortKey;
@@ -218,7 +187,7 @@ export class weakHandler extends BaseHandler{
             return WeakDayUseCase.countByQuery(q=>{
                 let condition;
                 q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0);
-
+                q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 if(searchobj){
                     for(let key in searchobj){
                         if(searchobj[key] != null && searchobj[key] != ''){
@@ -255,7 +224,7 @@ export class weakHandler extends BaseHandler{
 
                     let condition;
                     q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.IS_DELETED}`,0);
-
+                    q.where(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                     if(searchobj){
                         for(let key in searchobj){
                             if(searchobj[key] != null && searchobj[key] != ''){
@@ -294,15 +263,9 @@ export class weakHandler extends BaseHandler{
                     if (sortKey != null && sortValue != '') {
                         if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
                             let ColumnSortKey = Utils.changeSearchKey(sortKey);
-<<<<<<< HEAD
-                            if (sortKey == 'districtId') {
-                                q.orderBy(ColumnSortKey, sortValue);
-                            } else if (sortKey == 'districtName') {
-=======
                             if (sortKey == 'weakId') {
                                 q.orderBy(ColumnSortKey, sortValue);
                             } else if (sortKey == 'weakName') {
->>>>>>> city/feature
                                 q.orderBy(`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`, sortValue);
                             } else if (sortKey == 'isActive') {
                                 q.orderBy(ColumnSortKey, sortValue);
@@ -331,7 +294,8 @@ export class weakHandler extends BaseHandler{
     }
 
     public static massdelete(req:express.Request,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rids = req.body.rids || "";
         let weakId =[];
 
@@ -374,7 +338,8 @@ export class weakHandler extends BaseHandler{
         })
     }
     public static view_weaks(req:express.Required,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid;
 
         return Promise.then(()=>{
@@ -392,13 +357,9 @@ export class weakHandler extends BaseHandler{
 
             if(obj == null){
                 Utils.responseError(res, new Exception(
-<<<<<<< HEAD
-                    ErrorCode.AUTHENTICATION.ACCOUNT_NOT_FOUND,
-                    MessageInfo.MI_USER_NOT_EXIST,
-=======
+
                     ErrorCode.RESOURCE.NOT_FOUND,
                     MessageInfo.MI_WEAK_ID_NOT_FOUND,
->>>>>>> city/feature
                     false,
                     HttpStatus.BAD_REQUEST
                 ));

@@ -12,6 +12,7 @@ import { TimingTableSchema } from '../../data/schemas';
 import { Expression } from 'aws-sdk/clients/costexplorer';
 import { promises } from 'fs';
 import { BearerObject } from "../../libs/jwt";
+import timing from '../../domains/timing';
 
 
 
@@ -23,7 +24,10 @@ export class TimeHabdler extends BaseHandler{
 
 
     public static create_time(req:express.Request , res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+        req.body.schoolId=schoolId;
+        req.body.createdBy=session.userId;
         let timeDay = TimingModel.fromRequest(req);
         if(!Utils.requiredCheck(timeDay.Time)){
             return Utils.responseError(res, new Exception(
@@ -49,7 +53,8 @@ export class TimeHabdler extends BaseHandler{
 
     public static update_time(req:express.Request,res:express.Response){
 
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
         let timeDay = TimingModel.fromRequest(req);
         if(!Utils.requiredCheck(timeDay.Time)){
@@ -62,11 +67,14 @@ export class TimeHabdler extends BaseHandler{
         }
 
         return Promise.then(()=>{
-            return TimingDayUseCase.findById(rid);
+            return TimingDayUseCase.findOne( q => {
+                q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.RID}`,rid);
+                q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.IS_DELETED}`,0);
+            })
         }).then((obj)=>{
             if(obj == null){
                 Utils.responseError(res, new Exception(
-                    ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
+                    ErrorCode.RESOURCE.NOT_FOUND,
                     MessageInfo.MI_TIME_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
@@ -76,6 +84,7 @@ export class TimeHabdler extends BaseHandler{
 
             return TimingDayUseCase.findOne(q=>{
                 q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.TIME}`,timeDay.Time);
+                q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.whereNot(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.RID}`,rid);
                 q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.IS_DELETED}`,0)
             })
@@ -83,7 +92,7 @@ export class TimeHabdler extends BaseHandler{
             if (obj != null) {
                 Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.NOT_FOUND,
-                MessageInfo.MI_TIME_ID_NOT_FOUND,
+                MessageInfo.MI_TIME_ALREADY_EXISTS,
                 false,
                 HttpStatus.BAD_REQUEST
                 ));
@@ -102,7 +111,8 @@ export class TimeHabdler extends BaseHandler{
     }
 
     public static destory(req:express.Request,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid || "";
 
         return Promise.then(()=>{
@@ -140,7 +150,8 @@ export class TimeHabdler extends BaseHandler{
 
 
     public static list(req:express.Request,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let offset = parseInt(req.query.offset) || null;
         let limit = parseInt(req.query.limit) || null;
         let sortKey;
@@ -165,7 +176,7 @@ export class TimeHabdler extends BaseHandler{
             return TimingDayUseCase.countByQuery(q=>{
                 let condition;
                 q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.IS_DELETED}`,0);
-
+                q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 if(searchobj){
                     for(let key in searchobj){
                         if(searchobj[key] != null && searchobj[key] != ''){
@@ -206,7 +217,7 @@ export class TimeHabdler extends BaseHandler{
 
                     let condition;
                     q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.IS_DELETED}`,0);
-
+                    q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                     if(searchobj){
                         for(let key in searchobj){
                             if(searchobj[key] != null && searchobj[key] != ''){
@@ -281,7 +292,8 @@ export class TimeHabdler extends BaseHandler{
 
 
     public static massdelete(req:express.Request,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rids = req.body.rids || "";
         let TimeId =[];
 
@@ -325,7 +337,8 @@ export class TimeHabdler extends BaseHandler{
     }
 
     public static view_times(req:express.Required,res:express.Response){
-
+        let session: BearerObject = req[Properties.SESSION];
+        let schoolId:BearerObject = req[Properties.SCHOOL_ID];
         let rid = req.params.rid;
 
         return Promise.then(()=>{

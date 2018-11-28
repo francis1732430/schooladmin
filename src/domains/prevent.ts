@@ -13,6 +13,7 @@ export class PreventUseCase extends BaseUseCase{
 
     constructor(){
         super();
+        this.mysqlModel = PrevenTDto;
     }
 
     public create(prevent:PreventModel):Promise<any> {

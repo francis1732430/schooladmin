@@ -162,7 +162,7 @@ export class AdminUserUseCase extends BaseUseCase {
             .enclose();
     }
 
-    public updateById(id:string, user:AdminUserModel):Promise<any> {
+    public updateById(id:string, user:AdminUserModel,schoolId):Promise<any> {
         let adminuser:any;
         return Promise.then(() => {
             return this.findById(id);
@@ -182,6 +182,9 @@ export class AdminUserUseCase extends BaseUseCase {
                 console.log(userData);
                 console.log(user);
                 if(userData.createdBy == user.createdBy || user.createdBy==1 || user.userId == userData.userId) {
+                    let data = user.toDto();
+                    return adminuser.save(data, {patch: true});
+                } else if(schoolId && user.createdBy == 18) {
                     let data = user.toDto();
                     return adminuser.save(data, {patch: true});
                 }

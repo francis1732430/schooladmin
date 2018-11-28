@@ -65,7 +65,7 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
      * @param userId
      * @returns {Promise<any>}
      */
-    public updateUserRole(roleId:number, userId:number):Promise<any> {
+    public updateUserRole(roleId:number, userId:number,user:any):Promise<any> {
         let roleInfo :any;
         return Promise.then(() => {
             return this.findOne(q => {
@@ -93,8 +93,8 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                 console.log(roleData);
                 let data = roleData.toDto();
                
-                data[AuthorizationRoleTableSchema.FIELDS.PARENT_ID] = roleId;
-                data[AuthorizationRoleTableSchema.FIELDS.ROLE_NAME] = roleInfo["roleName"];
+                data[AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID] = user.assignedDistrict;
+                data[AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID] = user.schoolId;
                 console.log(data);
                 return object.save(data, {patch: true});
             })

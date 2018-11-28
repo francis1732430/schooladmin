@@ -460,7 +460,7 @@ export const TimeTableTableSchema = {
 
 
 export const WeakTableSchema = {
-    TABLE_NAME:"weak_entity",
+    TABLE_NAME:"weakdays",
     FIELDS: {
         RID:"rid",
         WEAK_ID:"weak_id",
@@ -498,7 +498,30 @@ export const PreventionsTableSchemas = {
         PREVENTIONS_TITLE:"prevention_title",
         PREVENTIONS_COMMAND:"prvention_command",
         IS_ACTIVE: "is_active",
-        IMAGES:"image",
+        IMAGES:"images",
+        SCHOOL_ID:"school_id",
+        CREATED_BY: "created_by",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted"
+    }
+}
+
+export const NeetCenterTableSchema = {
+
+    TABLE_NAME:"neet_center_schema",
+    FIELDS: {
+
+        RID:"rid",
+        CENTER_ID:"center_id",
+        CENTER_NAME:"center_name",
+        DISTRICT_ID:"district_id",
+        CITY_ID: "city_id",
+        CO_ORDINATES:"co_ordinates",
+        MOBILE_NUMBER:"mobile_number",
+        REPRESENTATIVE_NAME: "representative_name",
+        ADDRESS:"address",
+        IS_ACTIVE:"is_active",
         CREATED_BY: "created_by",
         CREATED_DATE: "created_date",
         UPDATED_DATE: "updated_date",

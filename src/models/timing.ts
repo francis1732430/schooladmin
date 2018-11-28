@@ -7,20 +7,22 @@ import { Request }from "express";
 export class TimingModel extends BaseModel{
 
     public TimeId:string;
-    public noon:number;
+    public noon:string;
     public Time:string;
     public createdDate:string;
     public isActive:number;
     public updatedDate:string;
+    public schoolId:string;
 
     public static fromRequest(req:Request):TimingModel {
 
         if (req != null && req.body) {
             let timing = new TimingModel();
-            timing.TimeId = TimingModel.getString(req.body.TimeId);
+           // timing.TimeId = TimingModel.getString(req.body.TimeId);
             timing.Time = TimingModel.getString(req.body.Time);
-            timing.noon = TimingModel.getNumber(req.body.noon);
-           timing.isActive = TimingModel.getNumber(req.body.isActive);
+            timing.noon = TimingModel.getString(req.body.noon);
+            timing.schoolId = TimingModel.getString(req.body.schoolId);
+            timing.isActive = TimingModel.getNumber(req.body.isActive);
             return timing;
         }
         return null;
@@ -30,6 +32,8 @@ export class TimingModel extends BaseModel{
     public static fromDto(object:any,filters?:string[]):TimingModel {
 
         if(object != null){
+
+            let rid = object.get(TimingTableSchema.FIELDS.RID);
             let TimeId = object.get(TimingTableSchema.FIELDS.TIME_ID);
             let Time = object.get(TimingTableSchema.FIELDS.TIME);
             let noon = object.get(TimingTableSchema.FIELDS.NOON);
@@ -37,6 +41,7 @@ export class TimingModel extends BaseModel{
             let createdDate = object.get(TimingTableSchema.FIELDS.CREATED_DATE);
             let updatedDate = object.get(TimingTableSchema.FIELDS.UPDATED_DATE);
             let ret = new TimingModel();
+            ret.rid = rid != null && rid !== "" ? rid : undefined;
             ret.TimeId = TimeId != null && TimeId !== "" ? TimeId : undefined;
             ret.noon = noon != null && noon !== "" ? noon : undefined;
             ret.Time = Time != null && Time !== "" ? Time : undefined;
@@ -58,6 +63,7 @@ export class TimingModel extends BaseModel{
         obj[TimingTableSchema.FIELDS.TIME_ID] = this.TimeId;
         obj[TimingTableSchema.FIELDS.TIME] = this.Time;
         obj[TimingTableSchema.FIELDS.NOON] = this.noon;
+        obj[TimingTableSchema.FIELDS.SCHOOL_ID] = this.schoolId;
         obj[TimingTableSchema.FIELDS.IS_ACTIVE] = this.isActive;
         return obj;
     }

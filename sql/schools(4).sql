@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 10, 2018 at 12:52 PM
+-- Generation Time: Nov 28, 2018 at 06:28 PM
 -- Server version: 5.7.24-0ubuntu0.16.04.1
 -- PHP Version: 7.0.32-0ubuntu0.16.04.1
 
@@ -49,7 +49,7 @@ CREATE TABLE `admin_user` (
 --
 
 INSERT INTO `admin_user` (`rid`, `user_id`, `firstname`, `lastname`, `email`, `password`, `mobile_number`, `rp_token`, `tmp_password`, `is_active`, `created_by`, `created_date`, `updated_date`, `is_deleted`, `school_id`) VALUES
-('c6de933b-ddd9-45ef-a45d-3c4b3233b11b', 1, 'francis', 'francis', 'francissalin123456@gmail.com', '$2a$08$aqDgy3JFKDaou4oKw2ryO.liQHWsU1XRl01M1MPgsH8EgFwO45npG', NULL, NULL, NULL, 1, 1, '2018-10-25 16:41:20', '2018-10-25 16:41:20', 0, NULL),
+('ed6011fd-2a02-46cf-a7a7-78ff2c88eadf', 1, 'senthil', '', 'senthilkumar@gmail.com', '$2a$08$FA9kYXiAMVA9I.x.VPGRnOBLzouCvA3qj4YiXIob/.b7L2jqn8/fm', NULL, NULL, NULL, 1, 0, '2018-11-16 13:04:52', '2018-11-16 13:04:52', 0, NULL),
 ('e0e1d21c-5d1a-4249-8ce2-91d85413fc24', 3, 'francis', 'francis', 'fran@gmail.com', '$2a$10$VR.jMTs92HWtNC3C4pjUf.625U5EM5wk.3UdekD0QUC6VClXCkuVy', NULL, NULL, NULL, 1, 1, '2018-10-25 11:42:00', '2018-10-25 11:42:00', 0, NULL),
 ('a50046bd-3627-43c2-b06a-1d4f8866c949', 4, 'francis', 'francis', 'franc@gmail.com', '$2a$10$ZH0r0snLrAAjGMYlgK4wTeTI3ZSt8KQFFpSfUoI0cICVY2y1.WsCm', NULL, NULL, NULL, 1, 1, '2018-10-25 11:43:29', '2018-10-25 11:43:29', 0, NULL),
 ('dccb6a84-0224-41ae-8b4b-f85495712cdf', 5, 'francis', 'francis', 'franci@gmail.com', '$2a$10$XpGkl.jt99ds7DKUFLa8Leg.qPMIieDjce3Ap.0YbnhcWbSVMfh1u', NULL, NULL, NULL, 1, 1, '2018-10-25 11:52:48', '2018-10-25 11:52:48', 0, NULL),
@@ -74,14 +74,15 @@ INSERT INTO `admin_user` (`rid`, `user_id`, `firstname`, `lastname`, `email`, `p
 ('f08228e2-1824-4af2-ab95-5ae9e94cb0e6', 24, 'francis', 'francis', 'francissalin7111111111@gmail.com', '$2a$08$ytUX7muJkTj.49pttmp31e1psahYoinxkdZeRIr./gqDTNIvItzJS', NULL, NULL, NULL, 1, 1, '2018-10-25 15:48:53', '2018-10-25 15:48:53', 0, NULL),
 ('c83bde09-e81b-4cbd-86fd-c961b80ccb72', 25, 'francis', 'francis', 'francissalin71111211111@gmail.com', '$2a$08$Zx7gi9gJE0ukjiTH9HLGEOTRIAmXFo5Ahyr3CnSTUwKrBIPwhUs/K', NULL, NULL, NULL, 1, 1, '2018-10-25 15:50:24', '2018-10-25 15:50:24', 0, NULL),
 ('2a2307dd-2b53-4474-afc0-97e45def1eb1', 26, 'francis', 'francis', 'francissalin711112111111@gmail.com', '$2a$08$MEf0sp/7I/cALpCW8.VJyumVd9d0z3EnN5DcHXKsOq5r8r.xxJh6q', NULL, NULL, NULL, 1, 1, '2018-10-25 15:51:22', '2018-10-25 15:51:22', 0, NULL),
-('a58c6d20-2b5e-4725-9626-27f324562451', 27, 'francis', 'francis', 'francissalin7111121111111@gmail.com', '$2a$08$/aNnvbK8e.BEFFyy.02MJuFQVRbCoid/4isGzT./UAotYrOUl.A3S', NULL, NULL, NULL, 1, 1, '2018-10-25 16:39:07', '2018-10-25 16:39:07', 0, NULL),
-('d26fad51-4d2f-4e42-8728-08da635a3c21', 28, 'francis', 'francis', 'francissalin71111121111111@gmail.com', '$2a$08$L6hHEablf9NRx8T/3JrMFukxVAkgdEscuj7OYGxln237x83UMNwEO', NULL, NULL, NULL, 1, 1, '2018-10-25 16:40:18', '2018-10-25 16:40:18', 0, NULL),
-('375cbd67-d70c-429c-9a01-a3f0102ee2d0', 29, 'francis', 'francis', 'fr@gmail.com', '$2a$10$nWpM6zkPaf6pSWeUELwDQOS.06shOYzjGAVX0ccjHFuwv8qLJKDhW', NULL, NULL, NULL, 1, 1, '2018-10-25 11:26:27', '2018-10-25 11:26:27', 0, NULL),
-('3ac9edee-c4fc-48b2-aa9a-63ba754bf4dd', 30, 'francis', 'francis', 'francissalin7111111121111111@gmail.com', '$2a$08$X1ZGvK68sPnNTjzb0wAoaeTUCVpHdkHfH4ybCWD13c4ZNP99bBaZa', NULL, NULL, NULL, 1, 1, '2018-10-25 16:44:44', '2018-10-25 16:44:44', 0, NULL),
+('a58c6d20-2b5e-4725-9626-27f324562451', 27, 'francis', 'francis', 'francissalin7111121111111@gmail.com', '$2a$08$/aNnvbK8e.BEFFyy.02MJuFQVRbCoid/4isGzT./UAotYrOUl.A3S', NULL, NULL, NULL, 1, 1, '2018-10-25 16:39:07', '2018-10-25 16:39:07', 0, 5),
+('d26fad51-4d2f-4e42-8728-08da635a3c21', 28, 'francis', 'francis', 'francissalin71111121111111@gmail.com', '$2a$08$L6hHEablf9NRx8T/3JrMFukxVAkgdEscuj7OYGxln237x83UMNwEO', NULL, NULL, NULL, 1, 1, '2018-10-25 16:40:18', '2018-10-25 16:40:18', 0, 5),
+('375cbd67-d70c-429c-9a01-a3f0102ee2d0', 29, 'francis', 'francis', 'fr@gmail.com', '$2a$10$nWpM6zkPaf6pSWeUELwDQOS.06shOYzjGAVX0ccjHFuwv8qLJKDhW', NULL, NULL, NULL, 1, 1, '2018-10-25 11:26:27', '2018-10-25 11:26:27', 0, 5),
+('3ac9edee-c4fc-48b2-aa9a-63ba754bf4dd', 30, 'francis', 'francis', 'francissalin7111111121111111@gmail.com', '$2a$08$X1ZGvK68sPnNTjzb0wAoaeTUCVpHdkHfH4ybCWD13c4ZNP99bBaZa', NULL, NULL, NULL, 1, 1, '2018-10-25 16:44:44', '2018-10-25 16:44:44', 0, 5),
 ('f7932cff-f990-4f9f-a383-f0bbad797343', 31, 'francis', 'francis', 'francissalin71111111121111111@gmail.com', '$2a$08$WqXo0HfvQQL7o926UWq4oe6bbXAFC2oat5FaqvNiY7aaGe7R9OcDm', NULL, NULL, NULL, 1, 1, '2018-10-25 16:45:18', '2018-10-25 16:45:18', 0, NULL),
-('1c92152f-3556-40ae-91a2-2d525fbc9ee7', 32, 'francis', 'francis', 'francissalin37@gmail.com', '$2a$08$Mch/EQF4nvy2SFgcTaVL1.dsZg1WWn2xewZKT68EGRhxvHFdoK3mG', NULL, NULL, NULL, 1, 1, '2018-10-26 11:11:59', '2018-10-26 11:11:59', 0, NULL),
-('3cd26346-df88-46b2-a201-6b2c3c74940b', 1111, 'francis', 'francis', 'fra@gmail.com', '$2a$10$JZ062HaU6j8UM.EmYuzUIeO97wjOQGPb2LvOcCde5jc5Nrma2dXCO', NULL, NULL, NULL, 1, 1, '2018-10-25 11:41:26', '2018-10-25 11:41:26', 0, NULL),
-('2c128572-dc9e-44d5-b179-93acb61a88a1', 1112, 'francis', 'francis', 'francissalin7@gmail.com', '$2a$08$NTXcUADxOF50aMz3C4CgaewwsJ/f.V1WtAQgeyLDmTKtXhvLiIHYa', NULL, NULL, NULL, 1, 1, '2018-10-29 11:03:13', '2018-10-29 11:03:13', 0, NULL),
+('1c92152f-3556-40ae-91a2-2d525fbc9ee7', 32, 'francis', 'francis', 'francissalin37@gmail.com', '$2a$08$Mch/EQF4nvy2SFgcTaVL1.dsZg1WWn2xewZKT68EGRhxvHFdoK3mG', NULL, NULL, NULL, 1, 1, '2018-10-26 11:11:59', '2018-10-26 11:11:59', 0, 5),
+('d5540917-8c89-416a-a151-8b45cab1be9a', 123, 'francis', 'francis', 'sridhar.iyngaran@gmail.com', '$2a$08$egs7X2NB29mIWY3icdnah.Vd0M6I.ybtmdTYjALdUztUsQ.ra167a', NULL, NULL, NULL, 1, 0, '2018-11-14 12:56:40', '2018-11-14 12:56:40', 0, NULL),
+('3cd26346-df88-46b2-a201-6b2c3c74940b', 1111, 'francis', 'francis', 'sridhar.iyngaransss@gmail.com', '$2a$10$JZ062HaU6j8UM.EmYuzUIeO97wjOQGPb2LvOcCde5jc5Nrma2dXCO', NULL, NULL, NULL, 1, 1, '2018-10-25 11:41:26', '2018-10-25 11:41:26', 0, NULL),
+('2c128572-dc9e-44d5-b179-93acb61a88a1', 1112, 'francis', 'francis', 'francissalin7@gmail.com', '$2a$08$NTXcUADxOF50aMz3C4CgaewwsJ/f.V1WtAQgeyLDmTKtXhvLiIHYa', NULL, NULL, NULL, 1, 1, '2018-10-29 11:03:13', '2018-10-29 11:03:13', 0, 5),
 ('45ec8b3f-89a9-4491-a59e-f80fc0e35a30', 1113, 'francis', 'francis', 'francissalin7211@gmail.com', '$2a$08$jB6Z9jZlP5SLxM8sBVk1p.laWPNymhBvzPYg5BFFgigefwHduQpT.', NULL, NULL, NULL, 1, 1, '2018-10-29 11:08:33', '2018-10-29 11:08:33', 0, NULL),
 ('33c96413-8815-487e-a530-ba5400909942', 1114, 'francis', 'francis', 'francissalin72111@gmail.com', '$2a$08$7R1tuwx1rdlNjasFXZQ6IuvkWC0C2Sh.6T0tY1C3ogyhQEi7Ke5.G', NULL, NULL, NULL, 1, 32, '2018-10-29 11:24:19', '2018-10-29 11:24:19', 0, 1),
 ('7b0b8224-ccc7-4ba7-b96a-b2175146e631', 1115, 'francis', 'francis', 'francissalin721211@gmail.com', '$2a$08$t4SsF9jGBpoN3gzWdnoEJukOPC971p/yDocE05usu/LaVP7aWsyrq', NULL, NULL, NULL, 1, 32, '2018-10-29 11:27:56', '2018-10-29 11:27:56', 0, 1),
@@ -89,12 +90,17 @@ INSERT INTO `admin_user` (`rid`, `user_id`, `firstname`, `lastname`, `email`, `p
 ('e0be91e0-4508-4f42-be20-2f7369a2b4ca', 1117, 'francis', 'francis', 'francissalin72121121@gmail.com', '$2a$08$qDxCdf86PmBoMYXvCWkEWuIHltG/xVO082cxd5mkkAtUhSiCfmotK', NULL, NULL, NULL, 1, 1, '2018-10-30 14:36:02', '2018-10-30 14:36:02', 0, NULL),
 ('9dc5daaf-b968-4224-a2af-79f55793a33d', 1118, 'francis', 'francis', 'francissalin721211211@gmail.com', '$2a$08$nQe4jvTeaaxyA//ULonfZO/rzzmFNmHo4LEWS8X0eZyyWDGVkabpa', NULL, NULL, NULL, 1, 1, '2018-10-30 14:38:57', '2018-10-30 14:38:57', 0, NULL),
 ('9f73fad2-fa97-414a-bb6a-7d5ca352037e', 1119, 'francis', 'francis', 'francissalin7212112111@gmail.com', '$2a$08$agMro4gnWj/fdPLrHhbTq.I7ofCwcUqcFv5pJieL4qY.GNcTcVR0W', NULL, NULL, NULL, 1, 1, '2018-10-30 14:40:24', '2018-10-30 14:40:24', 0, NULL),
-('852d5b85-867f-4da3-8799-3e9a97dfc0c1', 1120, 'francis', 'francis', 'francissalin72121121111@gmail.com', '$2a$08$TXunHkgAqSEyc0t0tGtf8.oG4qL8I8g/Sn9Cjy78HDSS5mqhIbw/O', NULL, NULL, NULL, 1, 1, '2018-10-30 14:50:23', '2018-10-30 14:50:23', 0, NULL),
+('852d5b85-867f-4da3-8799-3e9a97dfc0c1', 1120, 'francis', 'francis', 'francissalin72121121111@gmail.com', '$2a$08$TXunHkgAqSEyc0t0tGtf8.oG4qL8I8g/Sn9Cjy78HDSS5mqhIbw/O', NULL, NULL, NULL, 1, 1, '2018-10-30 14:50:23', '2018-10-30 14:50:23', 0, 5),
 ('a072150b-f174-4b58-8e3a-9a8bd1f2b72f', 1121, 'francis', 'francis', 'francissalin3@gmail.com', '$2a$08$zWUGof3WqSBpCJpYtyVW3e4vPT1UlRMoSF8okGdLddim/eIkWmEhi', NULL, NULL, NULL, 1, 1, '2018-10-30 14:56:56', '2018-10-30 14:56:56', 0, 5),
 ('6abdd696-9751-458f-93c5-7a9fb2829ff2', 1122, 'francis', 'francis', 'francissalin4@gmail.com', '$2a$08$tvpQgJiSpDFNn3Meum7oo.r0DeUrPbH76fk8wauDUbV67xt480SoS', NULL, NULL, NULL, 1, 1121, '2018-10-30 15:16:56', '2018-10-30 15:16:56', 0, 5),
 ('15da629f-6c7f-45e5-baf3-b4f22b494012', 1123, 'francis', 'francis', 'francissalin5@gmail.com', '$2a$08$gvZEDrdHWGY2oxE02CZFJ.Ph43gmrLDc9FplauCojVE1DJO8XWvs6', NULL, NULL, NULL, 1, 1121, '2018-10-30 15:21:39', '2018-10-30 15:21:39', 0, 5),
 ('cd836958-0b32-4026-9dc2-d9c46b70a178', 1124, 'francis', 'francis', 'francissalin6@gmail.com', '$2a$08$NcbVZn37KsqJy16OJsGZoOQ9tVgRZqDXzx8EWT8BRasHC98DA.472', NULL, NULL, NULL, 1, 1121, '2018-10-30 15:23:59', '2018-10-30 15:23:59', 0, 5),
-('a3bff8d9-c16b-404b-b7e0-4b288794e3f1', 1125, 'francis', 'francis', 'francissalin8@gmail.com', '$2a$08$LGdc8UI7zxYSUuaxHJ8/uOl7xhdQaga0tkGyiNOElunSs6iSajFIO', NULL, NULL, NULL, 1, 1121, '2018-10-30 15:25:44', '2018-10-30 15:25:44', 0, 5);
+('a3bff8d9-c16b-404b-b7e0-4b288794e3f1', 1125, 'francis', 'francis', 'francissalin8@gmail.com', '$2a$08$LGdc8UI7zxYSUuaxHJ8/uOl7xhdQaga0tkGyiNOElunSs6iSajFIO', NULL, NULL, NULL, 1, 1121, '2018-10-30 15:25:44', '2018-10-30 15:25:44', 0, 5),
+('a16c7b4f-8c86-4c30-9301-8101ffa2c2c0', 1126, 'francis', 'francis', 'francissalin11@gmail.com', '$2a$08$rfB0o20TLRC6gwLXUC3D9eQBx95VjAmlafY1gmnlvCEPivcJUFzQi', NULL, NULL, NULL, 1, 1121, '2018-11-14 11:56:05', '2018-11-14 11:56:05', 0, 5),
+('f2bd4592-f2ba-4869-91af-17eaeed57547', 1127, 'francis', 'francis', 'sridhar.iyngaranss@gmail.com', '$2a$08$vr6CSYO1ZhrNOhRoTLuaieriOtNbCQXugBaAaIEL0VtiPlHLbmqUq', NULL, NULL, NULL, 1, 1, '2018-11-14 11:59:25', '2018-11-14 11:59:25', 0, 6),
+('08a759e1-b9f1-4469-a361-f4aff50365c6', 1128, 'francis', 'francis', 'francissalin13@gmail.com', '$2a$08$uRszDyWCAcGf7Q1cpIlynemY/4lEwDAjlIdCFo05xaS55HhR8SGnC', NULL, NULL, NULL, 1, 1117, '2018-11-14 12:01:33', '2018-11-14 12:01:33', 0, NULL),
+('c6de933b-ddd9-45ef-a45d-3c4b3233b11b', 11234, 'francis', 'francis', 'francissalin123456@gmail.com', '$2a$08$aqDgy3JFKDaou4oKw2ryO.liQHWsU1XRl01M1MPgsH8EgFwO45npG', NULL, NULL, NULL, 1, 1, '2018-10-25 16:41:20', '2018-10-25 16:41:20', 0, NULL),
+('8a969a30-f8d8-44fa-ad68-026e1340b4b2', 12345, 'francis', 'francis', 'sridhar.iyngarans@gmail.com', '7904920584', NULL, NULL, NULL, 1, 1, '2018-11-16 13:01:55', '2018-11-16 13:01:55', 0, 5);
 
 -- --------------------------------------------------------
 
@@ -120,13 +126,14 @@ CREATE TABLE `admin_user_session` (
 INSERT INTO `admin_user_session` (`rid`, `session_id`, `user_id`, `login_status`, `device_token`, `created_date`, `updated_date`, `is_deleted`) VALUES
 ('66be7e2f-b97a-4be3-9f8c-e88d8c125eeb', 1, 26, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI2LCJleHAiOjE1NTM0MjU1OTYxNzksImlhdCI6MTU0MDQ2NTU5NjE3OSwiaXNzIjoiQWxhZGRpbiBTdHJlZXQiLCJhdWQiOiJjbGllbnQifQ.YFqpDhsqfD90dkPi6BBfBYA0MjuF0MLCY_vUoFyJK5s', '2018-10-25 16:09:47', '2018-10-25 16:09:47', 0),
 ('2a12948b-0f73-40c5-a031-379abf8e643e', 2, 29, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI5LCJleHAiOjE1NTM0ODgxMTM4MjYsImlhdCI6MTU0MDUyODExMzgyNiwiaXNzIjoiQWxhZGRpbiBTdHJlZXQiLCJhdWQiOiJjbGllbnQifQ.DrY9enBRJZeTVKhFN04HyniMz1VT6rIqGDtYNMNomfU', '2018-10-25 16:41:47', '2018-10-25 16:41:47', 0),
-('34dacee7-6d47-4ef6-8016-4cd93dd7dbdd', 3, 1, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImV4cCI6MTU1MzQ4ODQzNjM5OCwiaWF0IjoxNTQwNTI4NDM2Mzk4LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.Dq8gOYisYz6sBoP24Kevxxcreh3HqwdXgPS31MjVK_g', '2018-10-26 10:03:56', '2018-10-26 10:03:56', 0),
-('88fe0d8b-23a9-400a-93eb-82cb5b5ea7f7', 4, 1121, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMjEsImV4cCI6MTU1Mzg1NjgwODQyOCwiaWF0IjoxNTQwODk2ODA4NDI4LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.7TYHjrf0NpfiTOJ5a0Zyqq81frfz707VwWrmcZH5E40', '2018-10-30 15:00:00', '2018-10-30 15:00:00', 0),
-('b8cde21f-2b69-4f5c-818e-2d1d35645aef', 5, 1117, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMTcsImV4cCI6MTU1MzkzMDI2NTUxNCwiaWF0IjoxNTQwOTcwMjY1NTE0LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.8qCWwCxH-SBNM-sLgOU8m-xPqEibhFO4sws9IAmhjrQ', '2018-10-30 15:30:05', '2018-10-30 15:30:05', 0),
-('f74f5e7c-f03e-4748-9eb0-f303711a4a06', 6, 1118, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMTgsImV4cCI6MTU1NDcxNzk5MzIwNywiaWF0IjoxNTQxNzU3OTkzMjA3LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9._AfWKZCXYePDZeDzZwzsWEU_yZnfD9Is2Ueru0QXBbQ', '2018-10-30 16:10:26', '2018-10-30 16:10:26', 0),
-('225b8e35-2133-4e42-8400-305e55bee460', 7, 1123, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMjMsImV4cCI6MTU1Mzg1OTMxNTc0NywiaWF0IjoxNTQwODk5MzE1NzQ3LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.rEc_os9i06J10jy-4TKp4zyadE-VqHCMwOAws1HjtaQ', '2018-10-30 16:58:01', '2018-10-30 16:58:01', 0),
+('34dacee7-6d47-4ef6-8016-4cd93dd7dbdd', 3, 1, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImV4cCI6MTU1NjM0MDk0ODUyNiwiaWF0IjoxNTQzMzgwOTQ4NTI2LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.GjgWiiCOzYK20T_UC9SSkG4vev11zaC4C9Lcs9OcBCg', '2018-10-26 10:03:56', '2018-10-26 10:03:56', 0),
+('88fe0d8b-23a9-400a-93eb-82cb5b5ea7f7', 4, 1121, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMjEsImV4cCI6MTU1NjM2NjExNzI4MSwiaWF0IjoxNTQzNDA2MTE3MjgxLCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.7_hK2NTtZiZYw2UZ4VCf4zG62rXKwLPCxUiGlIvEpSE', '2018-10-30 15:00:00', '2018-10-30 15:00:00', 0),
+('b8cde21f-2b69-4f5c-818e-2d1d35645aef', 5, 1117, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMTcsImV4cCI6MTU1NTMwNTkyOTA0OSwiaWF0IjoxNTQyMzQ1OTI5MDQ5LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.FzfzHDh5bUyQLjpVGxyEaj7N2FqG3mQCvZCQgJHDyaw', '2018-10-30 15:30:05', '2018-10-30 15:30:05', 0),
+('f74f5e7c-f03e-4748-9eb0-f303711a4a06', 6, 1118, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMTgsImV4cCI6MTU1NTMxMjQ0MzE3MiwiaWF0IjoxNTQyMzUyNDQzMTcyLCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.RoMrJIawKJdTxv0tLrioI-jkIgx9eXqpq1Sk7f8ebVI', '2018-10-30 16:10:26', '2018-10-30 16:10:26', 0),
+('225b8e35-2133-4e42-8400-305e55bee460', 7, 1123, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMjMsImV4cCI6MTU1NTMwODcyMjY4NiwiaWF0IjoxNTQyMzQ4NzIyNjg2LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.45z5f-CUwUfQN33r-9PsrcSWSdKjSs1v1BzhT6GcQR8', '2018-10-30 16:58:01', '2018-10-30 16:58:01', 0),
 ('0cb0103c-a76c-4909-9ba3-4fd6cec6a151', 8, 1125, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMjUsImV4cCI6MTU1Mzg2Mjk5OTQxNSwiaWF0IjoxNTQwOTAyOTk5NDE1LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.FI1RfX66-EEZV1pCUdrLbJfs_ijwADdlzyQ3Ka4mDfI', '2018-10-30 17:02:05', '2018-10-30 17:02:05', 0),
-('a4034197-a0c2-42f9-940f-73814863bbcd', 9, 1119, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMTksImV4cCI6MTU1MzkyOTc5MzQ4NiwiaWF0IjoxNTQwOTY5NzkzNDg2LCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.Td4xILH3oR0X99G4MLYgCxo2a7M6KBD1nR8KHBuh4IM', '2018-10-30 17:24:43', '2018-10-30 17:24:43', 0);
+('a4034197-a0c2-42f9-940f-73814863bbcd', 9, 1119, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMTksImV4cCI6MTU1NTMwNjExMTc4MiwiaWF0IjoxNTQyMzQ2MTExNzgyLCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.OGM59jN0YyUQQZnOUAX9awhfFXGc1Aj88GOtSvJYgDo', '2018-10-30 17:24:43', '2018-10-30 17:24:43', 0),
+('2e8d00c8-2afa-4f59-8fb6-c923c3b7e9c4', 10, 1129, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExMjksImV4cCI6MTU1NTE0MDUyNDIxMiwiaWF0IjoxNTQyMTgwNTI0MjEyLCJpc3MiOiJBbGFkZGluIFN0cmVldCIsImF1ZCI6ImNsaWVudCJ9.kaCX6jHuWiBvHmWg6hMOaoNiMwr0qXAJ3GbqqVsIq3I', '2018-11-14 12:58:44', '2018-11-14 12:58:44', 0);
 
 -- --------------------------------------------------------
 
@@ -143,11 +150,24 @@ CREATE TABLE `attendance_schema` (
   `status` int(1) NOT NULL COMMENT '1=>present,0=>absent',
   `notified` int(1) NOT NULL COMMENT '1=>yes,0=>no',
   `reason` text NOT NULL,
+  `school_id` int(11) NOT NULL,
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_active` int(1) NOT NULL DEFAULT '1',
-  `is_deleted` int(1) NOT NULL DEFAULT '0'
+  `is_deleted` int(1) NOT NULL DEFAULT '0',
+  `created_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `attendance_schema`
+--
+
+INSERT INTO `attendance_schema` (`rid`, `id`, `standard_id`, `class_id`, `user_id`, `status`, `notified`, `reason`, `school_id`, `created_date`, `updated_date`, `is_active`, `is_deleted`, `created_by`) VALUES
+('a4e96e93-dd6c-426f-b988-d86f8cb2573c', 1, 1, 1, 1, 1, 1, 'sss', 5, '2018-11-15 14:39:02', '2018-11-15 14:39:02', 1, 0, 1117),
+('b7a7a541-7bb0-4180-87cd-89562f8a6bf0', 2, 1, 1, 1, 1, 1, 'sss', 5, '2018-11-15 14:39:44', '2018-11-15 14:39:44', 1, 0, 1117),
+('ce6f4233-084f-4e16-b096-7d0eb57d730b', 3, 1, 1, 13, 1, 1, 'sss', 5, '2018-11-15 14:39:44', '2018-11-15 14:39:44', 0, 0, 1117),
+('422c6f6e-65c4-48af-b274-406c416f904e', 4, 1, 1, 112, 1, 1, 'sss', 5, '2018-11-15 14:39:44', '2018-11-15 14:39:44', 1, 0, 1117),
+('b00ea2c2-552c-46c6-a429-de2507c03e09', 5, 1, 1, 1115, 1, 0, 'dddd', 5, '2018-11-15 14:39:44', '2018-11-15 14:39:44', 1, 0, 1117);
 
 -- --------------------------------------------------------
 
@@ -177,7 +197,7 @@ CREATE TABLE `authorization_role` (
 --
 
 INSERT INTO `authorization_role` (`rid`, `role_id`, `level`, `parent_id`, `role_type`, `role_name`, `user_id`, `school_id`, `school_tmp_id`, `created_by`, `created_date`, `updated_date`, `is_deleted`, `assigned_district`) VALUES
-('07e378ab-7ec4-4f55-b7ce-8ef99bd2d3b2', 1, 0, 0, 'G', 'administrator', 1, 1, NULL, NULL, '2018-10-25 10:14:51', '2018-10-25 10:14:51', 0, NULL),
+('07e378ab-7ec4-4f55-b7ce-8ef99bd2d3b2', 1, 0, 0, 'G', 'administrator', 1, NULL, NULL, NULL, '2018-10-25 10:14:51', '2018-10-25 10:14:51', 0, NULL),
 ('a80a69a7-4b95-4f5f-86ee-3e1bbed798f6', 6, 0, 0, 'G', 'administrator1111', NULL, NULL, NULL, NULL, '2018-10-25 10:15:31', '2018-10-25 10:15:31', 0, NULL),
 ('b5ef2fed-d7f8-4745-9a3b-6c9012b64169', 7, 0, 0, 'G', 'administrator11111', NULL, NULL, NULL, NULL, '2018-10-25 10:15:36', '2018-10-25 10:15:36', 0, NULL),
 ('20545f5a-5f62-4d10-b1b6-6dcdc8f47799', 8, NULL, 1, NULL, 'administrator', 8, NULL, NULL, 1, '2018-10-25 11:56:00', '2018-10-25 11:56:00', 0, NULL),
@@ -220,23 +240,24 @@ INSERT INTO `authorization_role` (`rid`, `role_id`, `level`, `parent_id`, `role_
 ('b45b942a-78c8-423b-ace2-ca8ef24de41a', 222, 1, 1, 'U', 'schooladmin', 1112, NULL, NULL, 1, '2018-10-29 11:03:13', '2018-10-29 11:03:13', 0, NULL),
 ('e4b09f71-8f14-49f6-bc77-d386c610aba9', 223, 1, 221, 'U', 'AEEO', 1113, NULL, NULL, 1, '2018-10-29 11:08:34', '2018-10-29 11:08:34', 0, NULL),
 ('e9d507af-5533-4fcd-9f5e-b59df8de1f2d', 224, 2, 100, 'U', 'student', 1114, NULL, NULL, 32, '2018-10-29 11:24:19', '2018-10-29 11:24:19', 0, NULL),
-('3f2bb64f-a856-4e5b-8504-a99bfe555c3e', 225, 2, 100, 'U', 'student', 1115, NULL, NULL, 32, '2018-10-29 11:27:56', '2018-10-29 11:27:56', 0, NULL),
+('3f2bb64f-a856-4e5b-8504-a99bfe555c3e', 225, 2, 100, 'U', 'student', 1115, 5, NULL, 32, '2018-10-29 11:27:56', '2018-10-29 11:27:56', 0, NULL),
 ('1e5aecfc-5079-445e-a3b9-710a197e05ca', 226, 2, 100, 'U', 'student', 1116, 1, NULL, 32, '2018-10-29 11:29:05', '2018-10-29 11:29:05', 0, NULL),
 ('dc2822bc-51f0-41ca-8c91-1fd7a350d7bb', 227, 1, 32, 'U', 'districtadmin', 1117, NULL, NULL, 1, '2018-10-30 14:36:02', '2018-10-30 14:36:02', 0, 3),
 ('9ca65d41-8860-49e7-b525-c2726a5d0f12', 228, 1, 33, 'U', 'ddeo', 1118, NULL, NULL, 1, '2018-10-30 14:38:57', '2018-10-30 14:38:57', 0, 3),
 ('b03570bb-8826-4636-8ef3-c500793b886c', 229, 1, 33, 'U', 'AEEO', 1119, NULL, NULL, 1, '2018-10-30 14:40:24', '2018-10-30 14:40:24', 0, 3),
-('ad4069c7-3737-4d3b-919b-8acc5d25b762', 230, 1, 1, 'U', 'schooladmin', 1120, NULL, NULL, 1, '2018-10-30 14:50:24', '2018-10-30 14:50:24', 0, NULL),
+('ad4069c7-3737-4d3b-919b-8acc5d25b762', 230, 1, 1, 'U', 'admin', 1120, NULL, NULL, 1, '2018-10-30 14:50:24', '2018-10-30 14:50:24', 0, NULL),
 ('ec0977b4-d826-4ddf-87b9-e68a4acde03a', 231, 1, 18, 'U', 'schooladmin', 1121, NULL, NULL, 1, '2018-10-30 14:56:57', '2018-10-30 14:56:57', 0, NULL),
-('3f5357be-8319-48d6-a651-8f3439dda723', 232, 2, 231, 'U', 'teacher', 1122, NULL, NULL, 1121, '2018-10-30 15:16:56', '2018-10-30 15:16:56', 0, NULL),
+('3f5357be-8319-48d6-a651-8f3439dda723', 232, 2, 231, 'U', 'teacher', 1122, 5, NULL, 1121, '2018-10-30 15:16:56', '2018-10-30 15:16:56', 0, NULL),
 ('0d8e3179-8f8e-48d2-976e-dd212a4b40e4', 233, 2, 231, 'U', 'teacher', 1123, 5, NULL, 1121, '2018-10-30 15:21:39', '2018-10-30 15:21:39', 0, NULL),
 ('04f989af-384d-48f0-bec1-9e1cc31b97c7', 234, 2, 231, 'U', 'student', 1124, 5, NULL, 1121, '2018-10-30 15:23:59', '2018-10-30 15:23:59', 0, NULL),
 ('fcf21e47-7342-41df-a3f5-d5ec2241b045', 235, 2, 231, 'U', 'parent', 1125, 5, NULL, 1121, '2018-10-30 15:25:44', '2018-10-30 15:25:44', 0, NULL),
-('5f0e0958-4a29-4a6b-8a50-ff8b138bd09b', 237, NULL, 18, 'U', 'teacher-training', 1123, NULL, NULL, 1121, '2018-10-30 16:48:02', '2018-10-30 16:48:02', 0, NULL),
-('a9414a95-f4c0-43d7-9688-a0e4783262bc', 238, NULL, 18, 'U', 'teacher-training1', 1123, NULL, NULL, 1121, '2018-10-30 16:51:03', '2018-10-30 16:51:03', 0, NULL),
-('9d658612-e555-4dab-b72d-1aaf2ca1299b', 239, NULL, 231, 'U', 'teacher-training2', 1123, NULL, NULL, 1123, '2018-10-30 17:06:23', '2018-10-30 17:06:23', 0, NULL),
-('86903cc3-0d41-437e-b003-521a7d279260', 240, NULL, 231, 'U', 'teacher-training3', 1123, NULL, NULL, 1123, '2018-10-30 17:08:51', '2018-10-30 17:08:51', 0, NULL),
-('6eacece9-9bfb-41e4-bbfd-1a11767f2ce0', 241, NULL, 231, 'U', 'teacher-training4', 1123, NULL, NULL, 1123, '2018-10-30 17:10:15', '2018-10-30 17:10:15', 0, NULL),
-('e7e959b5-0ee0-4315-abb3-fadcbfd53dea', 242, NULL, 231, 'U', 'teacher-training5', 1123, 5, NULL, 1123, '2018-10-30 17:12:23', '2018-10-30 17:12:23', 0, NULL);
+('e7e959b5-0ee0-4315-abb3-fadcbfd53dea', 242, NULL, 231, 'U', 'teacher-training5', 1123, 5, NULL, 1123, '2018-10-30 17:12:23', '2018-10-30 17:12:23', 0, NULL),
+('20e1ff3e-27a9-433f-9d10-54a344d52e90', 244, 2, 227, 'U', 'ddeo', 1127, 6, NULL, 1117, '2018-11-14 11:59:26', '2018-11-14 11:59:26', 0, 4),
+('f98840fb-7de3-4842-9a71-ec78e00284a6', 245, 2, 227, 'U', 'districtadmin', 1128, 5, NULL, 1117, '2018-11-14 12:01:33', '2018-11-14 12:01:33', 0, 3),
+('9614483d-c3ab-4eee-bd06-d9a826152bb3', 246, 2, 227, 'U', 'districtadmin', 112, 5, NULL, 1117, '2018-11-14 12:56:40', '2018-11-14 12:56:40', 0, 3),
+('789839cc-5862-45e8-b90c-212b6bb05723', 247, NULL, 18, 'U', 'employee', 1126, 5, NULL, 1121, '2018-11-16 11:52:47', '2018-11-16 11:52:47', 0, NULL),
+('bcf04157-0267-4e74-a0ab-ad4ef723be50', 248, 1, 32, 'U', 'districtadmin', 1130, 5, NULL, 1, '2018-11-16 13:01:55', '2018-11-16 13:01:55', 0, 3),
+('80785c7f-0c7b-4e50-a7a0-dec246934244', 249, 1, 32, 'U', 'districtadmin', 1131, 5, NULL, 1, '2018-11-16 13:04:52', '2018-11-16 13:04:52', 0, 3);
 
 -- --------------------------------------------------------
 
@@ -280,7 +301,7 @@ INSERT INTO `authorization_rule` (`rid`, `rule_id`, `privileges`, `permission`, 
 ('d075d390-a502-421b-8da6-65f4968ad2e6', 14, NULL, 'allow', 227, NULL, 6, 0, '2018-10-30 15:33:45', '2018-10-30 15:33:45', 0, 1),
 ('9b4f7383-a615-4a26-946f-5fda998fef4b', 15, NULL, 'allow', 227, NULL, 7, 0, '2018-10-30 16:07:06', '2018-10-30 16:07:06', 0, 1117),
 ('76e61cd2-7ecd-48d6-a270-636ec638f3c3', 16, NULL, 'allow', 229, NULL, 6, 0, '2018-10-30 16:14:54', '2018-10-30 16:14:54', 0, 1118),
-('f18d5743-913e-450c-b32c-1985d7877431', 17, NULL, 'allow', 228, NULL, 5, 0, '2018-10-30 16:32:54', '2018-10-30 16:32:54', 0, 1118),
+('f18d5743-913e-450c-b32c-1985d7877431', 17, NULL, 'deny', 228, NULL, 5, 0, '2018-10-30 16:32:54', '2018-10-30 16:32:54', 0, 1118),
 ('f2308002-1040-4fd7-ab46-7b8627c3025c', 18, NULL, 'allow', 228, NULL, 7, 0, '2018-10-30 16:48:02', '2018-10-30 16:48:02', 0, 1118),
 ('8ee0bb9d-8119-44e6-8893-502e7cef9e16', 19, NULL, 'allow', 223, NULL, 5, 0, '2018-10-30 16:51:03', '2018-10-30 16:51:03', 0, 1118),
 ('dc0f3cc9-b534-4d0c-81df-bef72d7b8935', 20, NULL, 'allow', 239, 1, NULL, 0, '2018-10-30 17:06:24', '2018-10-30 17:06:24', 0, NULL),
@@ -288,7 +309,8 @@ INSERT INTO `authorization_rule` (`rid`, `rule_id`, `privileges`, `permission`, 
 ('c3afb75b-5f52-4b1d-890e-2c3c71b8717d', 22, NULL, 'allow', 241, 1, NULL, 0, '2018-10-30 17:10:16', '2018-10-30 17:10:16', 0, NULL),
 ('87e9c5a2-6b7c-4bb0-8eda-47d28b9dd6c3', 23, NULL, 'allow', 242, 1, 5, 0, '2018-10-30 17:12:23', '2018-10-30 17:12:23', 0, NULL),
 ('b453a3e2-fe96-4b02-a502-6d5246f9755e', 24, NULL, 'allow', 231, 1, NULL, 0, '2018-10-30 17:38:13', '2018-10-30 17:38:13', 0, 1117),
-('c039a39d-5f71-40fb-bb9f-e989f6b2ac33', 25, NULL, 'allow', 235, 1, NULL, 0, '2018-10-30 17:38:44', '2018-10-30 17:38:44', 0, 1117);
+('c039a39d-5f71-40fb-bb9f-e989f6b2ac33', 25, NULL, 'allow', 235, 1, NULL, 0, '2018-10-30 17:38:44', '2018-10-30 17:38:44', 0, 1117),
+('9c376520-68d3-4be0-97cc-dc84c83dedb3', 26, NULL, 'deny', 247, 1, NULL, 0, '2018-11-16 11:52:48', '2018-11-16 11:52:48', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -375,12 +397,21 @@ CREATE TABLE `class_entity` (
   `staff_id` int(11) NOT NULL,
   `standard_id` int(11) DEFAULT NULL,
   `subject_ids` int(11) DEFAULT NULL,
+  `school_id` int(11) NOT NULL,
   `created_date` datetime NOT NULL,
   `updated_date` datetime NOT NULL,
   `is_active` int(1) NOT NULL DEFAULT '1',
   `is_deleted` int(1) NOT NULL DEFAULT '0',
   `created_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `class_entity`
+--
+
+INSERT INTO `class_entity` (`rid`, `class_id`, `class_name`, `staff_id`, `standard_id`, `subject_ids`, `school_id`, `created_date`, `updated_date`, `is_active`, `is_deleted`, `created_by`) VALUES
+('1', 1, 'aaaa', 1117, NULL, NULL, 5, '2018-11-26 00:00:00', '2018-11-21 00:00:00', 1, 0, 1121),
+('576fd4f5-163d-48c5-bb60-7707b2c33249', 2, '7th', 1122, 1, NULL, 5, '2018-11-16 15:48:29', '2018-11-16 15:48:29', 1, 0, 1121);
 
 -- --------------------------------------------------------
 
@@ -409,7 +440,7 @@ CREATE TABLE `directory_city` (
   `city_id` int(11) NOT NULL,
   `city_name` varchar(45) NOT NULL,
   `district_id` int(11) NOT NULL,
-  `status` int(1) NOT NULL,
+  `status` int(1) NOT NULL DEFAULT '1',
   `created_date` datetime NOT NULL,
   `updated_date` datetime NOT NULL,
   `is_deleted` int(1) NOT NULL DEFAULT '0'
@@ -637,7 +668,8 @@ INSERT INTO `directory_city` (`rid`, `city_id`, `city_name`, `district_id`, `sta
 ('ed785995-4a4e-4baa-8642-c6af1c0dc129', 218, 'sivakasi', 32, 1, '2018-10-24 17:47:20', '2018-10-24 17:47:20', 0),
 ('90906b15-f454-40c8-ba9f-00c9f5cb3f01', 219, 'srivilliputhur', 32, 1, '2018-10-24 17:47:20', '2018-10-24 17:47:20', 0),
 ('1d9d9001-1b5a-4e2c-a0fb-fbaf05b66e40', 220, 'tiruchuli', 32, 1, '2018-10-24 17:47:20', '2018-10-24 17:47:20', 0),
-('3ecdb3d9-1e55-415f-81d1-9621d5f2d7cf', 221, 'virudhunagar', 32, 1, '2018-10-24 17:47:20', '2018-10-24 17:47:20', 0);
+('3ecdb3d9-1e55-415f-81d1-9621d5f2d7cf', 221, 'virudhunagar', 32, 1, '2018-10-24 17:47:20', '2018-10-24 17:47:20', 0),
+('34a320ec-6ec8-4454-aa4c-0caef7151d0e', 222, 'fff', 2117, 1, '2018-11-27 12:49:33', '2018-11-27 12:49:33', 1);
 
 -- --------------------------------------------------------
 
@@ -650,7 +682,7 @@ CREATE TABLE `directory_district` (
   `district_id` int(11) NOT NULL,
   `district_name` varchar(50) NOT NULL,
   `state_name` varchar(50) DEFAULT NULL,
-  `status` int(1) NOT NULL,
+  `status` int(1) NOT NULL DEFAULT '1',
   `created_date` datetime NOT NULL,
   `updated_date` datetime NOT NULL,
   `is_deleted` int(1) NOT NULL DEFAULT '0'
@@ -692,7 +724,8 @@ INSERT INTO `directory_district` (`rid`, `district_id`, `district_name`, `state_
 ('2b279ded-2cef-4a32-83f3-b6c125b6b1ef', 29, 'tuticorin', 'tamilnadu', 1, '2018-10-24 15:12:10', '2018-10-24 15:12:10', 0),
 ('60c804da-2efb-4f96-8d51-57fc79b501e7', 30, 'velore', 'tamilnadu', 1, '2018-10-24 15:12:10', '2018-10-24 15:12:10', 0),
 ('fc05bd67-0a79-4787-8415-0fc61fd2aa33', 31, 'vilupuram', 'tamilnadu', 1, '2018-10-24 15:12:10', '2018-10-24 15:12:10', 0),
-('3b5944a3-ee8e-49c7-8a6a-dfc721f16836', 32, 'viruthunagar', 'tamilnadu', 1, '2018-10-24 15:12:10', '2018-10-24 15:12:10', 0);
+('3b5944a3-ee8e-49c7-8a6a-dfc721f16836', 32, 'viruthunagar', 'tamilnadu', 1, '2018-10-24 15:12:10', '2018-10-24 15:12:10', 0),
+('25ddc928-e073-4e62-bfb0-65821686a691', 33, 'chennai2', NULL, 1, '2018-11-27 12:23:21', '2018-11-27 12:23:21', 0);
 
 -- --------------------------------------------------------
 
@@ -703,22 +736,31 @@ INSERT INTO `directory_district` (`rid`, `district_id`, `district_name`, `state_
 CREATE TABLE `exam_schema` (
   `rid` varchar(256) NOT NULL,
   `exam_id` int(11) NOT NULL,
-  `subject_name` varchar(256) NOT NULL,
+  `subject_id` int(11) NOT NULL,
   `question_url` text,
   `sylabus_url` text,
   `exam_type` int(1) NOT NULL,
   `exam_date` varchar(46) NOT NULL,
   `standard_id` int(11) NOT NULL,
   `section_id` int(11) NOT NULL,
-  `noons` int(1) NOT NULL COMMENT '1=>FN,2=>AN',
-  `total_mark` varchar(20) NOT NULL,
-  `min_mark` varchar(20) NOT NULL,
-  `start_time` varchar(20) NOT NULL,
+  `noons` int(1) DEFAULT NULL COMMENT '1=>FN,2=>AN',
+  `total_mark` varchar(20) DEFAULT NULL,
+  `min_mark` varchar(20) DEFAULT NULL,
+  `start_time` varchar(20) DEFAULT NULL,
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_active` int(1) NOT NULL DEFAULT '1',
-  `is_deleted` int(1) NOT NULL DEFAULT '0'
+  `is_deleted` int(1) NOT NULL DEFAULT '0',
+  `created_by` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `exam_schema`
+--
+
+INSERT INTO `exam_schema` (`rid`, `exam_id`, `subject_id`, `question_url`, `sylabus_url`, `exam_type`, `exam_date`, `standard_id`, `section_id`, `noons`, `total_mark`, `min_mark`, `start_time`, `created_date`, `updated_date`, `is_active`, `is_deleted`, `created_by`, `school_id`) VALUES
+('a7b444e1-5f45-413c-a75b-9e9ea0a71f0c', 1, 1, 'b.txt', 'a.txt', 1, '2018-08-01', 1, 1, NULL, NULL, NULL, NULL, '2018-11-16 16:50:17', '2018-11-16 16:50:17', 1, 0, 1121, 5);
 
 -- --------------------------------------------------------
 
@@ -736,12 +778,20 @@ CREATE TABLE `exam_types` (
   `noons` int(1) DEFAULT NULL COMMENT '1=>FN,2=>AN',
   `total_mark` varchar(45) DEFAULT NULL,
   `min_mark` varchar(45) DEFAULT NULL,
+  `school_id` int(11) NOT NULL,
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_deleted` int(1) NOT NULL DEFAULT '0',
   `is_active` int(1) NOT NULL DEFAULT '1',
   `start_time` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `exam_types`
+--
+
+INSERT INTO `exam_types` (`rid`, `exam_type_id`, `type_name`, `created_by`, `due_date`, `to_date`, `noons`, `total_mark`, `min_mark`, `school_id`, `created_date`, `updated_date`, `is_deleted`, `is_active`, `start_time`) VALUES
+('117a9bbd-100e-41d7-9d3a-3f1e5d4035b9', 1, 'half', 1121, '1122', '1', NULL, '100', '35', 5, '2018-11-16 16:18:39', '2018-11-16 16:18:39', 0, 1, '2:30 pm');
 
 -- --------------------------------------------------------
 
@@ -782,11 +832,21 @@ CREATE TABLE `leave_request` (
   `attachments` text NOT NULL,
   `notified` int(1) NOT NULL COMMENT '0=>no,1=>yes',
   `approved_by` int(11) DEFAULT NULL,
+  `school_id` int(11) NOT NULL,
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_active` int(1) NOT NULL DEFAULT '1',
-  `is_deleted` int(1) NOT NULL DEFAULT '0'
+  `is_deleted` int(1) NOT NULL DEFAULT '0',
+  `created_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `leave_request`
+--
+
+INSERT INTO `leave_request` (`rid`, `request_id`, `leave_type`, `sent_by`, `sent_to`, `approval_status`, `description`, `due_date`, `to_date`, `attachments`, `notified`, `approved_by`, `school_id`, `created_date`, `updated_date`, `is_active`, `is_deleted`, `created_by`) VALUES
+('bd38f6a2-47a7-4707-a919-7a6c46052649', 1, 1, 1124, 1122, 1, 'sorry for inconvenience', '20-12-2018', '21-12-2018', 'a.txt', 1, 1, 5, '2018-11-17 10:35:42', '2018-11-17 10:35:42', 1, 0, 1121),
+('507fe8ba-46a5-467e-bf03-d06ebe0fcb87', 2, 1, 1124, 1122, 1, 'sorry for inconvenience', '20-12-2018', '21-12-2018', 'a.txt', 1, 1, 5, '2018-11-17 10:42:04', '2018-11-17 10:42:04', 1, 0, 1121);
 
 -- --------------------------------------------------------
 
@@ -842,14 +902,22 @@ CREATE TABLE `preventions_schema` (
   `rid` varchar(255) NOT NULL,
   `preventions_id` int(11) NOT NULL,
   `prevention_title` varchar(255) NOT NULL,
-  `prvention_command` text NOT NULL,
-  `images` text NOT NULL,
+  `prvention_command` text,
+  `images` text,
   `created_by` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_active` int(1) NOT NULL DEFAULT '1',
   `is_deleted` int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `preventions_schema`
+--
+
+INSERT INTO `preventions_schema` (`rid`, `preventions_id`, `prevention_title`, `prvention_command`, `images`, `created_by`, `school_id`, `created_date`, `updated_date`, `is_active`, `is_deleted`) VALUES
+('e04b5614-b137-456b-a329-fc83be5b7443', 1, 'deeee', 'Generate Lorem Ipsum placeholder text for use in your graphic, print and web layouts, and discover plugins for your favorite writing, design and blogging tools.', NULL, 1121, 5, '2018-11-28 17:33:09', '2018-11-28 17:33:09', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -892,11 +960,21 @@ CREATE TABLE `result_schema` (
   `subject_id` int(11) NOT NULL,
   `marks` varchar(45) NOT NULL,
   `status` int(1) NOT NULL COMMENT '1=>pass,0=>fail',
+  `school_id` int(11) NOT NULL,
   `is_active` int(1) NOT NULL DEFAULT '1',
   `is_deleted` int(1) NOT NULL DEFAULT '0',
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `result_schema`
+--
+
+INSERT INTO `result_schema` (`rid`, `exam_result_id`, `student_id`, `standard_id`, `class_id`, `exam_type_id`, `subject_id`, `marks`, `status`, `school_id`, `is_active`, `is_deleted`, `created_date`, `updated_date`, `created_by`) VALUES
+('286a4555-a919-4e0b-a04c-ee7b5faa70d4', 1, 1124, 1, 1, 1, 1, '62', 1, 5, 1, 0, '2018-11-16 17:20:40', '2018-11-16 17:20:40', 1121),
+('c7dd600f-2b44-4a73-8528-e12e0e6d4be6', 2, 1124, 1, 1, 1, 1, '62', 1, 5, 1, 0, '2018-11-16 17:28:31', '2018-11-16 17:28:31', 1121);
 
 -- --------------------------------------------------------
 
@@ -972,16 +1050,26 @@ CREATE TABLE `staffs_entity` (
 --
 
 CREATE TABLE `standard_entity` (
-  `rid` int(11) DEFAULT NULL,
+  `rid` varchar(255) NOT NULL,
   `standard_id` int(11) NOT NULL,
-  `standard_name` varchar(256) DEFAULT NULL,
-  `school_id` int(11) DEFAULT NULL,
+  `standard_name` varchar(256) NOT NULL,
+  `school_id` int(11) NOT NULL,
   `subject_ids` varchar(255) NOT NULL,
-  `created_date` datetime DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
+  `created_date` datetime NOT NULL,
+  `updated_date` datetime NOT NULL,
   `is_active` int(1) NOT NULL DEFAULT '1',
-  `is_deleted` int(1) NOT NULL DEFAULT '0'
+  `is_deleted` int(1) NOT NULL DEFAULT '0',
+  `created_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `standard_entity`
+--
+
+INSERT INTO `standard_entity` (`rid`, `standard_id`, `standard_name`, `school_id`, `subject_ids`, `created_date`, `updated_date`, `is_active`, `is_deleted`, `created_by`) VALUES
+('b3aedc15-0a9b-44fc-84ab-7209a8a83a98', 1, '7th', 5, '1,2', '2018-11-14 11:36:39', '2018-11-14 11:36:39', 1, 0, 0),
+('35186276-3ad3-4b82-8167-e1382ce05936', 2, '6th', 5, '1', '2018-11-14 11:44:20', '2018-11-14 11:44:20', 1, 0, 0),
+('72436aff-8108-410f-9865-b07e088db8ac', 3, '8th', 5, '1,2', '2018-11-16 15:10:47', '2018-11-16 15:10:47', 1, 0, 1121);
 
 -- --------------------------------------------------------
 
@@ -993,17 +1081,91 @@ CREATE TABLE `subjects_schema` (
   `rid` varchar(255) NOT NULL,
   `subject_id` int(11) NOT NULL,
   `subject_name` varchar(255) NOT NULL,
-  `sylabus_url` text NOT NULL,
-  `author_name` varchar(255) NOT NULL,
-  `material_url` text NOT NULL,
-  `ref_books` text NOT NULL,
+  `sylabus_url` text,
+  `author_name` varchar(255) DEFAULT NULL,
+  `material_url` text,
+  `ref_books` text,
   `school_id` int(11) NOT NULL,
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_active` int(1) NOT NULL DEFAULT '1',
-  `is_deleted` int(1) NOT NULL DEFAULT '1',
+  `is_deleted` int(1) NOT NULL DEFAULT '0',
   `created_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `subjects_schema`
+--
+
+INSERT INTO `subjects_schema` (`rid`, `subject_id`, `subject_name`, `sylabus_url`, `author_name`, `material_url`, `ref_books`, `school_id`, `created_date`, `updated_date`, `is_active`, `is_deleted`, `created_by`) VALUES
+('1', 1, 'tamil', NULL, NULL, NULL, NULL, 5, '2018-11-15 00:00:00', '2018-11-15 00:00:00', 1, 0, 1121),
+('2', 2, 'english', NULL, NULL, NULL, NULL, 5, '2018-11-07 00:00:00', '2018-11-08 00:00:00', 1, 0, 1),
+('e5c2877a-0137-4e7c-9334-b8bb9017d19c', 3, 'tamil', NULL, 'ffff', 'b.txt', 'c.txt', 5, '2018-11-16 18:01:58', '2018-11-16 18:01:58', 1, 1, 1121),
+('1a4c2479-3352-4ba8-bdb1-9ec5a3ea9f61', 4, 'tamil', NULL, 'ffff', 'b.txt', 'c.txt', 5, '2018-11-16 18:03:04', '2018-11-16 18:03:04', 1, 1, 1121),
+('8a1386fb-c484-4827-a5c2-d6ba3c870c8f', 5, 'tamils', NULL, 'ffff', 'b.txt', 'c.txt', 5, '2018-11-16 18:03:39', '2018-11-16 18:03:39', 1, 1, 1121);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `time_table`
+--
+
+CREATE TABLE `time_table` (
+  `rid` varchar(255) NOT NULL,
+  `time_table_id` int(11) NOT NULL,
+  `class_id` int(11) NOT NULL,
+  `standard_id` int(11) NOT NULL,
+  `start_time` int(11) NOT NULL,
+  `end_time` int(11) NOT NULL,
+  `weak_id` int(11) NOT NULL,
+  `staff_id` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_active` int(11) NOT NULL DEFAULT '1',
+  `is_deleted` int(11) NOT NULL DEFAULT '0',
+  `created_by` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `time_table`
+--
+
+INSERT INTO `time_table` (`rid`, `time_table_id`, `class_id`, `standard_id`, `start_time`, `end_time`, `weak_id`, `staff_id`, `school_id`, `created_date`, `updated_date`, `is_active`, `is_deleted`, `created_by`) VALUES
+('74e61bfc-8b5a-4413-8d71-0b7dafec430b', 1, 1, 1, 1, 1, 1, 1124, 5, '2018-11-17 14:22:37', '2018-11-17 14:22:37', 1, 0, 1121),
+('3024bcaf-7ea7-4767-84e3-d295cb807cf3', 2, 1, 1, 1, 1, 1, 1124, 5, '2018-11-17 14:26:45', '2018-11-17 14:26:45', 1, 0, 1121),
+('560c1669-432e-4248-8d6c-7c2da25d9252', 3, 1, 2, 1, 1, 1, 1124, 5, '2018-11-17 15:23:43', '2018-11-17 15:23:43', 1, 0, 1121),
+('c85f6253-5ad8-41f4-bf24-c28090b7b437', 4, 2, 2, 1, 1, 1, 1124, 5, '2018-11-17 15:23:57', '2018-11-17 15:23:57', 1, 0, 1121),
+('cad27682-5837-4382-add2-cdeda7fd142b', 5, 2, 2, 1, 1, 2, 1124, 5, '2018-11-17 15:24:53', '2018-11-17 15:24:53', 1, 0, 1121),
+('73464046-05de-4833-a529-bf07cb84a3bd', 6, 2, 2, 1, 1, 2, 1124, 5, '2018-11-17 15:29:45', '2018-11-17 15:29:45', 1, 0, 1121);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `timings`
+--
+
+CREATE TABLE `timings` (
+  `rid` varchar(255) NOT NULL,
+  `id` int(11) NOT NULL,
+  `noon` enum('am','pm') NOT NULL,
+  `timing` varchar(255) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_deleted` int(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `timings`
+--
+
+INSERT INTO `timings` (`rid`, `id`, `noon`, `timing`, `school_id`, `status`, `created_date`, `updated_date`, `is_deleted`) VALUES
+('1', 1, 'am', '2:30', 5, 1, '2018-11-15 00:00:00', '2018-11-30 00:00:00', 0),
+('2', 2, 'pm', '3:30', 5, 1, '2018-11-07 00:00:00', '2018-11-21 00:00:00', 0),
+('68afc66b-77ae-486d-9162-04f5f7f83f52', 3, 'am', '3:30', 5, 1, '2018-11-27 14:51:16', '2018-11-27 14:51:16', 1),
+('bc9a5642-30ca-450d-9fe8-63968ba14661', 4, 'pm', '3:31', 5, 1, '2018-11-27 14:51:28', '2018-11-27 14:51:28', 0);
 
 -- --------------------------------------------------------
 
@@ -1026,6 +1188,32 @@ CREATE TABLE `user_details` (
   `updated_date` datetime NOT NULL,
   `is_deleted` int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `weakdays`
+--
+
+CREATE TABLE `weakdays` (
+  `rid` varchar(255) NOT NULL,
+  `weak_id` int(11) NOT NULL,
+  `weak_name` varchar(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `status` int(1) NOT NULL DEFAULT '1',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_deleted` int(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `weakdays`
+--
+
+INSERT INTO `weakdays` (`rid`, `weak_id`, `weak_name`, `school_id`, `status`, `created_date`, `updated_date`, `is_deleted`) VALUES
+('1', 1, 'sunday', 5, 1, '2018-11-07 00:00:00', '2018-11-14 00:00:00', 0),
+('2', 2, 'monday', 5, 1, '2018-11-07 00:00:00', '2018-11-15 00:00:00', 0),
+('3c57f00f-aee2-4540-8496-436f94c4fe31', 3, 'sun', 5, 1, '2018-11-27 14:25:07', '2018-11-27 14:25:07', 0);
 
 --
 -- Indexes for dumped tables
@@ -1183,10 +1371,28 @@ ALTER TABLE `subjects_schema`
   ADD PRIMARY KEY (`subject_id`);
 
 --
+-- Indexes for table `time_table`
+--
+ALTER TABLE `time_table`
+  ADD PRIMARY KEY (`time_table_id`);
+
+--
+-- Indexes for table `timings`
+--
+ALTER TABLE `timings`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `user_details`
 --
 ALTER TABLE `user_details`
   ADD PRIMARY KEY (`user_deteails_id`);
+
+--
+-- Indexes for table `weakdays`
+--
+ALTER TABLE `weakdays`
+  ADD PRIMARY KEY (`weak_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -1196,27 +1402,27 @@ ALTER TABLE `user_details`
 -- AUTO_INCREMENT for table `admin_user`
 --
 ALTER TABLE `admin_user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1126;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12346;
 --
 -- AUTO_INCREMENT for table `admin_user_session`
 --
 ALTER TABLE `admin_user_session`
-  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `attendance_schema`
 --
 ALTER TABLE `attendance_schema`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `authorization_role`
 --
 ALTER TABLE `authorization_role`
-  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=243;
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=250;
 --
 -- AUTO_INCREMENT for table `authorization_rule`
 --
 ALTER TABLE `authorization_rule`
-  MODIFY `rule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `rule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 --
 -- AUTO_INCREMENT for table `authorization_rule_set`
 --
@@ -1236,7 +1442,7 @@ ALTER TABLE `books_entity`
 -- AUTO_INCREMENT for table `class_entity`
 --
 ALTER TABLE `class_entity`
-  MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `directory_category`
 --
@@ -1246,22 +1452,22 @@ ALTER TABLE `directory_category`
 -- AUTO_INCREMENT for table `directory_city`
 --
 ALTER TABLE `directory_city`
-  MODIFY `city_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=222;
+  MODIFY `city_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=223;
 --
 -- AUTO_INCREMENT for table `directory_district`
 --
 ALTER TABLE `directory_district`
-  MODIFY `district_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `district_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 --
 -- AUTO_INCREMENT for table `exam_schema`
 --
 ALTER TABLE `exam_schema`
-  MODIFY `exam_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `exam_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `exam_types`
 --
 ALTER TABLE `exam_types`
-  MODIFY `exam_type_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `exam_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `head_department`
 --
@@ -1271,7 +1477,7 @@ ALTER TABLE `head_department`
 -- AUTO_INCREMENT for table `leave_request`
 --
 ALTER TABLE `leave_request`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `neet_center_schema`
 --
@@ -1286,7 +1492,7 @@ ALTER TABLE `notices_schema`
 -- AUTO_INCREMENT for table `preventions_schema`
 --
 ALTER TABLE `preventions_schema`
-  MODIFY `preventions_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `preventions_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `registration_schema`
 --
@@ -1296,7 +1502,7 @@ ALTER TABLE `registration_schema`
 -- AUTO_INCREMENT for table `result_schema`
 --
 ALTER TABLE `result_schema`
-  MODIFY `exam_result_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `exam_result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `school_entity`
 --
@@ -1311,17 +1517,32 @@ ALTER TABLE `staffs_entity`
 -- AUTO_INCREMENT for table `standard_entity`
 --
 ALTER TABLE `standard_entity`
-  MODIFY `standard_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `standard_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `subjects_schema`
 --
 ALTER TABLE `subjects_schema`
-  MODIFY `subject_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `subject_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+--
+-- AUTO_INCREMENT for table `time_table`
+--
+ALTER TABLE `time_table`
+  MODIFY `time_table_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+--
+-- AUTO_INCREMENT for table `timings`
+--
+ALTER TABLE `timings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `user_details`
 --
 ALTER TABLE `user_details`
   MODIFY `user_deteails_id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `weakdays`
+--
+ALTER TABLE `weakdays`
+  MODIFY `weak_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -36,6 +36,7 @@ export class AdminUserModel extends BaseModel {
     public approvalStatusKey:string;
     public schoolId:number;
     public assignedDistrict:number;
+    public parentId:string;
 
     public static fromRequest(req:Request):AdminUserModel {
         if (req != null && req.body) {
@@ -76,7 +77,7 @@ export class AdminUserModel extends BaseModel {
                 let phoneNumber1 = object.get(AdminUserTableSchema.FIELDS.PHONE_NUMBER1);
                 //let phoneNumber2 = object.get(AdminUserTableSchema.FIELDS.PHONE_NUMBER2);
                 let createdBy = object.get(AdminUserTableSchema.FIELDS.CREATED_BY);
-                let roleId = object.get(AuthorizationRoleTableSchema.FIELDS.PARENT_ID);
+                let parentId = object.get(AuthorizationRoleTableSchema.FIELDS.PARENT_ID);
                 let roleName = object.get(AuthorizationRoleTableSchema.FIELDS.ROLE_NAME);
                 //let roleIsDeleted = object.get(AuthorizationRoleTableSchema.FIELDS.IS_DELETED);
                 //let companyNumber = object.get(StoreBusinessInfoTableSchema.FIELDS.COMPANY_NUMBER);
@@ -106,7 +107,7 @@ export class AdminUserModel extends BaseModel {
                 //ret.phoneNumber2 = phoneNumber2 != null && phoneNumber2 !== "" ? phoneNumber2 : "";
                 ret.rid = rid != null && rid !== "" ? rid : "";
                 ret.createdBy = createdBy != null && createdBy !== "" ? createdBy : "";
-                ret.roleId = roleId != null && roleId !== "" ? roleId : "";
+                ret.parentId = parentId != null && parentId !== "" ? parentId : "";
                 ret.roleName = roleName != null && roleName !== "" ? roleName : "";
                 ret.password = password != null && password !== "" ? password : "";
                 //ret.extensionNumber = extensionNumber != null && extensionNumber !== "" ? extensionNumber : "";
