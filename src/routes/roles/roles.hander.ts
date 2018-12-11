@@ -1918,6 +1918,239 @@ export class RoleHandler extends BaseHandler {
         .enclose();
 }
 
+
+public static adminList(req:express.Request, res:express.Response):any {
+    let session:BearerObject = req[Properties.SESSION];
+    let checkuser:BearerObject=req[Properties.CHECK_USER];
+    let userId = session.userId;
+    let role:any;
+    let offset = parseInt(req.query.offset) || null;
+    let limit = parseInt(req.query.limit) || null;
+    let sortKey;
+    let sortValue;
+    let searchobj = [];
+    let total = 0;
+    for (let key in req.query) {
+        console.log(req.query[key]);
+        if(key=='sortKey'){
+            sortKey = req.query[key];
+        }
+        else if(key=='sortValue'){
+            sortValue = req.query[key];
+        } else if(req.query[key]!='' && key!='limit' && key!='offset' && key!='sortKey' && key!='sortValue'){
+            searchobj[key] = req.query[key];
+        }
+    }
+    console.log(searchobj);
+    return Promise.then(() => {
+        return AuthorizationRoleUseCase.findOne(q => {
+            q.where(AuthorizationRoleTableSchema.FIELDS.USER_ID, userId);
+        }, []);
+    })
+    .then((object) => {
+        role = AuthorizationRoleModel.fromDto(object);
+        role["sub"]=[];
+        console.log("rolesssssssssssss",role);
+        return AuthorizationRoleUseCase.countByQuery(q => {
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`, 0); 
+                 if(userId != "1") {
+                    
+                    if(role.parentId == '32'){
+                        q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,role.assignedDistrict);
+                        // q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} as parent`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,`parent.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`);
+                        q.whereIn(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,['33','221']);
+                    }if(role.parentId == '33'){
+                        q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,role.assignedDistrict);
+                        // q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} as parent`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,`parent.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`);
+                        q.whereIn(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,['221']);
+                    }
+                  } else {
+                    // q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} as parent`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,`parent.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`);
+                  }
+                  q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`);
+                //   q.innerJoin(`${DirectoryTalukTableSchema.TABLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`);
+                  q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_BY}`);
+            let condition;
+            if (searchobj) {
+                for (let key in searchobj) { 
+                    if(searchobj[key]!=null && searchobj[key]!=''){
+                        console.log(searchobj[key]);
+                        let searchval = searchobj[key];
+                        let ColumnKey = Utils.changeSearchKey(key);
+
+                        if(key === "roleId"){
+                            condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                            q.andWhereRaw(condition);
+                        } else if(key=='createdByName'){
+                            condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                            q.andWhereRaw(condition);
+                        } else if(key === "roleName"){
+                            condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                            q.andWhereRaw(condition);
+                        }  else if(key === "districtName"){
+                            condition = `(${DirectoryDistrictTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                            q.andWhereRaw(condition);
+                        }
+                        else if(key === "cityName"){
+                            condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                            q.andWhereRaw(condition);
+                        }  else if(key === "updatedDate") {
+                            condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                            q.andWhereRaw(condition);
+                        } else if(key === "createdDate") {
+                            condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                            q.andWhereRaw(condition);
+                        }
+                    }
+                }
+            } 
+            
+        });
+    })
+    .then((totalObject) => {
+        total = totalObject;
+        return AuthorizationRoleUseCase.findByQuery(q => {
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.IS_DELETED}`, 0);
+            q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}`);
+            //q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
+            q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as createdByName`))
+            if(userId != "1") {
+                    
+                if(role.parentId == '32'){
+                    q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,role.assignedDistrict);
+                    // q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} as parent`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,`parent.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`);
+                    q.whereIn(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,['33','221']);
+                }if(role.parentId == '33'){
+                    q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,role.assignedDistrict);
+                    // q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} as parent`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,`parent.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`);
+                    q.whereIn(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,['221']);
+                }
+              } else {
+                // q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} as parent`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,`parent.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`);
+              }
+              q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`);
+            //   q.innerJoin(`${DirectoryTalukTableSchema.TABLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`);
+              q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_BY}`);
+        let condition;
+        if (searchobj) {
+            for (let key in searchobj) { 
+                if(searchobj[key]!=null && searchobj[key]!=''){
+                    console.log(searchobj[key]);
+                    let searchval = searchobj[key];
+                    let ColumnKey = Utils.changeSearchKey(key);
+
+                    if(key === "roleId"){
+                        condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                        q.andWhereRaw(condition);
+                    } else if(key=='createdByName'){
+                        condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                        q.andWhereRaw(condition);
+                    } else if(key === "roleName"){
+                        condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                        q.andWhereRaw(condition);
+                    } else if(key === "subroleName"){
+                        condition = `(parent.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
+                        q.andWhereRaw(condition);
+                    } else if(key === "districtName"){
+                        condition = `(${DirectoryDistrictTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                        q.andWhereRaw(condition);
+                    }
+                    else if(key === "cityName"){
+                        condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                        q.andWhereRaw(condition);
+                    }  else if(key === "updatedDate") {
+                        condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                        q.andWhereRaw(condition);
+                    } else if(key === "createdDate") {
+                        condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                        q.andWhereRaw(condition);
+                    }
+                }
+            }
+        } 
+
+            if (offset != null) {
+                q.offset(offset);
+            }
+            if (limit != null) {
+                q.limit(limit);
+            }
+            if (sortKey != null && sortValue != '') {
+                if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
+                    let ColumnSortKey = Utils.changeSearchKey(sortKey);
+                    if (sortKey === "roleId") {
+                        q.orderBy(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`, sortValue);
+                    } if (sortKey === "ruleId") {
+                        q.orderBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`, sortValue);
+                    } else if (sortKey === "roleName") {
+                        q.orderBy(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`, sortValue);
+                    } else if (sortKey === "subroleName") {
+                        q.orderBy(`parent.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`, sortValue);
+                    }else if (sortKey === "districtName") {
+                        q.orderBy(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`, sortValue);
+                    } else if (sortKey === "cityName") {
+                        q.orderBy(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME}`, sortValue);
+                    }else if (sortKey === "schoolName") {
+                        q.orderBy(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`, sortValue);
+                    } else if (sortKey == 'createdByName') {
+                        q.orderBy(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}`, sortValue);
+                        q.orderBy(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}`, sortValue);
+                    }else if (sortKey === "updatedDate") {
+                        q.orderBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.UPDATED_DATE}`, sortValue);
+                    } else if (sortKey === "createdDate") {
+                        q.orderBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_DATE}`, sortValue);
+                    }
+                }
+            }
+        });
+    })
+    .then(objects => {
+        if (objects != null && objects.models != null && objects.models.length != null) {
+            let ret = [];
+           console.log(objects.models);
+            objects.models.forEach(object => {
+                let rules=AuthorizationRoleModel.fromDto(object);
+                rules["districtName"]=object.get("district_name");
+                role["sub"].push(rules);
+            });
+            ret.push(role);
+            res.header(Properties.HEADER_TOTAL, total.toString(10));
+
+            if (offset != null) {
+                res.header(Properties.HEADER_OFFSET, offset.toString(10));
+            }
+            if (limit != null) {
+                res.header(Properties.HEADER_LIMIT, limit.toString(10));
+            }
+
+            res.json(ret);
+            
+        }
+        let exception;
+        exception = new Exception(ErrorCode.ROLE.NO_ROLE_FOUND, MessageInfo.MI_NO_ROLE_FOUND, false);
+        exception.httpStatus = HttpStatus.BAD_REQUEST;
+        return exception;
+    })
+    .catch(err => {
+        Utils.responseError(res, err);
+    })
+    .enclose();
+}
+
+public static userList(req:express.Request, res:express.Response):any {
+    let session:BearerObject = req[Properties.SESSION];
+    let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+    let userId = session.userId;
+    return Promise.then(() => {            
+        return AuthorizationRoleUseCase.list1(schoolId);   
+    })
+    .then(object => {
+        res.json(object);
+    })
+    .catch(err => {
+        Utils.responseError(res, err);
+    });
+}
 }
 
 export default RoleHandler;

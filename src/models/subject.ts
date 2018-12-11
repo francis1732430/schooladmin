@@ -18,7 +18,7 @@ export class SubjectEntityModel extends BaseModel {
             Subject.subjectId=SubjectEntityModel.getNumber(req.body.subjectId);
             Subject.subjectName=SubjectEntityModel.getString(req.body.subjectName);
             Subject.schoolId=SubjectEntityModel.getNumber(req.body.schoolId);
-            Subject.sylabusUrl=SubjectEntityModel.getString(req.body.sulabusUrl);
+            Subject.sylabusUrl=SubjectEntityModel.getString(req.body.sylabusUrl);
             Subject.authorName=SubjectEntityModel.getString(req.body.authorName);
             Subject.materialUrl=SubjectEntityModel.getString(req.body.materialUrl);
             Subject.refBooks=SubjectEntityModel.getString(req.body.refBooks);

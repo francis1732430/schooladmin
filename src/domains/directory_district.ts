@@ -66,6 +66,35 @@ export class DirectoryDistrictUseCase extends BaseUseCase {
             return Promise.reject(Utils.parseDtoError(err));
         }).enclose();
     }
+
+    public list():Promise<any> {
+        return Promise.then(() => {
+            return this.findByQuery(q => {  
+                q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.IS_ACTIVE}`, 1);              
+                q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.IS_DELETED}`, 0);             
+                q.orderBy(DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID, 'asc');
+            }, []);
+        })
+        .then(objects => {
+            if (objects != null && objects.models != null && objects.models.length != null) {
+                let ret = [];
+                objects.models.forEach(object => {
+                    ret.push(DirectoryDistrictModel.fromDto(object,[]));
+                });
+               return ret;
+                
+            }
+            let exception;
+            exception = new Exception(ErrorCode.ROLE.NO_ROLE_FOUND, MessageInfo.MI_NO_ROLE_FOUND, false);
+            exception.httpStatus = HttpStatus.BAD_REQUEST;
+            return exception;
+        })
+        .catch(err => {
+            Logger.error(err.message, err);
+            return false;
+        })
+        .enclose();
+    }
     
 }
 

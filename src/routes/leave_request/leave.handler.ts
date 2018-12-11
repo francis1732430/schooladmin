@@ -130,6 +130,18 @@ export class LeaveRequestHandler extends BaseHandler {
                 return Promise.break; 
             }
 
+            if(leave.attachments != undefined && leave.attachments != null){
+       
+                return LeaveRequestUseCase.materialUpload(leave.attachments,schoolId,'leaverequest');
+            }
+            return null;
+          }).then((obj) => {
+            console.log("kkkk1",obj);
+             if(leave.attachments != undefined && leave.attachments!= null){
+                
+                leave.attachments=obj;
+            }
+
             return LeaveRequestUseCase.create(leave);
         }).then((object) => {
             let examData={};
@@ -264,6 +276,18 @@ export class LeaveRequestHandler extends BaseHandler {
                 return Promise.break; 
             }
 
+            if(leave.attachments != undefined && leave.attachments != null){
+       
+                return LeaveRequestUseCase.materialUpload(leave.attachments,schoolId,'leaverequest');
+            }
+            return null;
+          }).then((obj) => {
+            console.log("kkkk1",obj);
+             if(leave.attachments != undefined && leave.attachments!= null){
+                
+                leave.attachments=obj;
+            }
+            
             return LeaveRequestUseCase.updateById(rid,leave);
         }).then((object) => {
 

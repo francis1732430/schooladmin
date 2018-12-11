@@ -24,4 +24,10 @@ export {default as TimeTableUseCase} from "./time_table";
 export {default as WeakDayUseCase} from "./weak_days";
 export {default as TimingDayUseCase} from "./timing";
 export {default as PreventUseCase}from "./prevent";
-
+export {default as NeetCenterUseCase}from "./neet_center";
+export {default as AwardUseCase}from "./award";
+export {default as ComplaintRegistrationUseCase}from "./complaint";
+export {default as UserDetailUseCase}from "./userdetails";
+export {default as NoticesUseCase}from "./notices";
+export {default as CategoryUseCase}from "./category";
+export {default as BooksUseCase}from "./books";

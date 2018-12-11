@@ -50,4 +50,9 @@ router.route("/masterRoles")
 router.route("/schoolRole")
      .post(authentication,checkUser,accessrole,RoleHandler.schoolCreate);            
 
+
+router.route("/adminList")
+.get(authentication,checkUser,accessrole,RoleHandler.adminList);
+
+router.route("/schoolUserList").get(authentication, accessrole,RoleHandler.userList);
 export default router;

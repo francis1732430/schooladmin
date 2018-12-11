@@ -11,6 +11,7 @@ import { BaseHandler } from "../base.handler";
 import { BearerObject } from "../../libs/jwt";
 import * as formidable from "formidable";
 import { Uploader } from "../../libs";
+import { readdir } from 'fs';
 let fs = require('fs');  
 var dateFormat = require('dateformat');
 let knex=require('knex');
@@ -69,6 +70,31 @@ export class SubjectHandler extends BaseHandler {
             ));
             return Promise.break;
            }
+          
+           if(subject.sylabusUrl != undefined && subject.sylabusUrl != null) {
+            
+            return SubjectEntityUseCase.materialUpload(subject.sylabusUrl,schoolId,subject.subjectName);
+        } else {
+            // return SubjectEntityUseCase.materialUpload(subject.materialUrl,schoolId,subject.subjectName);
+            return null;
+        }
+        
+       }).then((obj) => {
+           console.log("kkkk",obj);
+        if(subject.sylabusUrl != undefined && subject.sylabusUrl != null) {
+            subject.sylabusUrl=obj;
+        } if(subject.materialUrl != undefined && subject.materialUrl != null){
+   
+            return SubjectEntityUseCase.materialUpload(subject.materialUrl,schoolId,subject.subjectName);
+        }
+        return null;
+      }).then((obj) => {
+        console.log("kkkk1",obj);
+         if(subject.materialUrl != undefined && subject.materialUrl != null){
+            
+            subject.materialUrl=obj;
+        }
+
         return SubjectEntityUseCase.create(subject);
        }).then((object) => {
 
@@ -145,6 +171,30 @@ export class SubjectHandler extends BaseHandler {
                  HttpStatus.BAD_REQUEST
              ));
              return Promise.break;
+            }
+
+            if(subject.sylabusUrl != undefined && subject.sylabusUrl != null) {
+            
+                return SubjectEntityUseCase.materialUpload(subject.sylabusUrl,schoolId,subject.subjectName);
+            } else {
+                // return SubjectEntityUseCase.materialUpload(subject.materialUrl,schoolId,subject.subjectName);
+                return null;
+            }
+            
+           }).then((obj) => {
+               console.log("kkkk",obj);
+            if(subject.sylabusUrl != undefined && subject.sylabusUrl != null) {
+                subject.sylabusUrl=obj;
+            } if(subject.materialUrl != undefined && subject.materialUrl != null){
+       
+                return SubjectEntityUseCase.materialUpload(subject.materialUrl,schoolId,subject.subjectName);
+            }
+            return null;
+          }).then((obj) => {
+            console.log("kkkk1",obj);
+             if(subject.materialUrl != undefined && subject.materialUrl != null){
+                
+                subject.materialUrl=obj;
             }
          return SubjectEntityUseCase.updateById(rid,subject);
 

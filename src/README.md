@@ -16,3 +16,6 @@ datum.subModules = [];
   parentNode = idToNodeMap[tempParentId]; 
  console.log('mm',parentNode)  
  parentNode.subModules.push(datum)}});
+
+ bcrypt
+ // "bcrypt": "^0.8.7",

@@ -72,18 +72,16 @@ export class SchoolUseCase extends BaseUseCase {
             q.where(`${AdminUserTableSchema.FIELDS.USER_ID}`,"1");
         }).then((object) => {
          let user=AdminUserModel.fromDto(object);
-          emails.push(user.email);
-
+           emails.push(user.email);
           return Promise.each(emails,(email) => {
               return Promise.then(() => {
-                Mailer.sendApproval(email,schoolName,district);
+                Mailer.sendApproval(email.email,schoolName,district,email.name);
               })
           }).then(() => {
               return null;
           }).catch(err => {
             return Promise.reject(Utils.parseDtoError(err));
         }).enclose();
-
 
         })
     }
@@ -140,8 +138,35 @@ public checkSchool(permissions:any[]):Promise<any> {
         })
     })
 
+}
 
-
+public list():Promise<any> {
+    return Promise.then(() => {
+        return this.findByQuery(q => {  
+            q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.IS_ACTIVE}`, 1);              
+            q.where(`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.IS_DELETED}`, 0);             
+            q.orderBy(SchoolTableSchema.FIELDS.DISTRICT_ID, 'asc');
+        }, []);
+    })
+    .then(objects => {
+        if (objects != null && objects.models != null && objects.models.length != null) {
+            let ret = [];
+            objects.models.forEach(object => {
+                ret.push(SchoolModel.fromDto(object,[]));
+            });
+           return ret;
+            
+        }
+        let exception;
+        exception = new Exception(ErrorCode.ROLE.NO_ROLE_FOUND, MessageInfo.MI_NO_ROLE_FOUND, false);
+        exception.httpStatus = HttpStatus.BAD_REQUEST;
+        return exception;
+    })
+    .catch(err => {
+        Logger.error(err.message, err);
+        return false;
+    })
+    .enclose();
 }
 }
 export default new SchoolUseCase();

@@ -41,6 +41,17 @@ export class preventHandler extends BaseHandler {
 
         return Promise.then(()=>{
            
+            if(prevent.image != undefined && prevent.image != null){
+       
+                return PreventUseCase.materialUpload(prevent.image,schoolId,prevent.preventTitle);
+            }
+            return null;
+          }).then((obj) => {
+            console.log("kkkk1",obj);
+             if(prevent.image != undefined && prevent.image!= null){
+                
+                prevent.image=obj;
+            }
             return PreventUseCase.create(prevent);
 
         }).then((object)=>{
@@ -88,6 +99,18 @@ export class preventHandler extends BaseHandler {
                 ));
 
                 return Promise.break;
+            }
+
+            if(prevent.image != undefined && prevent.image != null){
+       
+                return PreventUseCase.materialUpload(prevent.image,schoolId,prevent.preventTitle);
+            }
+            return null;
+          }).then((obj) => {
+            console.log("kkkk1",obj);
+             if(prevent.image != undefined && prevent.image!= null){
+                
+                prevent.image=obj;
             }
             return PreventUseCase.update(rid,prevent);
 

@@ -325,6 +325,39 @@ export class Utils {
  
         return false;
     }
+
+    public static todayDateAndTime() {
+        let today = new Date();
+        let dd = today.getDate();
+
+        let mm = today.getMonth()+1;
+        let yyyy = today.getFullYear();
+        let hh =today.getHours();
+        let MM=today.getMinutes();
+        let ss=today.getSeconds();
+        if(dd<10)
+        {
+            dd='0'+dd;
+        }
+
+        if(mm<10)
+        {
+            mm='0'+mm;
+        }
+        if(hh<10)
+        {
+            hh='0'+hh;
+        }
+        if(MM<10)
+        {
+            MM='0'+MM;
+        }
+        if(ss<10)
+        {
+            ss='0'+ss;
+        }
+        return yyyy+'-'+mm+'-'+dd+'-'+hh+'-'+MM+'-'+ss;
+    }
 }
 
     

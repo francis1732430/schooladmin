@@ -87,7 +87,7 @@ export class UserHandler extends BaseHandler {
         }
         
         if(checkuser.school && checkuser.school == true){
-            if (!Utils.requiredCheck(user.roleName)) {
+            if (!Utils.requiredCheck(user.roleName) && !Utils.requiredCheck(user.roleId)) {
                 return Utils.responseError(res, new Exception(
                     ErrorCode.USER.ROLEID_EMPTY,
                     MessageInfo.MI_ROLE_NAME_NOT_FOUND,
@@ -109,7 +109,7 @@ export class UserHandler extends BaseHandler {
             return AdminUserUseCase.create(user);
         })
         .then(object => {
-            Mailer.newUser(user.firstname,user.email, generatedPassword);
+             Mailer.newUser(user.firstname,user.email, generatedPassword);
             let data  ={};
             data["password"] = generatedPassword;
             data["message"] = MessageInfo.MI_USER_ADDED;
@@ -166,7 +166,7 @@ export class UserHandler extends BaseHandler {
                         condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
                     }
                 } else if(checkuser.school == true) {
-                    if(session.userId=='1') {
+                    if(session.userId=='18') {
                         condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
                     } else {
                         condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
@@ -242,7 +242,7 @@ export class UserHandler extends BaseHandler {
                         condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
                     }
                 } else if(checkuser.school == true) {
-                    if(session.userId=='1') {
+                    if(session.userId=='18') {
                         condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
                     } else {
                         condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY} = "${session.userId}" AND ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;

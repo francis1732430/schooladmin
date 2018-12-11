@@ -311,7 +311,8 @@ export class Mailer {
 
     }
 
-    public sendApproval(toEmail,schoolName,districtName) {
+    public sendApproval(toEmail,schoolName,districtName,name) {
+        console.log(toEmail,name,schoolName);
         let message = {
             body: {
                 name: name,

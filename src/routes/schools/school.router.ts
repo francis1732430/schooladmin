@@ -1,15 +1,17 @@
 import {authentication} from "../../middlewares/authentication";
 import {accessrole} from "../../middlewares/accessrole";
 import SchoolHandler from "./school.handler";
+import {checkUser} from "../../middlewares/checkuser";
 import * as express from "express";
 const router = express.Router();
 
+router.route("/list").get(authentication, accessrole,checkUser,SchoolHandler.selectList);
 router.route("/")
-    .get(authentication,accessrole, SchoolHandler.list)
+    .get(authentication,accessrole,checkUser,SchoolHandler.list)
     .post(SchoolHandler.create);
 
 router.route("/view/:rid")
-    .get(authentication,accessrole,SchoolHandler.view)
+    .get(authentication,accessrole,checkUser,SchoolHandler.view)
 
     
 router.route("/:rid")

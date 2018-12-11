@@ -21,10 +21,11 @@ export class AdminUserUseCase extends BaseUseCase {
     public create(user:AdminUserModel):Promise<any> {
         let roleInfo:any;
         let roleId;
+        let schoolId1;
         return Promise.then(() => {
             return this.findByQuery(q => {
                 //q.where(AdminUserTableSchema.FIELDS.USER_ID, user.createdBy);
-                q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
+                q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`);
                 q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`)
                q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,user.createdBy);
                 q.limit(1);
@@ -33,6 +34,8 @@ export class AdminUserUseCase extends BaseUseCase {
         .then(object => {
             if (object != null && object.models != null && object.models[0] != null) {
                  roleId=object.models[0].get('role_id');
+                 user.parentId=object.models[0].get('parent_id');
+                 schoolId1=object.models[0].get('school_id');
                 return this.findByQuery(q => {
                     q.where(AdminUserTableSchema.FIELDS.EMAIL, user.email);
                     q.where(AdminUserTableSchema.FIELDS.IS_DELETED, 0);
@@ -67,7 +70,6 @@ export class AdminUserUseCase extends BaseUseCase {
                 HttpStatus.BAD_REQUEST
             ));
         }).then((object) => {
-
             if(object != null){
                let roleName=object.get('role_name');
                user.roleName=roleName;
@@ -115,7 +117,7 @@ export class AdminUserUseCase extends BaseUseCase {
                 authRole.userId = userData.userId;
                 authRole.roleType = 'U';
                 authRole.createdBy = user.createdBy;
-                if(user.createdBy == 1){
+                if(user.createdBy == 1 || user.parentId == '18' && user.roleId != undefined){
                     authRole.parentId = user.roleId;
                 }else {
                     authRole.parentId = roleId;
@@ -126,10 +128,9 @@ export class AdminUserUseCase extends BaseUseCase {
                 if(user.roleId && user.schoolId){
                     authRole.schoolId=user.schoolId;
                 }
-                console.log("eeeeeeee",roleInfo);
-                if(!user.roleId || user.roleId == undefined || user.roleId == null){
+                if(user.parentId == '18'){
                     console.log("eeeeeeee1",roleInfo);
-                    authRole.schoolId=user.schoolId;
+                    authRole.schoolId=schoolId1;
                 }
                 AuthorizationRoleDto.create(AuthorizationRoleDto, authRole.toDto()).save();
                 return  authRole.toDto();

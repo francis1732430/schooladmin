@@ -2,15 +2,16 @@
  *    on 22/05/18.
  */
 import {AuthorizationRoleDto} from "../data/models";
-import {AuthorizationRuleUseCase,AuthorizationRuleSetUseCase} from "../domains"; 
+import {AuthorizationRuleUseCase,AuthorizationRuleSetUseCase,AdminUserUseCase} from "../domains"; 
 import {Utils} from "../libs/utils";
-import {AuthorizationRoleModel,AuthorizationRuleModel} from "../models";
+import {AuthorizationRoleModel,AuthorizationRuleModel, AdminUserModel} from "../models";
 import {Promise} from "thenfail";
 import {BaseUseCase} from "./base";
 import {ErrorCode, MessageInfo, HttpStatus} from "../libs/constants";
 import {Exception} from "../models/exception";
 import {Logger} from "../libs";
-import {AuthorizationRoleTableSchema,AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema} from "../data/schemas";
+import {AuthorizationRoleTableSchema,AuthorizationRuleTableSchema,AuthorizationRuleSetTableSchema,AdminUserTableSchema} from "../data/schemas";
+
 
 
 export class AuthorizationRoleUseCase extends BaseUseCase {
@@ -297,6 +298,37 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
         return this.findOne(q => {
             q.where(AuthorizationRoleTableSchema.FIELDS.USER_ID, userId);
         }, []);
+    }
+
+    public list1(schoolId):Promise<any> {
+        return Promise.then(() => {
+            return AdminUserUseCase.findByQuery(q => {
+                q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`);               
+                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`, 0); 
+                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`, schoolId);                         
+               q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);
+                q.orderBy(AdminUserTableSchema.FIELDS.USER_ID, 'asc');
+            }, []);
+        })
+        .then(objects => {
+            if (objects != null && objects.models != null && objects.models.length != null) {
+                let ret = [];
+                objects.models.forEach(object => {
+                    ret.push(AdminUserModel.fromDto(object,[]));
+                });
+               return ret;
+                
+            }
+            let exception;
+            exception = new Exception(ErrorCode.ROLE.NO_ROLE_FOUND, MessageInfo.MI_NO_ROLE_FOUND, false);
+            exception.httpStatus = HttpStatus.BAD_REQUEST;
+            return exception;
+        })
+        .catch(err => {
+            Logger.error(err.message, err);
+            return false;
+        })
+        .enclose();
     }
 }
 

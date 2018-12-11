@@ -528,3 +528,133 @@ export const NeetCenterTableSchema = {
         IS_DELETED:"is_deleted"
     }
 }
+
+export const AwardTableSchema = {
+
+    TABLE_NAME:"award_schema",
+    FIELDS: {
+
+        RID:"rid",
+        AWARD_NAME:"award_name",
+        AWARD_ID:"award_id",
+        AWARD_DESCRIPTION:"award_description",
+        USER_ID: "user_id",
+        IMAGE_URL:"image_url",
+        CERTFICATE_URL:"certificate_urls",
+        IS_ACTIVE:"is_active",
+        CREATED_BY: "created_by",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted",
+        SCHOOL_ID:"school_id"
+    }
+}
+
+export const ComplaintRegistrationSchema = {
+
+    TABLE_NAME:"registration_schema",
+    FIELDS: {
+
+        RID:"rid",
+        REGISTRATION_ID:"registraion_id",
+        STUDENT_ID:"student_id",
+        DISTRICT_ID:"district_id",
+        CITY_ID: "city_id",
+        SCHOOL_ID:"school_id",
+        GENDER:"gender",
+        MOBILE_NUMBER:"mobile_no",
+        EMAIL:"email_id",
+        ADDRESS: "address",
+        PIN:"PIN",
+        DESCRIPTION:"description",
+        IS_ACTIVE:"is_active",
+        CREATED_BY: "created_by",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted",
+    }
+}
+
+export const UserDetailSchema = {
+
+    TABLE_NAME:"user_details",
+    FIELDS: {
+
+        RID:"rid",
+        USER_DETAILS_ID:"user_details_id",
+        DESIGNATION:"designation",
+        SALARY:"salary",
+        EMPLOYEE_TYPE: "employee_type",
+        IMAGE_URL:"image_url",
+        DATE_OF_BIRTH:"date_of_birth",
+        USER_ID:"user_id",
+        DISTRICT_ID:"district_id",
+        CITY_ID: "city_id",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted",
+    }
+}
+
+export const NoticesTableSchema = {
+
+    TABLE_NAME:"notices_schema",
+    FIELDS: {
+
+        RID:"rid",
+        NOTICE_ID:"notice_id",
+        DESCRIPTION:"description",
+        LEVELS:"levels",
+        SENT_BY: "sent_by",
+        SENT_TO:"sent_to",
+        SECTION_ID:"section_id",
+        IMAGE_URL:"image_url",
+        IS_ACTIVE:"is_active",
+        SENT_TO_SCHOOL:"sent_to_school",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted",
+        CREATED_BY:"created_by",
+        TITLE:"title",
+        SCHOOL_ID:"school_id"
+    }
+}
+
+export const CategoryTableSchema = {
+
+    TABLE_NAME:"directory_category",
+    FIELDS: {
+
+        RID:"rid",
+        CATEGORY_ID:"category_id",
+        CATEGORY_NAME:"category_name",
+        IS_ACTIVE:"is_active",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted",
+        CREATED_BY:"created_by",
+        SCHOOL_ID:"school_id"
+    }
+}
+
+export const BooksTableSchema = {
+
+    TABLE_NAME:"books_entity",
+    FIELDS: {
+
+        RID:"rid",
+        BOOK_ID:"book_id",
+        BOOK_NAME:"book_name",
+        CATEGORY_ID:"category_id",
+        AUTHOR_NAME:"author_name",
+        DESCRIPTION:"description",
+        REF_BOOKS: "ref_books",
+        BOOK_URL:"book_url",
+        IS_ACTIVE:"is_active",
+        CREATED_DATE: "created_date",
+        UPDATED_DATE: "updated_date",
+        IS_DELETED:"is_deleted",
+        CREATED_BY:"created_by",
+        SCHOOL_ID:"school_id"
+    }
+}

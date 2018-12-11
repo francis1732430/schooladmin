@@ -8,7 +8,7 @@ import {checkUser} from "../../middlewares/checkuser";
 //import { LocationsHandler } from '../district/locations.handler';
 const router = express.Router();
 
-
+router.route("/list").get(authentication, accessrole,DistrictsHandler.selectList);   
 router.route("/create").post(authentication,checkUser,accessrole,DistrictsHandler.districtcreate)
 router.route("/:rid").put(authentication,checkUser,accessrole,DistrictsHandler.district_update)
 router.route("/:rid").delete(authentication,checkUser,accessrole,DistrictsHandler.destory);

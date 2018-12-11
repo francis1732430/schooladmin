@@ -26,6 +26,7 @@ export class ExamsHandler extends BaseHandler {
         req.body.createdBy=session.userId;
         let exams = ExamModel.fromRequest(req);
         let status = req.body.isActive;
+        let examName;
         if (!Utils.requiredCheck(exams.subjectId)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -111,8 +112,7 @@ export class ExamsHandler extends BaseHandler {
                 q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
             })
 
-        }).then((object) => {
-
+        }).then((object) => { 
             if(object == null) {
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.DUPLICATE_RESOURCE,
@@ -122,6 +122,7 @@ export class ExamsHandler extends BaseHandler {
                 ));
                 return Promise.break; 
             }
+            examName=object.get('type_name');
             return StandardEntityUseCase.findOne( q => {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,exams.standardId);
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
@@ -154,6 +155,30 @@ export class ExamsHandler extends BaseHandler {
                 return Promise.break; 
             }
 
+            if(exams.questionUrl != undefined && exams.questionUrl != null) {
+            
+                return SubjectEntityUseCase.materialUpload(exams.questionUrl,schoolId,examName);
+            } else {
+                // return SubjectEntityUseCase.materialUpload(subject.materialUrl,schoolId,subject.subjectName);
+                return null;
+            }
+            
+           }).then((obj) => {
+               console.log("kkkk",obj);
+            if(exams.questionUrl != undefined && exams.questionUrl != null) {
+                exams.questionUrl=obj;
+            } if(exams.sylabusUrl != undefined && exams.sylabusUrl != null){
+       
+                return SubjectEntityUseCase.materialUpload(exams.sylabusUrl,schoolId,'exam1');
+            }
+            return null;
+          }).then((obj) => {
+            console.log("kkkk1",obj);
+             if(exams.sylabusUrl != undefined && exams.sylabusUrl!= null){
+                
+                exams.sylabusUrl=obj;
+            }
+    
             return ExamUseCase.create(exams);
         }).then((object) => {
             let examData={};
@@ -170,6 +195,7 @@ export class ExamsHandler extends BaseHandler {
         let rid = req.params.rid || "";
         let exams = ExamModel.fromRequest(req);
         let status = req.body.isActive;
+        let examName;
         if (!Utils.requiredCheck(exams.subjectId)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -280,6 +306,7 @@ export class ExamsHandler extends BaseHandler {
                 ));
                 return Promise.break; 
             }
+            examName=object.get('type_name');
             return StandardEntityUseCase.findOne( q => {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,exams.standardId);
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
@@ -310,6 +337,30 @@ export class ExamsHandler extends BaseHandler {
                     HttpStatus.BAD_REQUEST
                 ));
                 return Promise.break; 
+            }
+
+            if(exams.questionUrl != undefined && exams.questionUrl != null) {
+            
+                return SubjectEntityUseCase.materialUpload(exams.questionUrl,schoolId,examName);
+            } else {
+                // return SubjectEntityUseCase.materialUpload(subject.materialUrl,schoolId,subject.subjectName);
+                return null;
+            }
+            
+           }).then((obj) => {
+               console.log("kkkk",obj);
+            if(exams.questionUrl != undefined && exams.questionUrl != null) {
+                exams.questionUrl=obj;
+            } if(exams.sylabusUrl != undefined && exams.sylabusUrl != null){
+       
+                return SubjectEntityUseCase.materialUpload(exams.sylabusUrl,schoolId,'exam1');
+            }
+            return null;
+          }).then((obj) => {
+            console.log("kkkk1",obj);
+             if(exams.sylabusUrl != undefined && exams.sylabusUrl!= null){
+                
+                exams.sylabusUrl=obj;
             }
             return ExamUseCase.updateById(rid,exams);
         }).then((object) => {

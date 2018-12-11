@@ -348,4 +348,18 @@ export class DistrictsHandler extends BaseHandler {
             Utils.responseError(res, err);
         })
     }
+
+    public static selectList(req:express.Request, res:express.Response):any {
+        let session:BearerObject = req[Properties.SESSION];
+        let userId = session.userId;
+        return Promise.then(() => {            
+            return DirectoryDistrictUseCase.list();   
+        })
+        .then(object => {
+            res.json(object);
+        })
+        .catch(err => {
+            Utils.responseError(res, err);
+        });
+    }
 }

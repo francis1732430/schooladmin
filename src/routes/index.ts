@@ -19,12 +19,20 @@ import results from "./exam_result/results.router";
 import subjects from "./subjects/subjects.router";
 import leaverequest from "./leave_request/leave.router";
 import calender from "./time_tables/time_tables.router";
-
 import me from "./me/me.router";
 import WeakDays from "./weakdays/weakdays.routes"
 import Timing from "./time/time.routes";
 import Prevent from "./prevent/prevent.router";
+import center from "./neetcenter/neetcenter.router";
+import award from "./award/award.router";
+import complaint from "./complaint/complaint.router";
+import notices from "./notices/notices.router";
+import category from "./category/category.router";
+import books from "./books/books.router";
 import * as express from "express";
+
+
+
 const router = express.Router();
 router.use("/auth", auth);
 router.use("/roles", roles);
@@ -50,6 +58,12 @@ router.use("/taluka",directory_taulk)
 router.use("/weak",WeakDays)
 router.use("/time",Timing);
 router.use("/prevent",Prevent);
+router.use("/neet",center);
+router.use("/award",award);
+router.use("/complaint",complaint);
+router.use("/notices",notices);
+router.use("/category",category);
+router.use("/books",books);
 
 router.get("/", (req:express.Request, res:express.Response) => {
     res.end();

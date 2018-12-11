@@ -64,6 +64,60 @@ export class LeaveRequestUseCase extends BaseUseCase {
             return Promise.reject(Utils.parseDtoError(err));
         }).enclose();
     }
+
+    public materialUpload(leave,schoolId,attachmentName):Promise<any> {
+        let partpath:any;
+        return new Promise((resolve,reject) => {
+            let img=leave;
+            var check2=img.match(/^data:image\/\w+;base64,/);
+            let type;
+            // console.log(material);
+            console.log('check2',check2);
+            if(check2 != null){
+               type=leave.substring("data:image/".length, leave.indexOf(";base64"));
+            }
+            var data = img.replace(/^data:image\/\w+;base64,/, "");
+                        var buf = new Buffer(data, 'base64');
+            let path=require('path');
+            let pathUrl=path.join(__dirname,'../../files');
+            let now=Utils.todayDateAndTime();
+             var fs=require('fs');
+             let res=resolve;
+            return fs.readdir(pathUrl,async function(err,files) {
+              
+                let check=await files.filter((file1,i) => {
+                    let dirUrl=`${pathUrl}/${file1}`;
+                    let fi=fs.lstatSync(dirUrl).isDirectory();
+                    if( fi && file1 == `leave${schoolId}`){
+                        return 1;
+                    }else {
+                        return 0;
+                    }
+                })
+               console.log(check);
+                if(check.length == 0){
+                    fs.mkdirSync(`${pathUrl}/leave${schoolId}`);
+                }
+                let partialpath;
+                if(check2 != null){
+                    partialpath=`leave${schoolId}/${attachmentName}-${now}.${type}`;
+                } else {
+                    partialpath=`leave${schoolId}/${attachmentName}-${now}`;
+                }
+                
+                let originalPath=`${pathUrl}/${partialpath}` 
+            return fs.writeFile(originalPath,buf,function(err){
+                console.log(err);
+
+                partpath=partialpath;
+                console.log("1111111",partialpath);
+               return res(partialpath);
+            })
+        })
+        }).catch(err => {
+            return Promise.reject(Utils.parseDtoError(err));
+        }).enclose();
+     }
 }
 
 export default new LeaveRequestUseCase();

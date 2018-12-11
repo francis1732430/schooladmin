@@ -28,7 +28,13 @@ import {
     WeakTableSchema,
     TimingTableSchema,
     PreventionsTableSchemas,
-    NeetCenterTableSchema
+    NeetCenterTableSchema,
+    AwardTableSchema,
+    ComplaintRegistrationSchema,
+    UserDetailSchema,
+    NoticesTableSchema,
+    CategoryTableSchema,
+    BooksTableSchema
 } from "./schemas";
 import * as Bookshelf from "bookshelf";
 import * as UUID from "node-uuid";
@@ -243,5 +249,47 @@ export class NeetCenterDto extends BaseDto {
 
     get tableName():string {
         return NeetCenterTableSchema.TABLE_NAME;
+    }
+}
+
+export class AwardDto extends BaseDto {
+
+    get tableName():string {
+        return AwardTableSchema.TABLE_NAME;
+    }
+}
+
+export class ComplaintRegistrationDto extends BaseDto {
+
+    get tableName():string {
+        return ComplaintRegistrationSchema.TABLE_NAME;
+    }
+}
+
+export class UserDetailDto extends BaseDto {
+
+    get tableName():string {
+        return UserDetailSchema.TABLE_NAME;
+    }
+}
+
+export class NoticesTableDto extends BaseDto {
+
+    get tableName():string {
+        return NoticesTableSchema.TABLE_NAME;
+    }
+}
+
+export class CategoryTableDto extends BaseDto {
+
+    get tableName():string {
+        return CategoryTableSchema.TABLE_NAME;
+    }
+}
+
+export class BooksTableDto extends BaseDto {
+
+    get tableName():string {
+        return BooksTableSchema.TABLE_NAME;
     }
 }

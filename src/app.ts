@@ -12,7 +12,7 @@ import * as cookieParser from "cookie-parser";
 import * as express from "express";
 import * as helmet from "helmet";
 import * as http from "http";
-
+let path=require('path');
 export class App {
     private app:express.Express;
     private bind:any;
@@ -36,9 +36,9 @@ export class App {
         this.app.disable("etag");
 
         //noinspection TypeScriptValidateTypes
-        this.app.use(json());
+        this.app.use(json({limit: '10mb', type: 'application/json'}));
         //noinspection TypeScriptValidateTypes
-        this.app.use(urlencoded({extended: false}));
+        this.app.use(urlencoded({extended: false,limit: '10mb'}));
         //noinspection TypeScriptValidateTypes
         this.app.use(cookieParser());
         //noinspection TypeScriptValidateTypes
@@ -59,6 +59,8 @@ export class App {
                 next();
             }
         });
+         
+        this.app.use('/',express.static(path.join(__dirname,'../files')));
 
         //noinspection TypeScriptValidateTypes
         this.app.use(httpLogger);
