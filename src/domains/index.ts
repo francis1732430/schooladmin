@@ -31,3 +31,4 @@ export {default as UserDetailUseCase}from "./userdetails";
 export {default as NoticesUseCase}from "./notices";
 export {default as CategoryUseCase}from "./category";
 export {default as BooksUseCase}from "./books";
+export {default as ChatUseCase}from "./chat";

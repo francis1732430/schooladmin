@@ -265,7 +265,7 @@ export class ExamTypesHandler extends BaseHandler {
         return Promise.then(() => {
             return ExamTypesUseCase.countByQuery(q => {
                 let condition;
-             if(checkuser.roleId != 18) {
+            if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
 
@@ -322,7 +322,7 @@ export class ExamTypesHandler extends BaseHandler {
                 return ExamTypesUseCase.findByQuery(q => {
                    q.select(`${ExamTypesTableSchema.TABLE_NAME}.*`);
                    let condition;
-             if(checkuser.roleId != 18) {
+            if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
 

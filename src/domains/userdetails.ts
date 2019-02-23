@@ -16,6 +16,7 @@ export class UserDetailUseCase extends BaseUseCase {
     }
 
     public create(detail:UserDetailModel):Promise<any> {
+        
         return Promise.then(() => {
                 return UserDetailDto.create(UserDetailDto, detail.toDto()).save();
             })

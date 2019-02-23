@@ -132,7 +132,7 @@ export class DistrictsHandler extends BaseHandler {
             if(object == null){
                 Utils.responseError(res, new Exception(
                     ErrorCode.RESOURCE.INVALID_Districts_Name,
-                    MessageInfo.MI_DISTRICT_NOT_FOUND,
+                    MessageInfo.MI_CITY_ID_NOT_FOUND,
                     false,
                     HttpStatus.BAD_REQUEST
                     ));

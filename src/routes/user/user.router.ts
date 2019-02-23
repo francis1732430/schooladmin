@@ -29,6 +29,25 @@ router.route("/massDelete")
 router.route("/exportSelected")
     .post(authentication,checkUser,accessrole, UserHandler.exportSelected);
 
-    router.route("/getUsers")
+router.route("/getUsers")
     .get(authentication,checkUser,accessrole, UserHandler.getUsers);
+
+
+router.route("/getStudent")
+    .get(authentication,checkUser,accessrole, UserHandler.getStudent);
+ 
+router.route("/getTeacher")
+    .get(authentication,checkUser,accessrole, UserHandler.getTeacher);    
+
+router.route("/getParent")
+    .get(authentication,checkUser,accessrole, UserHandler.getParent);
+
+router.route("/getTeacherandAdmin")
+    .get(authentication,checkUser,accessrole, UserHandler.getTeacherAndAdmin);
+
+router.route("/getStudentandAdmin")
+    .get(authentication,checkUser,accessrole, UserHandler.getStudentAndParent);
+    
+router.route("/getSchoolAdmin")
+    .get(authentication,checkUser,accessrole, UserHandler.getSchoolAdmin);    
 export default router;

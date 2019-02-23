@@ -323,9 +323,9 @@ export class AttendenceHandler extends BaseHandler {
                 q.leftJoin(`${StandardEntityTableSchema.TABLE_NAME}`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.STANDARD_ID}`);
                 q.leftJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.USER_ID}`);
                 let condition;
-             if(checkuser.roleId != 18) {
-             q.where(`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.CREATED_BY}`,session.userId);
-             }                
+                if(!checkuser.tmp && checkuser.roleId != 18) {
+                 q.where(`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.CREATED_BY}`,session.userId);
+                  }                
 
              q.where(`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.IS_DELETED}`,0);
@@ -340,7 +340,7 @@ export class AttendenceHandler extends BaseHandler {
                                 condition = `(${AttendenceTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key=='userId'){
-                                condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                condition = `(${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.USER_ID} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key == 'standardId') {
                                 condition = `(${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.STANDARD_ID} LIKE "%${searchval}%")`;
@@ -387,9 +387,9 @@ export class AttendenceHandler extends BaseHandler {
                    q.leftJoin(`${StandardEntityTableSchema.TABLE_NAME}`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.STANDARD_ID}`);
                    q.leftJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.USER_ID}`);
                    let condition;
-                if(checkuser.roleId != 18) {
-                q.where(`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.CREATED_BY}`,session.userId);
-                }                
+                   if(!checkuser.tmp && checkuser.roleId != 18) {
+                    q.where(`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.CREATED_BY}`,session.userId);
+                    }                
    
                 q.where(`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                 q.where(`${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.IS_DELETED}`,0);
@@ -404,7 +404,7 @@ export class AttendenceHandler extends BaseHandler {
                                 condition = `(${AttendenceTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key=='userId'){
-                                condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                condition = `(${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.USER_ID} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key == 'standardId') {
                                 condition = `(${AttendenceTableSchema.TABLE_NAME}.${AttendenceTableSchema.FIELDS.STANDARD_ID} LIKE "%${searchval}%")`;

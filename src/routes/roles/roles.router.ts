@@ -52,7 +52,11 @@ router.route("/schoolRole")
 
 
 router.route("/adminList")
-.get(authentication,checkUser,accessrole,RoleHandler.adminList);
+    .get(authentication,checkUser,accessrole,RoleHandler.adminList);
 
-router.route("/schoolUserList").get(authentication, accessrole,RoleHandler.userList);
+router.route("/schoolUserList")
+    .get(authentication, accessrole,RoleHandler.userList);
+
+router.route("/updateRoles/:rid")
+    .put(authentication, accessrole,RoleHandler.updateRoles);    
 export default router;

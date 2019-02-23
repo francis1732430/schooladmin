@@ -402,12 +402,13 @@ export class ExamsHandler extends BaseHandler {
         return Promise.then(() => {
             return ExamUseCase.countByQuery(q => {
                 let condition;
-             if(checkuser.roleId != 18) {
+            if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
              q.leftJoin(`${ExamTypesTableSchema.TABLE_NAME}`,`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.EXAM_TYPE_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.EXAM_TYPE}`);
              q.leftJoin(`${StandardEntityTableSchema.TABLE_NAME}`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.STANDARD_ID}`);
              q.leftJoin(`${ClassEntityTableSchema.TABLE_NAME}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.SECTION_ID}`);
+             q.leftJoin(`${SubjectTableSchema.TABLE_NAME}`,`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.SUBJECT_ID}`);
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
              q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
                // q.whereRaw(condition);               
@@ -465,14 +466,15 @@ export class ExamsHandler extends BaseHandler {
             .then((totalObject) => {
                 total = totalObject;
                 return ExamUseCase.findByQuery(q => {
-                   q.select(`${ExamTableSchema.TABLE_NAME}.*`,`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.TYPE_NAME}`);
+                   q.select(`${ExamTableSchema.TABLE_NAME}.*`,`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.TYPE_NAME}`, `${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`, `${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME} as standardName`, `${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_NAME} as className`, `${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`, `${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_NAME} as subjectName`);
                    let condition;
-                   if(checkuser.roleId != 18) {
+                   if(!checkuser.tmp && checkuser.roleId != 18) {
                    q.where(`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.CREATED_BY}`,session.userId);
                    }                
                    q.leftJoin(`${ExamTypesTableSchema.TABLE_NAME}`,`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.EXAM_TYPE_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.EXAM_TYPE}`);
                    q.leftJoin(`${StandardEntityTableSchema.TABLE_NAME}`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.STANDARD_ID}`);
                    q.leftJoin(`${ClassEntityTableSchema.TABLE_NAME}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.SECTION_ID}`);
+                   q.leftJoin(`${SubjectTableSchema.TABLE_NAME}`,`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,`${ExamTableSchema.TABLE_NAME}.${ExamTableSchema.FIELDS.SUBJECT_ID}`);
                    q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
                    q.where(`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.IS_DELETED}`,0);
                      // q.whereRaw(condition);               
@@ -576,6 +578,9 @@ export class ExamsHandler extends BaseHandler {
                     object.models.forEach(obj => {
                         let examData = ExamModel.fromDto(obj, ["createdBy","password"]); 
                         examData["typeName"]=obj.get('type_name');
+                        examData["standardName"]=obj.get('standardName');
+                        examData["subjectName"]=obj.get('subjectName');
+                        examData["className"]=obj.get('className');
                         ret.push(examData);
                     });
                 }

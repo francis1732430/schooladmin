@@ -34,7 +34,8 @@ import {
     UserDetailSchema,
     NoticesTableSchema,
     CategoryTableSchema,
-    BooksTableSchema
+    BooksTableSchema,
+    ChatTableSchema
 } from "./schemas";
 import * as Bookshelf from "bookshelf";
 import * as UUID from "node-uuid";
@@ -291,5 +292,12 @@ export class BooksTableDto extends BaseDto {
 
     get tableName():string {
         return BooksTableSchema.TABLE_NAME;
+    }
+}
+
+export class ChatTableDto extends BaseDto {
+
+    get tableName():string {
+        return ChatTableSchema.TABLE_NAME;
     }
 }

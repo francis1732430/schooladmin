@@ -172,7 +172,7 @@ export class AuthorizationRoleUseCase extends BaseUseCase {
                     })
                     .then(object => {
                         console.log("vvvvvvvvvvvvvvv",object.models.length);
-                        if (object != null && object.models != null && object.model.length != null && object.models.length != 0) {
+                        if (object != null && object.models != null) {
                             return Promise.void;
                         } else {
                             let exception;

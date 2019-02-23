@@ -449,6 +449,7 @@ export const TimeTableTableSchema = {
         END_TIME:"end_time",
         WEAK_ID:"weak_id",
         STAFF_ID:"staff_id",
+        SUBJECT_ID:"subject_id",
         SCHOOL_ID:"school_id",
         CREATED_DATE:"created_date",
         UPDATED_DATE:"updated_date",
@@ -581,7 +582,7 @@ export const UserDetailSchema = {
     FIELDS: {
 
         RID:"rid",
-        USER_DETAILS_ID:"user_details_id",
+        USER_DETAILS_ID:"user_deteails_id",
         DESIGNATION:"designation",
         SALARY:"salary",
         EMPLOYEE_TYPE: "employee_type",
@@ -655,6 +656,24 @@ export const BooksTableSchema = {
         UPDATED_DATE: "updated_date",
         IS_DELETED:"is_deleted",
         CREATED_BY:"created_by",
+        SCHOOL_ID:"school_id"
+    }
+}
+
+export const ChatTableSchema = {
+
+    TABLE_NAME:"chat",
+    FIELDS: {
+        RID:"rid",
+        CHAT_ID:"chat_id",
+        GROUP_TYPE: "group_type",
+        GROUP_ID:"group_id",
+        USER_ID:"user_id",
+        MESSAGE:"message",
+        CREATED_DATE:"created_date",
+        UPDATED_DATE: "updated_date",
+        JOINED:"joined",
+        IS_DELETED:"is_deleted",
         SCHOOL_ID:"school_id"
     }
 }

@@ -552,6 +552,7 @@ export class RoleHandler extends BaseHandler {
         let sortValue;
         let searchobj = [];
         let total = 0;
+        let searchValue = req.query.searchValue;
         for (let key in req.query) {
             console.log(req.query[key]);
             if(key=='sortKey'){
@@ -572,7 +573,9 @@ export class RoleHandler extends BaseHandler {
         .then((object) => {
             role = AuthorizationRoleModel.fromDto(object);
             return AuthorizationRoleUseCase.countByQuery(q => {
-                q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
+                q.leftJoin(`${AdminUserTableSchema.TABLE_NAME}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`);
+                q.leftJoin(`${AdminUserTableSchema.TABLE_NAME} as createdUser`, `createdUser.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_BY}`);
+                q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`, 0);
                 if(checkuser && checkuser.global == true) {
                   if(checkuser && checkuser.tmp == true){
   //                  q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
@@ -611,6 +614,16 @@ export class RoleHandler extends BaseHandler {
                             } else if(key === "createdDate") {
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else {
+                                searchval = searchValue; 
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
                             }
                         }
                     }
@@ -621,7 +634,12 @@ export class RoleHandler extends BaseHandler {
         .then((totalObject) => {
             total = totalObject;
             return AuthorizationRoleUseCase.findByQuery(q => {
-                q.where(AuthorizationRoleTableSchema.FIELDS.IS_DELETED, 0);
+                q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`, 0);
+                q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`);
+                q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as userName`));
+                q.select(knex.raw(`CONCAT(createdUser.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",createdUser.${AdminUserTableSchema.FIELDS.LASTNAME}) as createdByName`))
+                q.leftJoin(`${AdminUserTableSchema.TABLE_NAME}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`);
+                q.leftJoin(`${AdminUserTableSchema.TABLE_NAME} as createdUser`, `createdUser.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_BY}`);
                 if(checkuser && checkuser.global == true) {
                     if(checkuser && checkuser.tmp == true){
     //                  q.whereRaw(`(${AuthorizationRoleTableSchema.FIELDS.CREATED_BY} = '${userId}')`);
@@ -659,6 +677,16 @@ export class RoleHandler extends BaseHandler {
                             } else if(key === "createdDate") {
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else {
+                                searchval = searchValue; 
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
                             }
                         }
                     }
@@ -690,7 +718,10 @@ export class RoleHandler extends BaseHandler {
             if (objects != null && objects.models != null && objects.models.length != null) {
                 let ret = [];
                 objects.models.forEach(object => {
-                    ret.push(AuthorizationRoleModel.fromDto(object));
+                    let role = AuthorizationRoleModel.fromDto(object);
+                    role["createdBy"] = object.get('createdByName');
+                    role["userName"] = object.get('userName');
+                    ret.push(role);
                 });
                 res.header(Properties.HEADER_TOTAL, total.toString(10));
 
@@ -1431,6 +1462,8 @@ export class RoleHandler extends BaseHandler {
         let searchobj = [];
         let total = 0;
         let schoolIds:any[];
+        let searchValue = req.query.searchValue;
+        console.log('searchvalue', searchValue);
         for (let key in req.query) {
             console.log(req.query[key]);
             if(key=='sortKey'){
@@ -1460,8 +1493,8 @@ export class RoleHandler extends BaseHandler {
                 q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.IS_DELETED}`, 0);
           //      q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${AuthorizationRuleTableSchema.TABLE_NAME}.*`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}`);
        //   q.select(`${AuthorizationRuleTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`);     
-          q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
-                q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as createdByName`))
+        //   q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
+                // q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as createdByName`))
                 if(userId != "1") {
                     q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.ROLE_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
                 //q.innerJoin(`${AuthorizationRuleTableSchema.TABLE_NAME} as school`,`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`,`school.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID}`);
@@ -1488,7 +1521,7 @@ export class RoleHandler extends BaseHandler {
                        let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
                        q.whereRaw(condition);
                        //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`,userId);
-                      // q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
+                        // q.groupBy(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`);
                       }
                 
                
@@ -1499,7 +1532,7 @@ export class RoleHandler extends BaseHandler {
                             console.log(searchobj[key]);
                             let searchval = searchobj[key];
                             let ColumnKey = Utils.changeSearchKey(key);
-
+                            searchval = searchValue;
                             if(key === "roleId"){
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
@@ -1528,6 +1561,25 @@ export class RoleHandler extends BaseHandler {
                             } else if(key === "createdDate") {
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else {
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                                condition = `(${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_DATE} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.UPDATED_DATE} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
                             }
                         }
                     }
@@ -1570,7 +1622,7 @@ export class RoleHandler extends BaseHandler {
                    let condition=`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.SCHOOL_ID} IS NOT NULL`;
                    q.whereRaw(condition);
                    //q.where(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.CREATED_BY}`,userId);
-                    q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
+                    // q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
                   }
 
                 let condition;
@@ -1579,6 +1631,7 @@ export class RoleHandler extends BaseHandler {
                         if(searchobj[key]!=null && searchobj[key]!=''){
                             console.log(searchobj[key]);
                             let searchval = searchobj[key];
+                            searchval = searchValue;
                             let ColumnKey = Utils.changeSearchKey(key);
                             if(key === "roleId"){
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
@@ -1608,6 +1661,25 @@ export class RoleHandler extends BaseHandler {
                             } else if(key === "createdDate") {
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else {
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                                condition = `(${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_DATE} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.UPDATED_DATE} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
                             }
                         }
                     }
@@ -1692,6 +1764,7 @@ export class RoleHandler extends BaseHandler {
         let sortValue;
         let searchobj = [];
         let total = 0;
+        let searchValue = req.query.searchValue;
         for (let key in req.query) {
             console.log(req.query[key]);
             if(key=='sortKey'){
@@ -1744,7 +1817,7 @@ export class RoleHandler extends BaseHandler {
                             console.log(searchobj[key]);
                             let searchval = searchobj[key];
                             let ColumnKey = Utils.changeSearchKey(key);
-
+                            searchval = searchValue;
                             if(key === "roleId"){
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
@@ -1773,6 +1846,23 @@ export class RoleHandler extends BaseHandler {
                             } else if(key === "createdDate") {
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else {
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                                condition = `(${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_DATE} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.UPDATED_DATE} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
                             }
                         }
                     }
@@ -1816,6 +1906,7 @@ export class RoleHandler extends BaseHandler {
                         if(searchobj[key]!=null && searchobj[key]!=''){
                             console.log(searchobj[key]);
                             let searchval = searchobj[key];
+                            searchval = searchValue;
                             let ColumnKey = Utils.changeSearchKey(key);
                             if(key === "roleId"){
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
@@ -1845,6 +1936,23 @@ export class RoleHandler extends BaseHandler {
                             } else if(key === "createdDate") {
                                 condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else {
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                                condition = `(${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_DATE} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
+                                condition = `(${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.UPDATED_DATE} LIKE "%${searchval}%")`;
+                                q.orWhereRaw(condition);
                             }
                         }
                     }
@@ -2014,6 +2122,7 @@ public static adminList(req:express.Request, res:express.Response):any {
             q.select(`${AuthorizationRoleTableSchema.TABLE_NAME}.*`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}`);
             //q.groupBy(`${AuthorizationRuleTableSchema.TABLE_NAME}.${AuthorizationRuleTableSchema.FIELDS.RULE_ID}`);
             q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as createdByName`))
+            q.select(knex.raw(`CONCAT(user.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",user.${AdminUserTableSchema.FIELDS.LASTNAME}) as userName`))
             if(userId != "1") {
                     
                 if(role.parentId == '32'){
@@ -2031,6 +2140,7 @@ public static adminList(req:express.Request, res:express.Response):any {
               q.innerJoin(`${DirectoryDistrictTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`);
             //   q.innerJoin(`${DirectoryTalukTableSchema.TABLE_NAME}`,`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.DISTRICT_ID}`);
               q.innerJoin(`${AdminUserTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.CREATED_BY}`);
+              q.innerJoin(`${AdminUserTableSchema.TABLE_NAME} as user`,`user.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`);
         let condition;
         if (searchobj) {
             for (let key in searchobj) { 
@@ -2107,10 +2217,11 @@ public static adminList(req:express.Request, res:express.Response):any {
     .then(objects => {
         if (objects != null && objects.models != null && objects.models.length != null) {
             let ret = [];
-           console.log(objects.models);
+        //    console.log(objects.models);
             objects.models.forEach(object => {
                 let rules=AuthorizationRoleModel.fromDto(object);
                 rules["districtName"]=object.get("district_name");
+                rules["username"]=object.get("userName");
                 role["sub"].push(rules);
             });
             ret.push(role);
@@ -2151,6 +2262,82 @@ public static userList(req:express.Request, res:express.Response):any {
         Utils.responseError(res, err);
     });
 }
-}
 
+public static updateRoles(req:express.Request, res:express.Response):any {
+    let session:BearerObject = req[Properties.SESSION];
+    let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+    let rid = req.params.rid;
+    let role = AuthorizationRoleModel.fromRequest(req);
+    if (!Utils.requiredCheck(role.parentId)) {
+        return Utils.responseError(res, new Exception(
+            ErrorCode.RESOURCE.REQUIRED_ERROR,
+            MessageInfo.MI_ROLE_NOT_FOUND,
+            false,
+            HttpStatus.BAD_REQUEST
+        ));
+    }
+    return Promise.then(() => {
+        return AuthorizationRoleUseCase.findOne((q) => {
+         q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.RID}`, rid);
+         q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`, 0);
+        })
+    }).then((object) => {
+     if(object == null) {
+        Utils.responseError(res, new Exception(
+            ErrorCode.RESOURCE.GENERIC,
+            MessageInfo.MI_NO_ROLE_FOUND,
+            false,
+            HttpStatus.BAD_REQUEST
+        ));
+        return Promise.break;
+     }
+     return AuthorizationRoleUseCase.findOne((q) => {
+         q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,role.parentId);
+         q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+         q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.ROLE_TYPE}`,'G');
+     })
+    }).then((object) => {
+        if(!object) {
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.GENERIC,
+                MessageInfo.MI_NO_ROLE_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+         }
+         role["roleName"] = object.get("role_name");
+         console.log('rolename', role);
+         return AuthorizationRoleUseCase.findOne((q) => {
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,session.userId);
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.IS_DELETED}`,0);
+        }) 
+    }).then((object) => {
+     if(!object) {
+        Utils.responseError(res, new Exception(
+            ErrorCode.RESOURCE.GENERIC,
+            MessageInfo.MI_NO_ROLE_FOUND,
+            false,
+            HttpStatus.BAD_REQUEST
+        ));
+        return Promise.break;
+     } 
+     let roles = AuthorizationRoleModel.fromDto(object);
+     if(roles.parentId != 18) {
+        Utils.responseError(res, new Exception(
+            ErrorCode.RESOURCE.GENERIC,
+            MessageInfo.MI_PARENT_ROLE_NOT_FOUND,
+            false,
+            HttpStatus.BAD_REQUEST
+        ));
+        return Promise.break;
+     }
+     return AuthorizationRoleUseCase.updateById(rid, role);
+    }).then(() => {
+        res.json({message: "role updated successfully"});
+    }).catch(err => {
+        Utils.responseError(res, err);
+    })
+}
+}
 export default RoleHandler;

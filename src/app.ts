@@ -12,11 +12,13 @@ import * as cookieParser from "cookie-parser";
 import * as express from "express";
 import * as helmet from "helmet";
 import * as http from "http";
+import * as ioo from "socket.io";
 let path=require('path');
 export class App {
     private app:express.Express;
     private bind:any;
     private server:http.Server;
+    private io:any;
 
     private static normalizePort(val:any) {
         let port = parseInt(val, 10);
@@ -30,6 +32,7 @@ export class App {
     }
 
     constructor() {
+
         this.app = express();
         this.app.set("x-powered-by", false);
         this.app.enable("trust proxy");
@@ -51,7 +54,7 @@ export class App {
             res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
             res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
             // Set custom headers for CORS 
-            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Pragma, If-Modified-Since, Cache-Control, Authorization, action");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Pragma, If-Modified-Since, Cache-Control, Authorization, action, schoolId");
             res.header("Access-Control-Expose-Headers", "Total-Items, Item-Per-Page, Total, Offset, Limit");
             if (req.method === "OPTIONS") {
                 res.status(200).end();
@@ -79,6 +82,19 @@ export class App {
         this.app.use(recovery);
 
         this.server = http.createServer(this.app).listen(8888);
+         require('./routes/chat/chat.router')(this.server);
+        // let io = ioo(this.server);
+        // io.on('connection', client => {
+        //     client.on('group', (data) => {
+        //      console.log(data);
+        //      client.join(data);
+        //      io.to(data).emit('message','new user joined');
+        //     })  
+        //     client.on('message', data => { 
+        //       io.to(data.group).emit("message", "message");
+        //      });
+        //     client.on('disconnect', () => { /* … */ });
+        //   });
         var listener = this.server.listen(this.bind,function(){
             console.log('Listening on port ' + listener.address().port);
         });

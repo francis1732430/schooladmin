@@ -24,6 +24,7 @@ export class UserDetailModel extends BaseModel {
             Details.userId=UserDetailModel.getString(req.body.userId);
             Details.districtId=UserDetailModel.getString(req.body.districtId);
             Details.cityId=UserDetailModel.getString(req.body.cityId);
+            Details.salary=UserDetailModel.getString(req.body.salary);
             return Details;
         }
         return null;
@@ -40,6 +41,7 @@ export class UserDetailModel extends BaseModel {
             let userId = object.get(UserDetailSchema.FIELDS.USER_ID);
             let districtId = object.get(UserDetailSchema.FIELDS.DISTRICT_ID);
             let cityId = object.get(UserDetailSchema.FIELDS.CITY_ID);
+            let salary = object.get(UserDetailSchema.FIELDS.SALARY);
             let createdDate = object.get(UserDetailSchema.FIELDS.CREATED_DATE);
             let updatedDate = object.get(UserDetailSchema.FIELDS.UPDATED_DATE); 
             let ret = new UserDetailModel();
@@ -52,6 +54,7 @@ export class UserDetailModel extends BaseModel {
             ret.userId = userId != null && userId !== "" ? userId : undefined;
             ret.districtId = districtId != null && districtId !== "" ? districtId : undefined;
             ret.cityId = cityId != null && cityId !== "" ? cityId : undefined;
+            ret.salary = salary != null && salary !== "" ? salary : undefined;
             ret.createdDate = createdDate != null && createdDate !== "" ? createdDate : undefined;
             ret.updatedDate = updatedDate != null && updatedDate !== "" ? updatedDate : undefined;
             if (object.relations != null) {
@@ -77,6 +80,7 @@ export class UserDetailModel extends BaseModel {
         obj[UserDetailSchema.FIELDS.USER_ID] = this.userId;
         obj[UserDetailSchema.FIELDS.DISTRICT_ID] = this.districtId;
         obj[UserDetailSchema.FIELDS.CITY_ID] = this.cityId;
+        obj[UserDetailSchema.FIELDS.SALARY] = this.salary;
         return obj;
     }
 }

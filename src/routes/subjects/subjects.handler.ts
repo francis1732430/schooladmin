@@ -237,7 +237,7 @@ export class SubjectHandler extends BaseHandler {
         return Promise.then(() => {
             return SubjectEntityUseCase.countByQuery(q => {
                 let condition;
-             if(checkuser.roleId != 18) {
+            if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
 
@@ -288,7 +288,7 @@ export class SubjectHandler extends BaseHandler {
                 return SubjectEntityUseCase.findByQuery(q => {
                    q.select(`${SubjectTableSchema.TABLE_NAME}.*`);
                    let condition;
-             if(checkuser.roleId != 18) {
+             if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
 

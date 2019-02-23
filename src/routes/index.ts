@@ -29,6 +29,9 @@ import complaint from "./complaint/complaint.router";
 import notices from "./notices/notices.router";
 import category from "./category/category.router";
 import books from "./books/books.router";
+import userdetails from "./userdetail/userdetail.router";
+import chat from "./chat/chatrouter.router";
+import fileupload from "./file_upload/subject_upload";
 import * as express from "express";
 
 
@@ -64,7 +67,9 @@ router.use("/complaint",complaint);
 router.use("/notices",notices);
 router.use("/category",category);
 router.use("/books",books);
-
+router.use("/userdetail", userdetails);
+router.use("/fileupload", fileupload);
+router.use("/chat", chat);
 router.get("/", (req:express.Request, res:express.Response) => {
     res.end();
 });

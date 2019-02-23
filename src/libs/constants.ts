@@ -304,7 +304,7 @@ export const DATE_FORMAT = {
 };
 
 export const WebUrl = {
-    WEBSITE_URL: "http://52.9.168.172/#/",
+    WEBSITE_URL: "http://52.9.168.172s/#/",
     RESETPASSWORD_URL:"resetpassword/"
 };
 

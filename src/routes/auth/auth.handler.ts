@@ -255,7 +255,7 @@ export class AuthHandler extends BaseHandler {
 
                 let host = (req.get("x-forwarded-host")) ? req.get("x-forwarded-host") : req.get("host");
                 let link = `${WebUrl.WEBSITE_URL}${WebUrl.RESETPASSWORD_URL}${token}`;
-                
+                console.log('link', link);
                 Mailer.resetPassword(email, userName, link);
                 // res.status(HttpStatus.NO_CONTENT);
                 res.json({status: 1, message: MessageInfo.MI_SEND_RESETPWD_EMAIL});

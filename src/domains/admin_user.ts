@@ -70,6 +70,7 @@ export class AdminUserUseCase extends BaseUseCase {
                 HttpStatus.BAD_REQUEST
             ));
         }).then((object) => {
+            console.log('rrrrrrrrrrrrrrrrrrrrrtttttttt', object);
             if(object != null){
                let roleName=object.get('role_name');
                user.roleName=roleName;
@@ -84,6 +85,7 @@ export class AdminUserUseCase extends BaseUseCase {
             if (object != null && object.models != null && object.models[0] != null) {
                 roleInfo = AuthorizationRoleModel.fromDto(object.models[0]);
                 console.log(roleInfo);
+                user.schoolId = null;
                 return AdminUserDto.create(AdminUserDto, user.toDto()).save();
             }
             return Promise.reject(new Exception(
@@ -122,7 +124,7 @@ export class AdminUserUseCase extends BaseUseCase {
                 }else {
                     authRole.parentId = roleId;
                 }
-                
+                console.log('user', user);
                 authRole.roleName = user.roleName;
                 authRole.assignedDistrict = user.assignedDistrict;
                 if(user.roleId && user.schoolId){
@@ -289,11 +291,16 @@ export class AdminUserUseCase extends BaseUseCase {
 
     public destroyById(rid:string,createdBy:number):any {
         return Promise.then(() => {
-            return this.findById(rid);
+            return this.findOne(q => {
+                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.RID}`, rid);
+                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`, 0);
+            })
         }).then(object => {
+            console.log('object', object);
             if (object) {
                 let userData = AdminUserModel.fromDto(object);
-                if(userData.createdBy==createdBy || createdBy==1){
+                console.log('createdby', createdBy);
+                if(userData.createdBy==createdBy || createdBy == 1){
                     let adminUser = {};
                     adminUser[AdminUserTableSchema.FIELDS.IS_DELETED] = 1;
                     return object.save(adminUser, {patch: true});
@@ -602,7 +609,7 @@ export class AdminUserUseCase extends BaseUseCase {
         return Promise.then(() => {
      
             return this.findOne(q => {
-                q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`);
+                q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.SCHOOL_ID} as schoolId`);
             q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,userid);
             q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
             q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);           
@@ -616,8 +623,8 @@ export class AdminUserUseCase extends BaseUseCase {
             let obj:any={};
             let adminuser=AdminUserModel.fromDto(object);
             let schoolid=adminuser.schoolId;
-
-            if(schoolid) {
+            let schoolId1 = object.get('schoolId');
+            if(schoolId1) {
             obj.school=true
             } else {
              obj.global=true;

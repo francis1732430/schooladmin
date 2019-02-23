@@ -198,7 +198,7 @@ export class StandardHandler extends BaseHandler {
         return Promise.then(() => {
             return StandardEntityUseCase.countByQuery(q => {
                 let condition;
-             if(checkuser.roleId != 18 || checkuser.tmp == true) {
+             if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
 
@@ -249,7 +249,7 @@ export class StandardHandler extends BaseHandler {
                    q.select(`${StandardEntityTableSchema.TABLE_NAME}.*`);
                    //q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as staffName`));
                    let condition;
-                   if(checkuser.roleId != 18 || checkuser.tmp == true) {
+                   if(!checkuser.tmp && checkuser.roleId != 18) {
                    q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.CREATED_BY}`,session.userId);
                    }                
       

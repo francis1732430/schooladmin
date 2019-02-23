@@ -51,7 +51,7 @@ export class UserDetailHandler extends BaseHandler {
        
         return Promise.then(() => {
             return AdminUserUseCase.findOne(q => {
-                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,complaint.studentId);
+                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,details.userId);
                 q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
             })
         }).then((object) => {
@@ -66,7 +66,7 @@ export class UserDetailHandler extends BaseHandler {
             }
  
             return DirectoryDistrictUseCase.findOne(q => {
-             q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,complaint.districtId);
+             q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,details.districtId);
              q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.IS_DELETED}`,0);
          })
         }).then((object) => {
@@ -81,7 +81,7 @@ export class UserDetailHandler extends BaseHandler {
             }
  
             return DirectoryTalukUseCase.findOne(q => {
-             q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`,complaint.cityId);
+             q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`,details.cityId);
              q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
          })
         }).then((object) => {
@@ -111,7 +111,7 @@ export class UserDetailHandler extends BaseHandler {
        }).then((object) => {
 
         let subjectData={}
-        subjectData["message"] = "Subject created successfully";
+        subjectData["message"] = "User created successfully";
         res.json(subjectData);
     }).catch(err => {
         Utils.responseError(res, err);
@@ -132,43 +132,28 @@ export class UserDetailHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        if (!Utils.requiredCheck(details.districtId)) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.REQUIRED_ERROR,
-                MessageInfo.MI_DISTRICT_IS_REQUIRED,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-        }
-        if (!Utils.requiredCheck(details.cityId)) {
-            return Utils.responseError(res, new Exception(
-                ErrorCode.RESOURCE.REQUIRED_ERROR,
-                MessageInfo.MI_CITY_ID_IS_REQUIRED,
-                false,
-                HttpStatus.BAD_REQUEST
-            ));
-        }
+        // if (!Utils.requiredCheck(details.districtId)) {
+        //     return Utils.responseError(res, new Exception(
+        //         ErrorCode.RESOURCE.REQUIRED_ERROR,
+        //         MessageInfo.MI_DISTRICT_IS_REQUIRED,
+        //         false,
+        //         HttpStatus.BAD_REQUEST
+        //     ));
+        // }
+        // if (!Utils.requiredCheck(details.cityId)) {
+        //     return Utils.responseError(res, new Exception(
+        //         ErrorCode.RESOURCE.REQUIRED_ERROR,
+        //         MessageInfo.MI_CITY_ID_IS_REQUIRED,
+        //         false,
+        //         HttpStatus.BAD_REQUEST
+        //     ));
+        // }
        
         return Promise.then(() => {
-            return UserDetailUseCase.findOne(q => {
-                q.where(`${UserDetailSchema.TABLE_NAME}.${UserDetailSchema.FIELDS.RID}`,rid);
-                q.where(`${UserDetailSchema.TABLE_NAME}.${UserDetailSchema.FIELDS.IS_DELETED}`,0);
-            })
-        }).then((object) => {
-
-            if(object == null) {
-                Utils.responseError(res, new Exception(
-                    ErrorCode.RESOURCE.NOT_FOUND,
-                    MessageInfo.MI_SUBJECT_ID_NOT_FOUND,
-                    false,
-                    HttpStatus.BAD_REQUEST
-                ));
-                return Promise.break;
-            }
-            return AdminUserUseCase.findOne(q => {
-                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,complaint.studentId);
-                q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}`,0);
-            })
+        return UserDetailUseCase.findOne(q => {
+                     q.where(`${UserDetailSchema.TABLE_NAME}.${UserDetailSchema.FIELDS.USER_ID}`,details.userId);
+                     q.where(`${UserDetailSchema.TABLE_NAME}.${UserDetailSchema.FIELDS.IS_DELETED}`,0);
+                 })
         }).then((object) => {
          if(object == null) {
              Utils.responseError(res, new Exception(
@@ -179,37 +164,7 @@ export class UserDetailHandler extends BaseHandler {
              ));
              return Promise.break;
             }
- 
-            return DirectoryDistrictUseCase.findOne(q => {
-             q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.DISTRICT_ID}`,complaint.districtId);
-             q.where(`${DirectoryDistrictTableSchema.TABLE_NAME}.${DirectoryDistrictTableSchema.FIELDS.IS_DELETED}`,0);
-         })
-        }).then((object) => {
-            if(object == null) {
-             Utils.responseError(res, new Exception(
-                 ErrorCode.RESOURCE.NOT_FOUND,
-                 MessageInfo.MI_DISTRICT_NOT_FOUND,
-                 false,
-                 HttpStatus.BAD_REQUEST
-             ));
-             return Promise.break;
-            }
- 
-            return DirectoryTalukUseCase.findOne(q => {
-             q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.CITY_ID}`,complaint.cityId);
-             q.where(`${DirectoryTalukTableSchema.TABLE_NAME}.${DirectoryTalukTableSchema.FIELDS.IS_DELETED}`,0);
-         })
-        }).then((object) => {
-            if(object == null) {
-             Utils.responseError(res, new Exception(
-                 ErrorCode.RESOURCE.NOT_FOUND,
-                 MessageInfo.MI_CITY_ID_NOT_FOUND,
-                 false,
-                 HttpStatus.BAD_REQUEST
-             ));
-             return Promise.break;
-            }
-
+             rid = object.get('rid');
             if(details.imageUrl != undefined && details.imageUrl != null){
        
                 return UserDetailUseCase.materialUpload(details.imageUrl,schoolId,'username');

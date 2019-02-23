@@ -1,12 +1,12 @@
 import { MessageInfo } from '../../libs/constants';
-import {TimeTableUseCase,StandardEntityUseCase,ClassEntityUseCase,AdminUserUseCase,WeakDayUseCase,TimingDayUseCase} from "../../domains";
+import {TimeTableUseCase,StandardEntityUseCase,ClassEntityUseCase,AdminUserUseCase,WeakDayUseCase,TimingDayUseCase, SubjectEntityUseCase} from "../../domains";
 import { ErrorCode, HttpStatus, MessageInfo, Properties, DefaultVal ,DATE_FORMAT} from "../../libs/constants";
 import { Utils } from "../../libs/utils";
 import {  Mailer } from "../../libs";
 import { Exception, TimeTableModel} from "../../models";
 import * as express from "express";
 import { Promise } from "thenfail";
-import { TimeTableTableSchema,AdminUserTableSchema,StandardEntityTableSchema,ClassEntityTableSchema,AuthorizationRoleTableSchema,WeakTableSchema,TimingTableSchema} from "../../data/schemas";
+import { TimeTableTableSchema,AdminUserTableSchema,StandardEntityTableSchema,ClassEntityTableSchema,AuthorizationRoleTableSchema,WeakTableSchema,TimingTableSchema, SubjectTableSchema} from "../../data/schemas";
 import { BaseHandler } from "../base.handler";
 import { BearerObject } from "../../libs/jwt";
 import * as formidable from "formidable";
@@ -78,7 +78,14 @@ export class TimeTableHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        
+        if (!Utils.requiredCheck(time.subjectId)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_SUBJECT_ID_IS_REQUIRED,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
         if (!Utils.requiredCheck(time.isActive)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -188,7 +195,6 @@ export class TimeTableHandler extends BaseHandler {
            q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.IS_DELETED}`,0);
         });
    }).then((object) => {
-
     if(object == null ){
         Utils.responseError(res, new Exception(
             ErrorCode.RESOURCE.NOT_FOUND,
@@ -198,6 +204,23 @@ export class TimeTableHandler extends BaseHandler {
         ));
         return Promise.break;
     }
+    return SubjectEntityUseCase.findOne(q => {
+        q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,time.subjectId);
+        q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+        q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
+        });
+   }).then((object) => {
+
+    if(object == null ){
+        Utils.responseError(res, new Exception(
+            ErrorCode.RESOURCE.NOT_FOUND,
+            MessageInfo.MI_SUBJECT_ID_NOT_FOUND,
+            false,
+            HttpStatus.BAD_REQUEST
+        ));
+        return Promise.break;
+    }
+   }).then((object) => {
 
       return TimeTableUseCase.create(time);
        }).then((object) => {
@@ -267,7 +290,14 @@ export class TimeTableHandler extends BaseHandler {
                 HttpStatus.BAD_REQUEST
             ));
         }
-        
+        if (!Utils.requiredCheck(time.subjectId)) {
+            return Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.REQUIRED_ERROR,
+                MessageInfo.MI_SUBJECT_ID_IS_REQUIRED,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+        }
         if (!Utils.requiredCheck(time.isActive)) {
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.REQUIRED_ERROR,
@@ -306,7 +336,7 @@ export class TimeTableHandler extends BaseHandler {
             return StandardEntityUseCase.findOne(q => {
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_ID}`,time.standardId);
                 q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
-                   q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
+                q.where(`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.IS_DELETED}`,0);
                 });
            }).then((object) => {
     
@@ -390,7 +420,7 @@ export class TimeTableHandler extends BaseHandler {
         return TimingDayUseCase.findOne(q => {
             q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.TIME_ID}`,time.endTime);
             q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
-               q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.IS_DELETED}`,0);
+            q.where(`${TimingTableSchema.TABLE_NAME}.${TimingTableSchema.FIELDS.IS_DELETED}`,0);
             });
        }).then((object) => {
     
@@ -403,7 +433,23 @@ export class TimeTableHandler extends BaseHandler {
             ));
             return Promise.break;
         }
-         return TimeTableUseCase.updateById(rid,time);
+        return SubjectEntityUseCase.findOne(q => {
+            q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`,time.subjectId);
+            q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+            q.where(`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.IS_DELETED}`,0);
+            });
+       }).then((object) => {
+    
+        if(object == null ){
+            Utils.responseError(res, new Exception(
+                ErrorCode.RESOURCE.NOT_FOUND,
+                MessageInfo.MI_SUBJECT_ID_NOT_FOUND,
+                false,
+                HttpStatus.BAD_REQUEST
+            ));
+            return Promise.break;
+        }    
+         return TimeTableUseCase.updateById(rid, time);
 
         }).then((object) => {
 
@@ -453,6 +499,7 @@ export class TimeTableHandler extends BaseHandler {
              q.leftJoin(`${WeakTableSchema.TABLE_NAME}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.WEAK_ID}`,`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_ID}`);
              q.leftJoin(`${TimingTableSchema.TABLE_NAME} as starttime`,`starttime.${TimingTableSchema.FIELDS.TIME_ID}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.START_TIME}`);
              q.leftJoin(`${TimingTableSchema.TABLE_NAME} as endtime`,`endtime.${TimingTableSchema.FIELDS.TIME_ID}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.END_TIME}`);
+             q.leftJoin(`${SubjectTableSchema.TABLE_NAME}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.SUBJECT_ID}`,`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`);
              q.where(`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.SCHOOL_ID}`,schoolId);       
              q.where(`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.IS_DELETED}`,0);
                // q.whereRaw(condition);               
@@ -468,13 +515,19 @@ export class TimeTableHandler extends BaseHandler {
                             } else if(key=='standardName'){
                                 condition = `(${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else if(key=='standardId'){
+                                condition = `(${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.STANDARD_ID} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
+                            } else if(key=='sectionId'){
+                                condition = `(${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.CLASS_ID} LIKE "%${searchval}%")`;
+                                q.andWhereRaw(condition);
                             } else if (key == 'startTime') {
                                 condition = `(${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.START_TIME} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key=='endTime'){
                                 condition = `(${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.END_TIME} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
-                            } else if (key == 'weakName') {
+                            } else if (key == 'weakId') {
                                 condition = `(${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.WEAK_ID} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key=='staffName'){
@@ -508,7 +561,7 @@ export class TimeTableHandler extends BaseHandler {
                 total = totalObject;
                 return TimeTableUseCase.findByQuery(q => {
                    
-                   q.select(`${TimeTableTableSchema.TABLE_NAME}.*`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_NAME}`,`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,`starttime.${TimingTableSchema.FIELDS.TIME} as starttime`,`endtime.${TimingTableSchema.FIELDS.TIME} as endtime`);
+                   q.select(`${TimeTableTableSchema.TABLE_NAME}.*`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_NAME}`,`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,`starttime.${TimingTableSchema.FIELDS.TIME} as starttime`,`endtime.${TimingTableSchema.FIELDS.TIME} as endtime`,`starttime.${TimingTableSchema.FIELDS.NOON} as startnoon`,`endtime.${TimingTableSchema.FIELDS.NOON} as endnoon`, `${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`, `${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_NAME} as subjectName`);
                    q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as staffName`));
                    let condition;
                    q.leftJoin(`${ClassEntityTableSchema.TABLE_NAME}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.CLASS_ID}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`);
@@ -517,6 +570,7 @@ export class TimeTableHandler extends BaseHandler {
              q.leftJoin(`${WeakTableSchema.TABLE_NAME}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.WEAK_ID}`,`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_ID}`);
              q.leftJoin(`${TimingTableSchema.TABLE_NAME} as starttime`,`starttime.${TimingTableSchema.FIELDS.TIME_ID}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.START_TIME}`);
              q.leftJoin(`${TimingTableSchema.TABLE_NAME} as endtime`,`endtime.${TimingTableSchema.FIELDS.TIME_ID}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.END_TIME}`);
+             q.leftJoin(`${SubjectTableSchema.TABLE_NAME}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.SUBJECT_ID}`,`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`);
              q.where(`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.SCHOOL_ID}`,schoolId);       
              q.where(`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.IS_DELETED}`,0);
                       // q.whereRaw(condition);               
@@ -532,6 +586,12 @@ export class TimeTableHandler extends BaseHandler {
                                    } else if(key=='standardName'){
                                        condition = `(${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME} LIKE "%${searchval}%")`;
                                        q.andWhereRaw(condition);
+                                   } else if(key=='standardId'){
+                                       condition = `(${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.STANDARD_ID} LIKE "%${searchval}%")`;
+                                       q.andWhereRaw(condition);
+                                   } else if(key=='sectionId'){
+                                       condition = `(${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.CLASS_ID} LIKE "%${searchval}%")`;
+                                       q.andWhereRaw(condition);
                                    } else if (key == 'startTime') {
                                        condition = `(starttime.${TimingTableSchema.FIELDS.TIME} LIKE "%${searchval}%")`;
                                        q.andWhereRaw(condition);
@@ -541,7 +601,10 @@ export class TimeTableHandler extends BaseHandler {
                                    } else if (key == 'weakName') {
                                        condition = `(${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME} LIKE "%${searchval}%")`;
                                        q.andWhereRaw(condition);
-                                   } else if(key=='staffName'){
+                                   } else if(key == 'weakId'){
+                                       condition = `(${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.WEAK_ID} LIKE "%${searchval}%")`;
+                                       q.andWhereRaw(condition);
+                                   } else if(key == 'staffName'){
                                        condition = `CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
                                        q.andWhereRaw(condition);
                                    } else if(key == 'isActive') {
@@ -564,6 +627,7 @@ export class TimeTableHandler extends BaseHandler {
                     if (limit != null) {
                         q.limit(limit);
                     }
+                    q.orderBy(`starttime.${TimingTableSchema.FIELDS.TIME}`, 'ASC');
                     if (sortKey != null && sortValue != '') {
                         if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
                             let ColumnSortKey = Utils.changeSearchKey(sortKey);
@@ -604,7 +668,7 @@ export class TimeTableHandler extends BaseHandler {
                     //noinspection TypeScriptUnresolvedVariable
 
                         object.models.forEach(obj => {
-
+                            console.log(obj);
                             let standardId=obj.get("standard_id");
                             let classId=obj.get("class_id");
                             let weakId=obj.get('weak_id');
@@ -625,6 +689,9 @@ export class TimeTableHandler extends BaseHandler {
                                 timeTableData['endTime']=obj.get('endtime');
                                 timeTableData['weakName']=obj.get('weak_name');
                                 timeTableData['staffName']=obj.get('staffName');
+                                timeTableData['subjectName']=obj.get('subjectName');
+                                timeTableData['startNoon']=obj.get('startnoon');
+                                timeTableData['endNoon']=obj.get('endnoon');
                                 standardid[standardId].timeTable.push(timeTableData);
                             }
                            
@@ -639,7 +706,10 @@ export class TimeTableHandler extends BaseHandler {
                                 attenenceData['endTime']=obj.get('endtime');
                                 attenenceData['weakName']=obj.get('weak_name');
                                 attenenceData['staffName']=obj.get('staffName');
-                                console.log("userId",attenenceData);
+                                attenenceData['subjectName']=obj.get('subjectName');
+                                attenenceData['startNoon']=obj.get('startnoon');
+                                attenenceData['endNoon']=obj.get('endnoon');
+                                // console.log("userId",attenenceData);
                                 standardid[standardId]=attenenceData;
                                 classid[classId]=attenenceData;
                                 weakid[weakId]=attenenceData;
@@ -673,7 +743,7 @@ export class TimeTableHandler extends BaseHandler {
         let result;
         return Promise.then(() =>{
             return TimeTableUseCase.findOne( q => {
-                q.select(`${TimeTableTableSchema.TABLE_NAME}.*`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_NAME}`,`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,`starttime.${TimingTableSchema.FIELDS.TIME} as starttime`,`endtime.${TimingTableSchema.FIELDS.TIME} as endtime`);
+                q.select(`${TimeTableTableSchema.TABLE_NAME}.*`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_NAME}`,`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_NAME}`,`starttime.${TimingTableSchema.FIELDS.TIME} as starttime`,`endtime.${TimingTableSchema.FIELDS.TIME} as endtime`,`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`, `${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_NAME}`);
                    q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as staffName`));
                    let condition;
                    q.leftJoin(`${ClassEntityTableSchema.TABLE_NAME}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.CLASS_ID}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_ID}`);
@@ -682,6 +752,7 @@ export class TimeTableHandler extends BaseHandler {
              q.leftJoin(`${WeakTableSchema.TABLE_NAME}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.WEAK_ID}`,`${WeakTableSchema.TABLE_NAME}.${WeakTableSchema.FIELDS.WEAK_ID}`);
              q.leftJoin(`${TimingTableSchema.TABLE_NAME} as starttime`,`starttime.${TimingTableSchema.FIELDS.TIME_ID}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.START_TIME}`);
              q.leftJoin(`${TimingTableSchema.TABLE_NAME} as endtime`,`endtime.${TimingTableSchema.FIELDS.TIME_ID}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.END_TIME}`);
+             q.leftJoin(`${SubjectTableSchema.TABLE_NAME}`,`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.SUBJECT_ID}`,`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_ID}`);
              q.where(`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.RID}`,rid);       
              q.where(`${TimeTableTableSchema.TABLE_NAME}.${TimeTableTableSchema.FIELDS.IS_DELETED}`,0);
             }) 

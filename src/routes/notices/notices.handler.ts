@@ -298,7 +298,7 @@ export class NoticesHandler extends BaseHandler {
         return Promise.then(() => {
             return NoticesUseCase.countByQuery(q => {
                 let condition;
-             if(checkuser.roleId != 18) {
+                  if(!checkuser.tmp && checkuser.roleId != 18) {
                  if(standardId != null && standardId != undefined){
                     q.where(`${NoticesTableSchema.TABLE_NAME}.${NoticesTableSchema.FIELDS.SECTION_ID}`,standardId);
                  }else {
@@ -372,7 +372,7 @@ export class NoticesHandler extends BaseHandler {
                    q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as sentBy`));
                    q.select(knex.raw(`CONCAT(sentto.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",sentto.${AdminUserTableSchema.FIELDS.LASTNAME}) as sentTo`));
                    let condition;
-                   if(checkuser.roleId != 18) {
+                   if(!checkuser.tmp && checkuser.roleId != 18) {
                     if(standardId != null && standardId != undefined){
                        q.where(`${NoticesTableSchema.TABLE_NAME}.${NoticesTableSchema.FIELDS.SECTION_ID}`,standardId);
                     }else {

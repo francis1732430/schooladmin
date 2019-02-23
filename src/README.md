@@ -19,3 +19,36 @@ datum.subModules = [];
 
  bcrypt
  // "bcrypt": "^0.8.7",
+
+ MULTER FILE UPLOADS TRIGGER EVENTS:
+
+ app.use(require('multer')({
+  limits: {
+    fieldNameSize: 999999999,
+    fieldSize: 999999999
+  },
+  includeEmptyFields: true,
+  inMemory: true,
+  onFileUploadStart: function(file) {
+    console.log('Starting ' + file.fieldname);
+  },
+  onFileUploadData: function(file, data) {
+    console.log('Got a chunk of data!');
+  },
+  onFileUploadComplete: function(file) {
+    console.log('Completed file!');
+  },
+  onParseStart: function() {
+    console.log('Starting to parse request!');
+  },
+  onParseEnd: function(req, next) {
+    console.log('Done parsing!');
+    next();
+  },
+  onError: function(e, next) {
+    if (e) {
+      console.log(e.stack);
+    }
+    next();
+  }
+}));

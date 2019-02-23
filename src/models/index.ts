@@ -31,3 +31,4 @@ export {UserDetailModel}from "./userdetails";
 export {NoticesModel}from "./notices";
 export {CategoryModel}from "./category";
 export {BooksModel}from "./books";
+export {ChatModel}from "./chat";

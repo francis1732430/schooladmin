@@ -89,7 +89,7 @@ export class District_taluka extends BaseHandler{
         if(!Utils.requiredCheck(taluka.cityName)){
             return Utils.responseError(res, new Exception(
                 ErrorCode.RESOURCE.INVALID_Weak_Name,
-                MessageInfo.MI_WEAKNAME_IS_REQUIRED,
+                MessageInfo.MI_CITY_NAME_IS_REQUIRED,
                 false,
                 HttpStatus.BAD_REQUEST
             ));

@@ -2,14 +2,14 @@ import { MessageInfo } from './../../libs/constants';
 /**
  *      on 7/21/16.
  */
-import {AdminUserUseCase,AuthorizationRoleUseCase} from "../../domains";
+import {AdminUserUseCase,AuthorizationRoleUseCase, UserDetailUseCase} from "../../domains";
 import { ErrorCode, HttpStatus, MessageInfo, Properties, DefaultVal ,DATE_FORMAT} from "../../libs/constants";
 import { Utils } from "../../libs/utils";
 import {  Mailer } from "../../libs";
-import { Exception, AdminUserModel,AuthorizationRoleModel} from "../../models";
+import { Exception, AdminUserModel,AuthorizationRoleModel, UserDetailModel} from "../../models";
 import * as express from "express";
 import { Promise } from "thenfail";
-import { AdminUserTableSchema,AuthorizationRoleTableSchema,AuthorizationRuleTableSchema, SchoolTableSchema,DirectoryDistrictTableSchema} from "../../data/schemas";
+import { AdminUserTableSchema,AuthorizationRoleTableSchema,AuthorizationRuleTableSchema, SchoolTableSchema,DirectoryDistrictTableSchema, UserDetailSchema} from "../../data/schemas";
 import { BaseHandler } from "../base.handler";
 import { BearerObject } from "../../libs/jwt";
 import * as formidable from "formidable";
@@ -87,7 +87,7 @@ export class UserHandler extends BaseHandler {
         }
         
         if(checkuser.school && checkuser.school == true){
-            if (!Utils.requiredCheck(user.roleName) && !Utils.requiredCheck(user.roleId)) {
+            if (!Utils.requiredCheck(user.roleId)) {
                 return Utils.responseError(res, new Exception(
                     ErrorCode.USER.ROLEID_EMPTY,
                     MessageInfo.MI_ROLE_NAME_NOT_FOUND,
@@ -109,7 +109,11 @@ export class UserHandler extends BaseHandler {
             return AdminUserUseCase.create(user);
         })
         .then(object => {
-             Mailer.newUser(user.firstname,user.email, generatedPassword);
+            let details = new UserDetailModel();
+            details.userId = object.user_id;
+            return UserDetailUseCase.create(details);
+        }).then((object) => {
+            Mailer.newUser(user.firstname,user.email, generatedPassword);
             let data  ={};
             data["password"] = generatedPassword;
             data["message"] = MessageInfo.MI_USER_ADDED;
@@ -130,6 +134,7 @@ export class UserHandler extends BaseHandler {
         let sortKey;
         let sortValue;
         let searchobj = [];
+        let searchValue = req.query.searchValue;
         for (let key in req.query) {
             console.log(req.query[key]);
             if(key=='sortKey'){
@@ -184,7 +189,7 @@ export class UserHandler extends BaseHandler {
                             let searchval = searchobj[key];
                             let ColumnKey = Utils.changeSearchKey(key);
                             if(key=='roleName'){
-                                condition = `(arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
+                                condition = `(ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
                             } else if(key=='createdByName'){
                                 condition = `CONCAT(user.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', user.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
@@ -210,6 +215,26 @@ export class UserHandler extends BaseHandler {
                             } else if(key == 'updatedDate') {
                                 condition = `(${AdminUserTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                 q.andWhereRaw(condition);
+                            } else {
+                                searchval = searchValue;
+                                    condition = `(ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
+                                    q.andWhereRaw(condition);
+                                    condition = `CONCAT(user.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', user.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.EMAIL} LIKE "%${searchval}%")`;
+                                    q.andWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_ACTIVE} LIKE "%${AdminUserTableSchema.FIELDS.IS_ACTIVE}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_DATE} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.UPDATED_DATE} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
                             }
                         }
                     }
@@ -220,20 +245,20 @@ export class UserHandler extends BaseHandler {
                 total = totalObject;
                 return AdminUserUseCase.findByQuery(q => {
                     q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`ar.*`,`ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID} as rolesId`,
-                        `ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`,
-                        `ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`,
+                        `ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} as rolesName`,
                         `user.${AdminUserTableSchema.FIELDS.FIRSTNAME} AS createdByFname`,
                         `user.${AdminUserTableSchema.FIELDS.LASTNAME}  AS createdByLname`,
-                         `${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`);
+                         `${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.RID} as rid1`);
                     q.leftJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} AS ar`, `ar.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`);
                     q.leftJoin(`${AuthorizationRoleTableSchema.TABLE_NAME} AS arg`, `arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_ID}`, `ar.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`);
                     q.innerJoin(`${AdminUserTableSchema.TABLE_NAME} AS user`, `user.${AdminUserTableSchema.FIELDS.USER_ID}`, `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_BY}`);
                     q.leftJoin(`${SchoolTableSchema.TABLE_NAME}`,  `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,`${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_ID}`);
+                    q.orderBy(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.UPDATED_DATE}`,'desc');
                     let condition;
                    
                 if(checkuser.global == true){
                     if(checkuser.tmp == true){
-                            condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
+                        condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}=${schoolId}`;
                     }
                     else if(session.userId=='1') {
                         condition = `${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_DELETED}=0 and ${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID} IS NULL`;
@@ -286,6 +311,26 @@ export class UserHandler extends BaseHandler {
                                 } else if(key == 'updatedDate') {
                                     condition = `(${AdminUserTableSchema.TABLE_NAME}.${ColumnKey} LIKE "%${searchval}%")`;
                                     q.andWhereRaw(condition);
+                                } else {
+                                    searchval = searchValue;
+                                    // condition = `(ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME} LIKE "%${searchval}%")`;
+                                    // q.andWhereRaw(condition);
+                                    condition = `CONCAT(user.${AdminUserTableSchema.FIELDS.FIRSTNAME},' ', user.${AdminUserTableSchema.FIELDS.LASTNAME}) LIKE "%${searchval}%"`;
+                                    q.andWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${SchoolTableSchema.TABLE_NAME}.${SchoolTableSchema.FIELDS.SCHOOL_NAME} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.EMAIL} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.IS_ACTIVE} LIKE "%${AdminUserTableSchema.FIELDS.IS_ACTIVE}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.CREATED_DATE} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
+                                    condition = `(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.UPDATED_DATE} LIKE "%${searchval}%")`;
+                                    q.orWhereRaw(condition);
                                 }
                             }
                         }
@@ -301,7 +346,7 @@ export class UserHandler extends BaseHandler {
                         if (sortKey != null && (sortValue == 'ASC' || sortValue == 'DESC' || sortValue == 'asc' || sortValue == 'desc')) {
                             let ColumnSortKey = Utils.changeSearchKey(sortKey);
                             if (sortKey == 'roleName') {
-                                q.orderBy(`arg.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`, sortValue);
+                                q.orderBy(`ar.${AuthorizationRoleTableSchema.FIELDS.ROLE_NAME}`, sortValue);
                             } else if (sortKey == 'createdByName') {
                                 q.orderBy(`user.${AdminUserTableSchema.FIELDS.FIRSTNAME}`, sortValue);
                                 q.orderBy(`user.${AdminUserTableSchema.FIELDS.LASTNAME}`, sortValue);
@@ -332,14 +377,18 @@ export class UserHandler extends BaseHandler {
                 if (object != null && object.models != null) {
                     //noinspection TypeScriptUnresolvedVariable
                     object.models.forEach(obj => {
+                        // console.log('obj',obj);
                         let adminUseData = AdminUserModel.fromDto(obj, ["createdBy","password"])
                       //  console.log(obj.get('rolesId'));
-                       //adminUseData["roleName"] = roles[adminUseData["roleId"]]; 
+                       //adminUseData["roleName"] = roles[adminUseData["roleId"]];
+                        
                        if(obj != null) {
                         // console.log(obj.get('rolesId'));
                         if(obj.get('rolesId') != null){
+                            adminUseData['rid1'] = obj.get('rid1');
                             adminUseData['rolesId']=obj.get('rolesId');
                             //adminUseData['parentId']=obj.get('parentId');
+                            adminUseData['rolename'] = obj.get('rolesName');
                             ret.push(adminUseData);
                         }
                        
@@ -604,6 +653,7 @@ export class UserHandler extends BaseHandler {
                     ));
                     return Promise.break;
                 } else {
+                    user.schoolId = null;
                     return AdminUserUseCase.updateById(rid, user,schoolId);
                 }
             })
@@ -633,6 +683,7 @@ export class UserHandler extends BaseHandler {
 
                 if(user.assignedDistrict != null && user.assignedDistrict != undefined ) {
                     if(session.userId == '1') {
+                        user.schoolId = req.body.schoolId;
                         return  AuthorizationRoleUseCase.updateUserRole(object.get("role_id"),object.get("user_id"),user); 
                     } else {
                         if (object == null) {
@@ -1019,8 +1070,163 @@ public static getUsers(req: express.Request, res: express.Response): any {
         });
 }
 
+public static getStudent(req: express.Request, res: express.Response): any {
+  
+    let studentId = req.query.studentId;
+    let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+    return Promise.then(() => {
+     
+        return AdminUserUseCase.findByQuery((q) => {
+            q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.*`);
+            q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`);
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,20);
+            q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+        })
+    }).then((object) => {
+        let ret = [];
+        // console.log(object);
+         //noinspection TypeScriptUnresolvedVariable
+         if (object != null && object.models != null) {
+             //noinspection TypeScriptUnresolvedVariable
+             object.models.forEach(obj => {
+                 let userData = AdminUserModel.fromDto(obj, ["createdBy","password"]); 
+                 ret.push(userData);
+             });
+         }
+         
+         res.json(ret);
+    })
+
+}
 
 
+public static getTeacher(req: express.Request, res: express.Response): any {
+    let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+    let teacherId = req.query.teacherId;
+
+    return Promise.then(() => {
+     
+        return AdminUserUseCase.findByQuery((q) => {
+            q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.*`);
+            q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`);
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,19);
+            q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+        })
+    }).then((object) => {
+        let ret = [];
+        // console.log(object);
+         //noinspection TypeScriptUnresolvedVariable
+         if (object != null && object.models != null) {
+             //noinspection TypeScriptUnresolvedVariable
+             object.models.forEach(obj => {
+                 let userData = AdminUserModel.fromDto(obj, ["createdBy","password"]); 
+                 ret.push(userData);
+             });
+         }
+         
+         res.json(ret);
+    })
+
+}
+
+public static getParent(req: express.Request, res: express.Response): any {
+    let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+    let parentId = req.query.studentId;
+
+    return Promise.then(() => {
+     
+        return AdminUserUseCase.findByQuery((q) => {
+            q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.*`);
+            q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`);
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,21);
+            q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+        })
+    }).then((object) => {
+        let ret = [];
+        // console.log(object);
+         //noinspection TypeScriptUnresolvedVariable
+         if (object != null && object.models != null) {
+             //noinspection TypeScriptUnresolvedVariable
+             object.models.forEach(obj => {
+                 let userData = AdminUserModel.fromDto(obj, ["createdBy","password"]); 
+                 ret.push(userData);
+             });
+         }
+         
+         res.json(ret);
+    })
+
+}
+public static getTeacherAndAdmin(req: express.Request, res: express.Response): any {
+    let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+    return Promise.then(() => {
+        return AdminUserUseCase.findByQuery((q) => {
+            q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.*`);
+            q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`);
+            q.whereIn(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,[19, 18]);
+            q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+        }) 
+    }).then((object) => {
+        let ret = [];
+        // console.log(object);
+         //noinspection TypeScriptUnresolvedVariable
+         if (object != null && object.models != null) {
+             //noinspection TypeScriptUnresolvedVariable
+             object.models.forEach(obj => {
+                 let userData = AdminUserModel.fromDto(obj, ["createdBy","password"]); 
+                 ret.push(userData);
+             });
+         }
+         res.json(ret);
+    })
+}
+
+public static getStudentAndParent(req: express.Request, res: express.Response): any {
+    let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+    return Promise.then(() => {
+        return AdminUserUseCase.findByQuery((q) => {
+            q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.*`);
+            q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`);
+            q.whereIn(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,[20, 21]);
+            q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+        }) 
+    }).then((object) => {
+        let ret = [];
+        // console.log(object);
+         //noinspection TypeScriptUnresolvedVariable
+         if (object != null && object.models != null) {
+             //noinspection TypeScriptUnresolvedVariable
+             object.models.forEach(obj => {
+                 let userData = AdminUserModel.fromDto(obj, ["createdBy","password"]); 
+                 ret.push(userData);
+             });
+         }
+         res.json(ret);
+    })
+}
+public static getSchoolAdmin(req: express.Request, res: express.Response): any {
+    let schoolId:BearerObject = req[Properties.SCHOOL_ID];
+    return Promise.then(() => {
+        return AdminUserUseCase.findByQuery((q) => {
+            q.select(`${AdminUserTableSchema.TABLE_NAME}.*`,`${AuthorizationRoleTableSchema.TABLE_NAME}.*`);
+            q.innerJoin(`${AuthorizationRoleTableSchema.TABLE_NAME}`,`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.USER_ID}`,`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.USER_ID}`);
+            q.where(`${AuthorizationRoleTableSchema.TABLE_NAME}.${AuthorizationRoleTableSchema.FIELDS.PARENT_ID}`,18);
+            q.where(`${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.SCHOOL_ID}`,schoolId);
+        }) 
+    }).then((object) => {
+        let ret = [];
+        // console.log(object);
+         //noinspection TypeScriptUnresolvedVariable
+         if (object != null && object.models != null) {
+             //noinspection TypeScriptUnresolvedVariable
+             object.models.forEach(obj => {
+                 let userData = AdminUserModel.fromDto(obj, ["createdBy","password"]); 
+                 ret.push(userData);
+             });
+         }
+         res.json(ret);
+    })
+}
 }
 
 

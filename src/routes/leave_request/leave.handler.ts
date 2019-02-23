@@ -328,7 +328,7 @@ export class LeaveRequestHandler extends BaseHandler {
         return Promise.then(() => {
             return LeaveRequestUseCase.countByQuery(q => {
                 let condition;
-             if(checkuser.roleId != 18) {
+            if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${LeaveRequestTableSchema.TABLE_NAME}.${LeaveRequestTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
              q.leftJoin(`${AdminUserTableSchema.TABLE_NAME} as sentby`,`sentby.${AdminUserTableSchema.FIELDS.USER_ID}`,`${LeaveRequestTableSchema.TABLE_NAME}.${LeaveRequestTableSchema.FIELDS.SENT_BY}`);
@@ -394,7 +394,7 @@ export class LeaveRequestHandler extends BaseHandler {
                    q.select(knex.raw(`CONCAT(sentby.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",sentby.${AdminUserTableSchema.FIELDS.LASTNAME}) as sentBy`));
                    q.select(knex.raw(`CONCAT(sentto.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",sentto.${AdminUserTableSchema.FIELDS.LASTNAME}) as sentTo`));
                    let condition;
-             if(checkuser.roleId != 18) {
+             if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${LeaveRequestTableSchema.TABLE_NAME}.${LeaveRequestTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
              q.leftJoin(`${AdminUserTableSchema.TABLE_NAME} as sentby`,`sentby.${AdminUserTableSchema.FIELDS.USER_ID}`,`${LeaveRequestTableSchema.TABLE_NAME}.${LeaveRequestTableSchema.FIELDS.SENT_BY}`);

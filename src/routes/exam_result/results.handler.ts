@@ -413,7 +413,7 @@ export class ExamResultHandler extends BaseHandler {
         return Promise.then(() => {
             return ExamResultUseCase.countByQuery(q => {
                 let condition;
-             if(checkuser.roleId != 18) {
+            if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
              q.leftJoin(`${ExamTypesTableSchema.TABLE_NAME}`,`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.EXAM_TYPE_ID}`,`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.EXAM_TYPE_ID}`);
@@ -487,7 +487,7 @@ export class ExamResultHandler extends BaseHandler {
                    q.select(`${ExamResultTableSchema.TABLE_NAME}.*`,`${StandardEntityTableSchema.TABLE_NAME}.${StandardEntityTableSchema.FIELDS.STANDARD_NAME}`,`${ClassEntityTableSchema.TABLE_NAME}.${ClassEntityTableSchema.FIELDS.CLASS_NAME}`,`${SubjectTableSchema.TABLE_NAME}.${SubjectTableSchema.FIELDS.SUBJECT_NAME}`,`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.TYPE_NAME}`);
                    q.select(knex.raw(`CONCAT(${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.FIRSTNAME}," ",${AdminUserTableSchema.TABLE_NAME}.${AdminUserTableSchema.FIELDS.LASTNAME}) as studentName`));
                    let condition;
-             if(checkuser.roleId != 18) {
+             if(!checkuser.tmp && checkuser.roleId != 18) {
              q.where(`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.CREATED_BY}`,session.userId);
              }                
              q.leftJoin(`${ExamTypesTableSchema.TABLE_NAME}`,`${ExamTypesTableSchema.TABLE_NAME}.${ExamTypesTableSchema.FIELDS.EXAM_TYPE_ID}`,`${ExamResultTableSchema.TABLE_NAME}.${ExamResultTableSchema.FIELDS.EXAM_TYPE_ID}`);
